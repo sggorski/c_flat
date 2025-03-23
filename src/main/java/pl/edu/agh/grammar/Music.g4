@@ -2,7 +2,6 @@ grammar Music;
 
 program : functionDecl* mainDecl EOF;
 
-
 functionDecl
     : 'melody' ID LP parameters? RP '{' statement* '}'
     ;
@@ -37,9 +36,8 @@ statement
     | trackStatement
     ;
 
-
 settings
-    : SET  settingsAssigment ';';
+    : SET settingsAssigment ';';
 
 settingsAssigment
     : PACE '=' INT_VAL #pace
@@ -67,6 +65,7 @@ playStatement
     | PLAY functionCall ';' #playFunc
     | PLAY ID ';' #playTrack
     ;
+
 pauseStatement
     : PAUSE INT_VAL ';';
 
@@ -96,8 +95,9 @@ expr
     | chord #chordExpr
     | ID #id
     ;
+
 op
-: LT | EQ | NEQ | GEQ | LEQ |  GT | DIV | MUL | SUB | ADD | PER;
+    : LT | EQ | NEQ | GEQ | LEQ |  GT | DIV | MUL | SUB | ADD | PER;
 
 chord
     : '[' NOTE_VAL (',' NOTE_VAL)+ ']';
@@ -113,8 +113,7 @@ TRACK : 'Track';
 
 BOOL_VAL: 'true' | 'false';
 INT_VAL : [0-9]+ ;
-NOTE_VAL : 'C2' |  'H' |  'C';
-
+NOTE_VAL : [CDEFGABH](#|b)?[01234] | [CDEFGABH](#|b)?-1 | [CDEFGABH](#|b)?-2 ;
 
 PACE: 'PACE';
 DISTORTION : 'DISTORTION';
@@ -126,7 +125,8 @@ SUSTAIN : 'SUSTAIN';
 KEY : 'KEY';
 
 INSTRUMENT_VALUE : 'PIANO' |  'VIOLIN' | 'DRUMS' | 'HARP';
-KEY_VAL : 'Fd' | 'Hd' | 'C1m';
+KEY_VAL : 'C' | 'C#' | 'D' | 'Eb' | 'E' | 'F' | 'F#' | 'G' | 'Ab' | 'A' | 'B' | 'H' |
+          'Cm' | 'C#m' | 'Dm' | 'Ebm' | 'Em' | 'Fm' | 'F#m' | 'Gm' | 'G#m' | 'Am' | 'Bm' | 'Hm' ;
 
 SET : 'SET';
 PLAY : 'PLAY';
