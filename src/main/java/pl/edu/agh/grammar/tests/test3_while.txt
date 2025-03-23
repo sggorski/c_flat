@@ -1,0 +1,15 @@
+melody main() {
+	SET BLUES = true;
+	SET JAZZ = false;
+	int i = 1;
+	
+	while(BLUES) {
+		PLAY E1 100;
+		PLAY F1 100;
+		PLAY F#1 100;
+		i++;
+		if(i==5) {
+			SET BLUES = false;
+		}
+	}
+}

@@ -1,0 +1,23 @@
+melody mel1(Note n1, int dist) {
+	SET DISTORTION = dist;
+	PLAY n1 100;
+	Note n2 = n1 + 4;
+	PLAY n2 200;
+}
+
+melody mel2() {
+	int n=100;
+	PLAY C1 500;
+	PAUSE 200;
+	PLAY H3 50;
+	PLAY C4 200;
+}
+
+melody main() {
+	SET INSTRUMENT = HARP;
+	PLAY mel1(G#2, 20);
+	PAUSE 200;
+	PLAY mel2(INSTRUMENT = PIANO);
+	PLAY G#2 100;
+	PLAY mel2();
+}

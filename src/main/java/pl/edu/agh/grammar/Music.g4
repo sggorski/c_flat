@@ -34,6 +34,8 @@ statement
     | pauseStatement
     | controlStatement
     | trackStatement
+    | breakStatement
+    | continueStatement
     ;
 
 settings
@@ -47,7 +49,6 @@ settingsAssigment
     | JAZZ '=' BOOL_VAL #jazz
     | BLUES '=' BOOL_VAL #blues
     | VOLUME '=' INT_VAL #volume
-    | PACE '=' INT_VAL #pace
     | KEY '=' KEY_VAL #key
     ;
 
@@ -74,6 +75,12 @@ controlStatement
     | 'if' '(' expr ')' '{' statement* '}' ('else' 'if' '(' expr ')' '{' statement* '}')* ('else' '{' statement* '}')?
     ;
 
+breakStatement
+    : 'break' ';' ;
+
+continueStatement
+    : 'continue' ';' ;
+
 functionCall
     : ID '(' arguments* (',')? settingsList? ')'
     ;
@@ -97,7 +104,7 @@ expr
     ;
 
 op
-    : LT | EQ | NEQ | GEQ | LEQ |  GT | DIV | MUL | SUB | ADD | PER;
+    : LT | EQ | NEQ | GEQ | LEQ |  GT | DIV | MUL | SUB | ADD | PER | AND | OR | NOT ;
 
 chord
     : '[' NOTE_VAL (',' NOTE_VAL)+ ']';
@@ -145,6 +152,10 @@ MUL : '*';
 ADD : '+';
 SUB : '-';
 PER : '%';
+
+AND : 'AND' ;
+OR : 'OR' ;
+NOT : 'NOT' ;
 
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 WS : [ \t\r\n]+ -> skip ;

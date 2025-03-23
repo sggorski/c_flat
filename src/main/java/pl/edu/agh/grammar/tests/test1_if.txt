@@ -1,0 +1,17 @@
+melody main() {
+	SET INSTRUMENT = VIOLIN;
+	SET KEY = F#m;
+	SET DISTORTION = 100;
+	SET BLUES = true;
+
+	if(BLUES) {
+		PLAY F3 200;
+	} else if (KEY == C) {
+		PLAY C2 500;
+		PLAY C3 250;
+	} else {
+		if (DISTORTION > 50) {
+			PLAY F#1 100;
+		}
+	}
+}
