@@ -73,7 +73,17 @@ pauseStatement
 controlStatement
     : 'while' '(' expr ')' '{' statement* '}'
     | 'if' '(' expr ')' '{' statement* '}' ('else' 'if' '(' expr ')' '{' statement* '}')* ('else' '{' statement* '}')?
+    | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' '{' statement* '}'
     ;
+
+forInit
+    : ID
+    | type ID '=' expr
+    ;
+
+forUpdate
+    : functionCall
+    | assignment ;
 
 breakStatement
     : 'break' ';' ;
@@ -120,7 +130,7 @@ TRACK : 'Track';
 
 BOOL_VAL: 'true' | 'false';
 INT_VAL : [0-9]+ ;
-NOTE_VAL : [CDEFGABH](#|b)?[01234] | [CDEFGABH](#|b)?-1 | [CDEFGABH](#|b)?-2 ;
+NOTE_VAL : [CDEFGABH]('#'|'b')?[01234] | [CDEFGABH]('#'|'b')?'-1' | [CDEFGABH]('#'|'b')?'-2';
 
 PACE: 'PACE';
 DISTORTION : 'DISTORTION';
