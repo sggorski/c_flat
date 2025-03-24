@@ -23,8 +23,8 @@ melody main() {
 
 	Note n1 = C1;
 	Note n2 = n1;
-	n1++;
-	n2--;
+	n1 += 1;
+	n2 -= 2;
 	Note n3 = n2*2;
 
 	Chord ch1 = [C1, G1, E2];
