@@ -1,0 +1,32 @@
+melody main() {
+	SET INSTRUMENT = VIOLIN;
+	SET KEY = Gm;
+	SET SUSTAIN = 20;
+	SET BLUES = true;
+
+	Note n1 = E2;
+	Note n2 = C#4;
+
+	for(int k=0; k<10; k+=2) {
+		PLAY n1 200;
+		n1 += 2;
+		
+		for(int j=0; i<5; j+=1) {
+			PLAY n2;
+			n1 /= 2;
+		}
+		n2 = C#4;
+	}
+
+	while(BLUES) {
+		PLAY E1 100;
+		PLAY F1 100;
+		PLAY F#1 100;
+
+		for(int i=0; i<10; i+=1) {
+			PLAY n1 200;
+			n1 += 2;
+		}
+		SET BLUES = false;
+	}
+}

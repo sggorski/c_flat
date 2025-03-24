@@ -1,0 +1,21 @@
+melody main() {
+	SET SUSTAIN = 127;
+	SET JAZZ = true;
+	int i = 1;
+	
+	while(BLUES) {
+		PLAY E1 100;
+		PLAY F1 100;
+		PLAY F#1 100;
+		PLAY F1 100;
+		i++;
+		if(i==5) {
+			break;
+		} else {
+			continue;
+		}
+	}
+	PAUSE 200;
+	PLAY F#0 50;
+	PLAY H1 200;
+}

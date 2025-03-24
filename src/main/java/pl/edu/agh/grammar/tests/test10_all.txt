@@ -1,0 +1,51 @@
+melody mel1() {
+	int n=100;
+	PLAY C1 500;
+	PAUSE 200;
+	PLAY H3 50;
+	PLAY C4 200;
+}
+
+melody mel2() {
+	if(BLUES) {
+		PLAY F3 200;
+	} else if (KEY == C) {
+		PLAY C2 500;
+		PLAY C3 250;
+	} else {
+		if (DISTORTION > 50) {
+			PLAY F#1 100;
+		}
+	}
+}
+
+melody main() {
+	SET PACE = 120;
+	SET SUSTAIN = 100;
+	SET DISTORTION = 50;
+	SET JAZZ = false;
+	SET BLUES = true;
+	SET VOLUME = 100;
+	SET INSTRUMENT = DRUMS;
+	SET KEY = C;
+
+	Note n1 = C2;
+	Note n2 = G4;
+
+	for(int i=0; i<10; i+=2) {
+		PLAY n1 200;
+		n1 += 2;
+		
+		for(int j=0; i<5; j+=1) {
+			PLAY n2;
+			n1 /= 2;
+		}
+		n2 = G4;
+	}
+
+	PAUSE 500;
+	Track t1;
+	t1 ADD mel1();
+	t1 ADD mel2();
+	PLAY t1;
+}

@@ -1,0 +1,21 @@
+melody main() {
+	SET INSTRUMENT = HARP;
+	SET TEMPO = 120;
+
+	PLAY G#2 200;
+	PAUSE 200;
+	PLAY G#2 100;
+	Note n1 = G#2;
+
+	for(int i=0; i<10; i+=1) {
+		PLAY n1 200;
+		n1 += 2;
+	}
+
+	PAUSE 500;
+
+	for(int j=0; i<2; j+=1) {
+		PLAY n1;
+		n1 /= 2;
+	}
+}
