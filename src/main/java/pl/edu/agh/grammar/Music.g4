@@ -28,6 +28,7 @@ type
 statement
     : functionDecl
     | assignment
+    | selfAssignment
     | settings
     | varDecl
     | playStatement
@@ -56,6 +57,9 @@ assignment
     : ID '=' expr ';'
     ;
 
+selfAssignment
+    : ID assOp expr ';';
+
 varDecl
     : type ID '=' expr ';' | type ID ';'
     ;
@@ -83,7 +87,8 @@ forInit
 
 forUpdate
     : functionCall
-    | assignment ;
+    | assignment
+    | selfAssignment ;
 
 breakStatement
     : 'break' ';' ;
@@ -115,6 +120,9 @@ expr
 
 op
     : LT | EQ | NEQ | GEQ | LEQ |  GT | DIV | MUL | SUB | ADD | PER | AND | OR | NOT ;
+
+assOp
+    : SUMIS | SUBIS | MULIS | DIVIS ;
 
 chord
     : '[' NOTE_VAL (',' NOTE_VAL)+ ']';
@@ -148,6 +156,11 @@ KEY_VAL : 'C' | 'C#' | 'D' | 'Eb' | 'E' | 'F' | 'F#' | 'G' | 'Ab' | 'A' | 'B' | 
 SET : 'SET';
 PLAY : 'PLAY';
 PAUSE : 'PAUSE';
+
+SUMIS : '+=';
+DIVIS : '/=';
+MULIS : '*=';
+SUBIS : '-=';
 
 LP : '(';
 RP : ')';

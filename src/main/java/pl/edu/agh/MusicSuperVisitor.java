@@ -1,6 +1,7 @@
 // Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
+import javax.sound.midi.*;
 
 /**
  * This class provides an empty implementation of {@link MusicVisitor},
@@ -11,28 +12,48 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  * operations with no return type.
  */
 @SuppressWarnings("CheckReturnValue")
-public class MusicBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements MusicVisitor<T> {
+public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVisitor<T> {
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitProgram(MusicParser.ProgramContext ctx) { return visitChildren(ctx); }
+	MainMelody main;
+	int tempo = 100;
+	MusicParser.MainDeclContext mainCtx = null;
+	MusicParser.FunctionDeclContext funcCtx = null;
+
+	@Override public T visitProgram(MusicParser.ProgramContext ctx) {
+		try{
+			main = new MainMelody();
+			main.synth = MidiSystem.getSynthesizer();
+			main.synth.open();
+			main.channels = main.synth.getChannels();
+			main.channels[0].programChange(0);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+
+		return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFunctionDecl(MusicParser.FunctionDeclContext ctx) { return visitChildren(ctx); }
+	@Override public T visitFunctionDecl(MusicParser.FunctionDeclContext ctx) {
+		funcCtx = ctx;
+		return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMainDecl(MusicParser.MainDeclContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMainDecl(MusicParser.MainDeclContext ctx) {
+		mainCtx = ctx;
+		return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -67,28 +88,52 @@ public class MusicBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitSettings(MusicParser.SettingsContext ctx) { return visitChildren(ctx); }
+	@Override public T visitSettings(MusicParser.SettingsContext ctx) {return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPace(MusicParser.PaceContext ctx) { return visitChildren(ctx); }
+	@Override public T visitPace(MusicParser.PaceContext ctx) {
+
+		return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitSustain(MusicParser.SustainContext ctx) { return visitChildren(ctx); }
+	@Override public T visitSustain(MusicParser.SustainContext ctx) {
+		int sustain = Integer.parseInt(ctx.getText());
+		main.channels[0].controlChange(7, sustain);
+		return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitInstrument(MusicParser.InstrumentContext ctx) { return visitChildren(ctx); }
+	@Override public T visitInstrument(MusicParser.InstrumentContext ctx) {
+		String instrumntName = ctx.INSTRUMENT_VALUE().getText();
+		switch (instrumntName) {
+			case "PIANO":
+				main.channels[0].programChange(0);
+				break;
+			case "HARP":
+				main.channels[0].programChange(46);
+				break;
+			case "VIOLIN":
+				main.channels[0].programChange(40);
+				break;
+			case "DRUMS":
+				main.channels[9].programChange(35); // nie działa póki co - main działa jedynie na channelu 0
+				break;
+			default:
+				System.out.println("Nie istnieje taki instrument");
+				break;
+		}
+		return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -151,7 +196,17 @@ public class MusicBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPlayNote(MusicParser.PlayNoteContext ctx) { return visitChildren(ctx); }
+	@Override public T visitPlayNote(MusicParser.PlayNoteContext ctx) {
+
+        try {
+			int tempo = Integer.parseInt(ctx.INT_VAL().getText());
+			main.channels[0].noteOn(65 + main.key, tempo);
+            Thread.sleep(tempo);
+			main.channels[0].noteOff(65 + main.key);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -179,7 +234,14 @@ public class MusicBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPauseStatement(MusicParser.PauseStatementContext ctx) { return visitChildren(ctx); }
+	@Override public T visitPauseStatement(MusicParser.PauseStatementContext ctx) {
+		try{
+			int sleep = Integer.parseInt(ctx.INT_VAL().getText());
+			Thread.sleep(sleep);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -194,6 +194,16 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitAssignment(MusicParser.AssignmentContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MusicParser#selfAssignment}.
+	 * @param ctx the parse tree
+	 */
+	void enterSelfAssignment(MusicParser.SelfAssignmentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#selfAssignment}.
+	 * @param ctx the parse tree
+	 */
+	void exitSelfAssignment(MusicParser.SelfAssignmentContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MusicParser#varDecl}.
 	 * @param ctx the parse tree
 	 */
@@ -435,6 +445,16 @@ public interface MusicListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitOp(MusicParser.OpContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MusicParser#assOp}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssOp(MusicParser.AssOpContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#assOp}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssOp(MusicParser.AssOpContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MusicParser#chord}.
 	 * @param ctx the parse tree

@@ -121,6 +121,12 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssignment(MusicParser.AssignmentContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MusicParser#selfAssignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSelfAssignment(MusicParser.SelfAssignmentContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MusicParser#varDecl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -263,6 +269,12 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitOp(MusicParser.OpContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MusicParser#assOp}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssOp(MusicParser.AssOpContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MusicParser#chord}.
 	 * @param ctx the parse tree

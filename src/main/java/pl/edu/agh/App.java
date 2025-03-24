@@ -20,7 +20,7 @@ public class App
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         MusicParser parser = new MusicParser(tokens);
         MusicParser.ProgramContext program = parser.program();
-        MusicBaseVisitor visitor = new MusicBaseVisitor();
+        MusicSuperVisitor visitor = new MusicSuperVisitor();
         visitor.visitProgram(program);
 
     }
