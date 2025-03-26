@@ -156,7 +156,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	@Override public T visitDistortion(MusicParser.DistortionContext ctx) {
 		if(mainCtx!=null){
 			int distortion = Integer.parseInt(ctx.INT_VAL().getText());
-			main.sustain=distortion;
+			main.distortion=distortion;
 			if(main.instrument==DRUMS) main.channels[9].controlChange(93, distortion);
 			else main.channels[0].controlChange(64, distortion);
 		}
