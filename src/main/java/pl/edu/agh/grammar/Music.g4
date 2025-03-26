@@ -53,6 +53,16 @@ settingsAssigment
     | KEY '=' KEY_VAL #key
     ;
 
+settingsValues
+    :PACE
+    | SUSTAIN
+    | INSTRUMENT
+    | DISTORTION
+    | JAZZ
+    | BLUES
+    | VOLUME
+    | KEY
+    ;
 assignment
     : ID '=' expr ';'
     ;
@@ -109,13 +119,15 @@ settingsList
     ;
 
 expr
-    : NOTE_VAL #note
-    | INT_VAL #int
-    | BOOL_VAL #bool
-    | expr op expr #operator
-    | LP expr RP  #parantheses
+    : NOTE_VAL #noteExpr
+    | INT_VAL #intExpr
+    | BOOL_VAL #boolExpr
+    | KEY_VAL #keyExpr
+    | expr op expr #operatorExpr
+    | LP expr RP  #paranthesesExpr
     | chord #chordExpr
-    | ID #id
+    | ID #idExpr
+    | settingsValues #settingsExpr
     ;
 
 op
