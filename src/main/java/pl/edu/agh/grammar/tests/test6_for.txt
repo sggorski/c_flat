@@ -1,6 +1,6 @@
 melody main() {
 	SET INSTRUMENT = HARP;
-	SET TEMPO = 120;
+	SET PACE = 120;
 
 	PLAY G#2 200;
 	PAUSE 200;
