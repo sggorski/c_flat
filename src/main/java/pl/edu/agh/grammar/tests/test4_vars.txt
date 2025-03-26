@@ -29,5 +29,5 @@ melody main() {
 
 	Chord ch1 = [C1, G1, E2];
 	Chord ch2 = [D1, F1, G1, H1];
-	PLAY ch1;
+	PLAY ch1 200;
 }
