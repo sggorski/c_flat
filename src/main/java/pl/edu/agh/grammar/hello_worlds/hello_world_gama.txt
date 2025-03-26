@@ -2,6 +2,8 @@ melody main() {
 	SET INSTRUMENT = PIANO;
 	SET KEY = C;
 
+	PAUSE 500;
+
 	PLAY C1 500;
 	PLAY D1 500;
 	PLAY E1 500;
