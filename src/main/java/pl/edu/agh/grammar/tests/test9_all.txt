@@ -1,6 +1,6 @@
 melody mel1(Note n1, int dist) {
 	SET DISTORTION = dist;
-	SET INTRUMENT = VIOLIN;
+	SET INSTRUMENT = VIOLIN;
 
 	PLAY n1 100;
 	Note n2 = n1 + 4;
@@ -14,7 +14,7 @@ melody mel1(Note n1, int dist) {
 		PLAY F1 100;
 		PLAY F#1 100;
 		PLAY F1 100;
-		i++;
+		i+=1;
 		if(i==5) {
 			break;
 		}

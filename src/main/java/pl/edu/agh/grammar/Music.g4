@@ -89,7 +89,7 @@ pauseStatement
 
 controlStatement
     : 'while' '(' expr ')' '{' (statement|loopStatement)*'}'
-    | 'if' '(' expr ')' '{' statement* '}' ('else' 'if' '(' expr ')' '{' statement* '}')* ('else' '{' statement* '}')?
+    | 'if' '(' expr ')' '{' (statement|loopStatement)* '}' ('else' 'if' '(' expr ')' '{' (statement|loopStatement)* '}')* ('else' '{' (statement|loopStatement)* '}')?
     | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' '{' (statement|loopStatement)* '}'
     ;
 
