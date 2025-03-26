@@ -9,7 +9,7 @@ melody mel1(Note n1, int dist) {
 	SET INSTRUMENT = PIANO;
 
 	int i=1;
-	while() {
+	while(true) {
 		PLAY E1 100;
 		PLAY F1 100;
 		PLAY F#1 100;

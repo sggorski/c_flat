@@ -7,7 +7,7 @@ melody main() {
 		PLAY E1 100;
 		PLAY F1 100;
 		PLAY F#1 100;
-		i++;
+		i += 1;
 		if(i==5) {
 			SET BLUES = false;
 		}
