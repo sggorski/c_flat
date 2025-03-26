@@ -124,6 +124,7 @@ expr
     | BOOL_VAL #boolExpr
     | KEY_VAL #keyExpr
     | expr op expr #operatorExpr
+    | NOT expr #notExpr
     | LP expr RP  #paranthesesExpr
     | chord #chordExpr
     | ID #idExpr
@@ -131,7 +132,7 @@ expr
     ;
 
 op
-    : LT | EQ | NEQ | GEQ | LEQ |  GT | DIV | MUL | SUB | ADD | PER | AND | OR | NOT ;
+    : LT | EQ | NEQ | GEQ | LEQ |  GT | DIV | MUL | SUB | ADD | PER | AND | OR;
 
 assOp
     : SUMIS | SUBIS | MULIS | DIVIS ;
