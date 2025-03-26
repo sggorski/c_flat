@@ -97,6 +97,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitPace(MusicParser.PaceContext ctx) {
+		if(mainCtx!=null){
+            main.pace= Integer.parseInt(ctx.INT_VAL().getText());
+		}
 
 		return visitChildren(ctx); }
 	/**
@@ -107,9 +110,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 */
 	@Override public T visitSustain(MusicParser.SustainContext ctx) {
 		if(mainCtx!=null){
-			int sustain = Integer.parseInt(ctx.getText());
+			int sustain = Integer.parseInt(ctx.INT_VAL().getText());
 			main.sustain=sustain;
-			main.channels[0].controlChange(64, sustain);
+			if(main.instrument==DRUMS) main.channels[9].controlChange(64, sustain);
+			else main.channels[0].controlChange(64, sustain);
 		}
 
 		return visitChildren(ctx); }
@@ -149,14 +153,29 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitDistortion(MusicParser.DistortionContext ctx) { return visitChildren(ctx); }
+	@Override public T visitDistortion(MusicParser.DistortionContext ctx) {
+		if(mainCtx!=null){
+			int distortion = Integer.parseInt(ctx.INT_VAL().getText());
+			main.sustain=distortion;
+			if(main.instrument==DRUMS) main.channels[9].controlChange(93, distortion);
+			else main.channels[0].controlChange(64, distortion);
+		}
+
+		return visitChildren(ctx);
+
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitJazz(MusicParser.JazzContext ctx) { return visitChildren(ctx); }
+	@Override public T visitJazz(MusicParser.JazzContext ctx) {
+		if(mainCtx!=null){
+            main.jazz= ctx.BOOL_VAL().getText().equals("true");
+		}
+		return visitChildren(ctx);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -170,13 +189,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitVolume(MusicParser.VolumeContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
+	@Override public T visitVolume(MusicParser.VolumeContext ctx) {
+		if(mainCtx!=null){
+            main.volume= Integer.parseInt(ctx.INT_VAL().getText());
+		}
+		return visitChildren(ctx);
+	}
+
 	@Override public T visitKey(MusicParser.KeyContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -209,7 +228,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         try {
 			int duration = Integer.parseInt(ctx.INT_VAL().getText());
-			Note note = Note.valueOf(ctx.NOTE_VAL().getText());
+			Note note = Note.valueOf(ctx.NOTE_VAL().getText().replace('#', 's'));
 			if(main.instrument==DRUMS){
 				main.playNote(main.channels[9],main.notes.get(note),duration,main.volume);
 			}
