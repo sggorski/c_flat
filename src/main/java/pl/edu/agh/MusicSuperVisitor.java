@@ -3,6 +3,8 @@ package pl.edu.agh;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import javax.sound.midi.*;
 
+import static pl.edu.agh.Instrument.DRUMS;
+
 /**
  * This class provides an empty implementation of {@link MusicVisitor},
  * which can be extended to create a visitor which only needs to handle a subset
@@ -20,7 +22,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	MainMelody main;
-	int tempo = 100;
 	MusicParser.MainDeclContext mainCtx = null;
 	MusicParser.FunctionDeclContext funcCtx = null;
 
@@ -105,8 +106,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitSustain(MusicParser.SustainContext ctx) {
-		int sustain = Integer.parseInt(ctx.getText());
-		main.channels[0].controlChange(7, sustain);
+		if(mainCtx!=null){
+			int sustain = Integer.parseInt(ctx.getText());
+			main.sustain=sustain;
+			main.channels[0].controlChange(64, sustain);
+		}
+
 		return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -115,23 +120,27 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitInstrument(MusicParser.InstrumentContext ctx) {
-		String instrumntName = ctx.INSTRUMENT_VALUE().getText();
-		switch (instrumntName) {
-			case "PIANO":
-				main.channels[0].programChange(0);
-				break;
-			case "HARP":
-				main.channels[0].programChange(46);
-				break;
-			case "VIOLIN":
-				main.channels[0].programChange(40);
-				break;
-			case "DRUMS":
-				main.channels[9].programChange(35); // nie działa póki co - main działa jedynie na channelu 0
-				break;
-			default:
-				System.out.println("Nie istnieje taki instrument");
-				break;
+		if(main!=null){
+			String instrumentName = ctx.INSTRUMENT_VALUE().getText();
+			Instrument instrument = Instrument.valueOf(instrumentName);
+			main.instrument = instrument;
+			switch (instrument) {
+				case PIANO:
+					main.channels[0].programChange(0);
+					break;
+				case HARP:
+					main.channels[0].programChange(46);
+					break;
+				case VIOLIN:
+					main.channels[0].programChange(40);
+					break;
+				case DRUMS:
+					main.channels[9].programChange(35);
+					break;
+				default:
+					System.out.println("Nie istnieje taki instrument");
+					break;
+			}
 		}
 		return visitChildren(ctx); }
 	/**
@@ -199,10 +208,14 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	@Override public T visitPlayNote(MusicParser.PlayNoteContext ctx) {
 
         try {
-			int tempo = Integer.parseInt(ctx.INT_VAL().getText());
-			main.channels[0].noteOn(65 + main.key, tempo);
-            Thread.sleep(tempo);
-			main.channels[0].noteOff(65 + main.key);
+			int duration = Integer.parseInt(ctx.INT_VAL().getText());
+			Note note = Note.valueOf(ctx.NOTE_VAL().getText());
+			if(main.instrument==DRUMS){
+				main.playNote(main.channels[9],main.notes.get(note),duration,main.volume);
+			}
+			else{
+				main.playNote(main.channels[0],main.notes.get(note),duration,main.volume);
+			}
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -235,13 +248,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitPauseStatement(MusicParser.PauseStatementContext ctx) {
-		try{
-			int sleep = Integer.parseInt(ctx.INT_VAL().getText());
-			Thread.sleep(sleep);
-		}catch (Exception e){
-			e.printStackTrace();
+		if(mainCtx!=null){
+			try{
+				int sleep = Integer.parseInt(ctx.INT_VAL().getText());
+				Thread.sleep(sleep);
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 		}
-		return visitChildren(ctx); }
+		return visitChildren(ctx);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
