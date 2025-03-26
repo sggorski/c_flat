@@ -43,14 +43,14 @@ settings
     : SET settingsAssigment ';';
 
 settingsAssigment
-    : PACE '=' INT_VAL #pace
-    | SUSTAIN '=' INT_VAL #sustain
-    | INSTRUMENT '=' INSTRUMENT_VALUE #instrument
-    | DISTORTION '=' INT_VAL #distortion
-    | JAZZ '=' BOOL_VAL #jazz
-    | BLUES '=' BOOL_VAL #blues
-    | VOLUME '=' INT_VAL #volume
-    | KEY '=' KEY_VAL #key
+    : PACE '=' (INT_VAL|ID)#pace
+    | SUSTAIN '=' (INT_VAL|ID) #sustain
+    | INSTRUMENT '=' (INSTRUMENT_VALUE|ID) #instrument
+    | DISTORTION '=' (INT_VAL|ID) #distortion
+    | JAZZ '=' (BOOL_VAL|ID) #jazz
+    | BLUES '=' (BOOL_VAL|ID) #blues
+    | VOLUME '=' (INT_VAL|ID) #volume
+    | KEY '=' (KEY_VAL|ID) #key
     ;
 
 settingsValues
