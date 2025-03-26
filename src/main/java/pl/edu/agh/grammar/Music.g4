@@ -35,9 +35,12 @@ statement
     | pauseStatement
     | controlStatement
     | trackStatement
-    | breakStatement
-    | continueStatement
     ;
+
+loopStatement
+    : breakStatement
+    | continueStatement ;
+
 
 settings
     : SET settingsAssigment ';';
@@ -85,9 +88,9 @@ pauseStatement
     : PAUSE INT_VAL ';';
 
 controlStatement
-    : 'while' '(' expr ')' '{' statement* '}'
+    : 'while' '(' expr ')' '{' (statement|loopStatement)*'}'
     | 'if' '(' expr ')' '{' statement* '}' ('else' 'if' '(' expr ')' '{' statement* '}')* ('else' '{' statement* '}')?
-    | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' '{' statement* '}'
+    | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' '{' (statement|loopStatement)* '}'
     ;
 
 forInit
