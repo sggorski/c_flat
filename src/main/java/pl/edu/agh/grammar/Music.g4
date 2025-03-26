@@ -97,8 +97,11 @@ forInit
 
 forUpdate
     : functionCall
-    | assignment
-    | selfAssignment ;
+    | forAssignment;
+
+forAssignment
+    :  ID '=' expr
+    |  ID assOp expr;
 
 breakStatement
     : 'break' ';' ;

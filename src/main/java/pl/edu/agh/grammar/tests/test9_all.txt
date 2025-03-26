@@ -23,7 +23,7 @@ melody mel1(Note n1, int dist) {
 
 melody main() {
 	SET INSTRUMENT = HARP;
-	SET TEMPO = 20;
+	SET PACE = 20;
 
 	PLAY H2 200;
 	PAUSE 200;
