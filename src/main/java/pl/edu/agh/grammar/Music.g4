@@ -88,9 +88,9 @@ pauseStatement
     : PAUSE INT_VAL ';';
 
 controlStatement
-    : 'while' '(' expr ')' '{' (statement|loopStatement)*'}'
-    | 'if' '(' expr ')' '{' (statement|loopStatement)* '}' ('else' 'if' '(' expr ')' '{' (statement|loopStatement)* '}')* ('else' '{' (statement|loopStatement)* '}')?
-    | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' '{' (statement|loopStatement)* '}'
+    : 'while' '(' expr ')' '{' (statement|loopStatement)+'}'
+    | 'if' '(' expr ')' '{' (statement|loopStatement)+ '}' ('else' 'if' '(' expr ')' '{' (statement|loopStatement)+ '}')* ('else' '{' (statement|loopStatement)+ '}')?
+    | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' '{' (statement|loopStatement)+ '}'
     ;
 
 forInit
