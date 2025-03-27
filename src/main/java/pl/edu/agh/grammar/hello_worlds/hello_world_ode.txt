@@ -1,0 +1,61 @@
+melody main() {
+    SET PACE=500;
+    SET INSTRUMENT=VIOLIN;
+    SET SUSTAIN=5;
+    SET JAZZ=false;
+    SET DISTORTION=0;
+    SET VOLUME=900;
+
+    PLAY E4 400;
+    PLAY E4 400;
+    PLAY F4 400;
+    PLAY G4 400;
+    PLAY G4 400;
+    PLAY F4 400;
+    PLAY E4 400;
+    PLAY D4 400;
+    PLAY C4 400;
+    PLAY C4 400;
+    PLAY D4 400;
+    PLAY E4 400;
+    PLAY E4 600;
+    PLAY D4 200;
+    PLAY D4 800;
+
+    PAUSE 200;
+    PLAY E4 400;
+    PLAY E4 400;
+    PLAY F4 400;
+    PLAY G4 400;
+    PLAY G4 400;
+    PLAY F4 400;
+    PLAY E4 400;
+    PLAY D4 400;
+    PLAY C4 400;
+    PLAY C4 400;
+    PLAY D4 400;
+    PLAY E4 400;
+    PLAY D4 600;
+    PLAY C4 200;
+    PLAY C4 800;
+
+    PAUSE 200;
+    PLAY D4 400;
+    PLAY D4 400;
+    PLAY E4 400;
+    PLAY C4 400;
+    PLAY D4 400;
+    PLAY E4 200;
+    PLAY F4 200;
+    PLAY E4 400;
+    PLAY C4 400;
+    PLAY D4 400;
+    PLAY E4 200;
+    PLAY F4 200;
+    PLAY E4 400;
+    PLAY D4 400;
+    PLAY C4 400;
+    PLAY D4 400;
+    PLAY G3 800;
+    PAUSE 500;
+}
