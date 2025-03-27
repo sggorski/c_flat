@@ -228,7 +228,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         try {
 			int duration = Integer.parseInt(ctx.INT_VAL().getText());
-			Note note = Note.valueOf(ctx.NOTE_VAL().getText().replace('#', 's'));
+			Note note = Note.valueOf(ctx.NOTE_VAL().getText().replace('#', 's').replace('-', 'm'));
 			if(main.instrument==DRUMS){
 				main.playNote(main.channels[9],main.notes.get(note),duration,main.volume);
 			}

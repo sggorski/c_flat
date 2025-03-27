@@ -5,6 +5,9 @@ melody main(){
     SET JAZZ=false;
     SET DISTORTION=40;
     SET VOLUME=45;
+
+    PAUSE 400;
+
     PLAY H1 200;
     PLAY H1 200;
     PLAY D2 100;
