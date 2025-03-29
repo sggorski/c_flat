@@ -1,7 +1,7 @@
 melody main() {
-    SET PACE=500;
+    SET PACE=550;
     SET INSTRUMENT=PIANO;
-    SET SUSTAIN=50;
+    SET SUSTAIN=60;
     SET JAZZ=false;
     SET DISTORTION=0;
     SET VOLUME=900;
@@ -147,5 +147,91 @@ melody main() {
     PLAY C#4 100;
     PLAY C#4 200;
     PLAY C#4 200;
-    PLAY C4 1000;
+
+    PLAY C4 200;
+    PLAY G#2 100;
+    PLAY G#3 100;
+    PLAY G#2 100;
+    PLAY G#3 100;
+    PLAY A#2 100;
+    PLAY G#3 100;
+    PLAY H#2 100;
+    PLAY G#3 100;
+    PLAY C#3 100;
+    PLAY G#3 100;
+    PLAY D#3 100;
+    PLAY G#3 100;
+    PLAY H#2 100;
+    PLAY G#3 100;
+
+    PLAY D#3 100;
+    PLAY G#3 100;
+    PLAY C#3 100;
+    PLAY G#3 100;
+    PLAY F#3 100;
+    PLAY G#3 100;
+    PLAY E3 100;
+    PLAY G#3 100;
+    PLAY D#3 100;
+    PLAY G#3 100;
+    PLAY C#3 100;
+    PLAY G#3 100;
+    PLAY H#2 100;
+    PLAY G#3 100;
+    PLAY A2 100;
+    PLAY G#3 100;
+
+    PLAY G#2 100;
+    PLAY G#3 100;
+    PLAY G#2 100;
+    PLAY G#3 100;
+    PLAY G#2 100;
+    PLAY G#3 100;
+    PLAY A#2 100;
+    PLAY G#3 100;
+    PLAY H#2 100;
+    PLAY G#3 100;
+    PLAY C#3 100;
+    PLAY G#3 100;
+    PLAY D#3 100;
+    PLAY G#3 100;
+    PLAY H#2 100;
+    PLAY G#3 100;
+
+    PLAY D#3 100;
+    PLAY G#3 100;
+    PLAY C#3 100;
+    PLAY G#3 100;
+    PLAY F#3 100;
+    PLAY G#3 100;
+    PLAY E3 100;
+    PLAY G#3 100;
+    PLAY D#3 100;
+    PLAY G#3 100;
+    PLAY C#3 100;
+    PLAY G#3 100;
+    PLAY H#2 100;
+    PLAY G#3 100;
+    PLAY A2 100;
+    PLAY G3 100;
+
+    PLAY G#2 100;
+    PLAY G#3 100;
+    PLAY A2 100;
+    PLAY G3 100;
+    PLAY G#2 100;
+    PLAY G#3 100;
+    PLAY A2 100;
+    PLAY G3 100;
+    PLAY G#2 100;
+    PLAY G#3 100;
+    PLAY A2 100;
+    PLAY G3 100;
+    PLAY G#2 100;
+    PLAY G#3 100;
+    PLAY A2 100;
+    PLAY G3 100;
+
+    PLAY G#3 500;
+    PLAY G#0 1000;
 }
