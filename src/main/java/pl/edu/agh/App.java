@@ -17,7 +17,14 @@ public class App
 {
     public static void main( String[] args ) throws IOException {
         //System.out.println( "Hello World!" );
-        CharStream stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/hello_worlds/hello_world_moonlight_sonata.txt");
+        CharStream stream;
+        try{
+            stream = CharStreams.fromFileName(String.format("src/main/java/pl/edu/agh/grammar/hello_worlds/hello_world_%s.txt",args[0]));
+        }
+        catch(Exception e){
+            System.out.println("No such melody!");
+            return;
+        }
         MusicLexer lexer = new MusicLexer(stream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         MusicParser parser = new MusicParser(tokens);
