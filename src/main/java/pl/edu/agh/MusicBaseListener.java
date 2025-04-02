@@ -552,5 +552,5 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void visitErrorNode(ErrorNode node) { }
+	@Override public void visitErrorNode(ErrorNode node){}
 }
