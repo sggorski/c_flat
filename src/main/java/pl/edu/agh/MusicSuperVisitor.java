@@ -1,6 +1,5 @@
 // Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
-import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import javax.sound.midi.*;
 
 import static pl.edu.agh.Instrument.DRUMS;
@@ -339,35 +338,36 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitNote(MusicParser.NoteContext ctx) { return visitChildren(ctx); }
+	@Override public T visitNoteExpr(MusicParser.NoteExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitBool(MusicParser.BoolContext ctx) { return visitChildren(ctx); }
+	@Override public T visitBoolExpr(MusicParser.BoolExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitParantheses(MusicParser.ParanthesesContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParanthesesExpr(MusicParser.ParanthesesExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitId(MusicParser.IdContext ctx) { return visitChildren(ctx); }
+	@Override public T visitIdExpr(MusicParser.IdExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitInt(MusicParser.IntContext ctx) { return visitChildren(ctx); }
+	@Override
+	public T visitIntExpr(MusicParser.IntExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -381,7 +381,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitOperator(MusicParser.OperatorContext ctx) { return visitChildren(ctx); }
+	@Override public T visitOperatorExpr(MusicParser.OperatorExprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

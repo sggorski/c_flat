@@ -144,7 +144,7 @@ assOp
     : SUMIS | SUBIS | MULIS | DIVIS ;
 
 chord
-    : '[' NOTE_VAL (',' NOTE_VAL)+ ']';
+    : '[' NOTE_VAL (',' NOTE_VAL) + ']';
 
 trackStatement
     : ID 'ADD' functionCall ';' ;
