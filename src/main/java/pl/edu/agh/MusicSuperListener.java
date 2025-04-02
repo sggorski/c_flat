@@ -246,9 +246,7 @@ public class MusicSuperListener extends MusicBaseListener {
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitVarDecl(MusicParser.VarDeclContext ctx) {
-        System.out.println(ctx.expr().getText());
-    }
+    @Override public void exitVarDecl(MusicParser.VarDeclContext ctx) {}
     /**
      * {@inheritDoc}
      *
@@ -414,61 +412,61 @@ public class MusicSuperListener extends MusicBaseListener {
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterNote(MusicParser.NoteContext ctx) { }
+    @Override public void enterNoteExpr(MusicParser.NoteExprContext ctx) { }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitNote(MusicParser.NoteContext ctx) { }
+    @Override public void exitNoteExpr(MusicParser.NoteExprContext ctx) { }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterBool(MusicParser.BoolContext ctx) {}
+    @Override public void enterBoolExpr(MusicParser.BoolExprContext ctx) {}
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitBool(MusicParser.BoolContext ctx) {}
+    @Override public void exitBoolExpr(MusicParser.BoolExprContext ctx) {}
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterParantheses(MusicParser.ParanthesesContext ctx) { }
+    @Override public void enterParanthesesExpr(MusicParser.ParanthesesExprContext ctx) { }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitParantheses(MusicParser.ParanthesesContext ctx) { }
+    @Override public void exitParanthesesExpr(MusicParser.ParanthesesExprContext ctx) { }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterId(MusicParser.IdContext ctx) { }
+    @Override public void enterIdExpr(MusicParser.IdExprContext ctx) { }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitId(MusicParser.IdContext ctx) { }
+    @Override public void exitIdExpr(MusicParser.IdExprContext ctx) { }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterInt(MusicParser.IntContext ctx) { }
+    @Override public void enterIntExpr(MusicParser.IntExprContext ctx) { }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitInt(MusicParser.IntContext ctx) { }
+    @Override public void exitIntExpr(MusicParser.IntExprContext ctx) { }
     /**
      * {@inheritDoc}
      *
@@ -486,13 +484,13 @@ public class MusicSuperListener extends MusicBaseListener {
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterOperator(MusicParser.OperatorContext ctx) { }
+    @Override public void enterOperatorExpr(MusicParser.OperatorExprContext ctx) { }
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitOperator(MusicParser.OperatorContext ctx) { }
+    @Override public void exitOperatorExpr(MusicParser.OperatorExprContext ctx) { }
     /**
      * {@inheritDoc}
      *
@@ -566,6 +564,6 @@ public class MusicSuperListener extends MusicBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override public void visitErrorNode(ErrorNode node){
-        throw new RuntimeException("Syntax Error");
+        throw new RuntimeException("");
     }
 }

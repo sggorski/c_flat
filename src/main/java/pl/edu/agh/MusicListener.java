@@ -78,6 +78,16 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitStatement(MusicParser.StatementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MusicParser#loopStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterLoopStatement(MusicParser.LoopStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#loopStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitLoopStatement(MusicParser.LoopStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MusicParser#settings}.
 	 * @param ctx the parse tree
 	 */
@@ -183,6 +193,16 @@ public interface MusicListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitKey(MusicParser.KeyContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MusicParser#settingsValues}.
+	 * @param ctx the parse tree
+	 */
+	void enterSettingsValues(MusicParser.SettingsValuesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#settingsValues}.
+	 * @param ctx the parse tree
+	 */
+	void exitSettingsValues(MusicParser.SettingsValuesContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MusicParser#assignment}.
 	 * @param ctx the parse tree
@@ -302,6 +322,16 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitForUpdate(MusicParser.ForUpdateContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MusicParser#forAssignment}.
+	 * @param ctx the parse tree
+	 */
+	void enterForAssignment(MusicParser.ForAssignmentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#forAssignment}.
+	 * @param ctx the parse tree
+	 */
+	void exitForAssignment(MusicParser.ForAssignmentContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MusicParser#breakStatement}.
 	 * @param ctx the parse tree
 	 */
@@ -352,65 +382,89 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitSettingsList(MusicParser.SettingsListContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code note}
+	 * Enter a parse tree produced by the {@code noteExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterNote(MusicParser.NoteContext ctx);
+	void enterNoteExpr(MusicParser.NoteExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code note}
+	 * Exit a parse tree produced by the {@code noteExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitNote(MusicParser.NoteContext ctx);
+	void exitNoteExpr(MusicParser.NoteExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code bool}
+	 * Enter a parse tree produced by the {@code intExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterBool(MusicParser.BoolContext ctx);
+	void enterIntExpr(MusicParser.IntExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code bool}
+	 * Exit a parse tree produced by the {@code intExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitBool(MusicParser.BoolContext ctx);
+	void exitIntExpr(MusicParser.IntExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code parantheses}
+	 * Enter a parse tree produced by the {@code notExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterParantheses(MusicParser.ParanthesesContext ctx);
+	void enterNotExpr(MusicParser.NotExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code parantheses}
+	 * Exit a parse tree produced by the {@code notExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitParantheses(MusicParser.ParanthesesContext ctx);
+	void exitNotExpr(MusicParser.NotExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code id}
+	 * Enter a parse tree produced by the {@code operatorExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterId(MusicParser.IdContext ctx);
+	void enterOperatorExpr(MusicParser.OperatorExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code id}
+	 * Exit a parse tree produced by the {@code operatorExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitId(MusicParser.IdContext ctx);
+	void exitOperatorExpr(MusicParser.OperatorExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code int}
+	 * Enter a parse tree produced by the {@code keyExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterInt(MusicParser.IntContext ctx);
+	void enterKeyExpr(MusicParser.KeyExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code int}
+	 * Exit a parse tree produced by the {@code keyExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitInt(MusicParser.IntContext ctx);
+	void exitKeyExpr(MusicParser.KeyExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code settingsExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterSettingsExpr(MusicParser.SettingsExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code settingsExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitSettingsExpr(MusicParser.SettingsExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code boolExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterBoolExpr(MusicParser.BoolExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code boolExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitBoolExpr(MusicParser.BoolExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code chordExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
@@ -424,17 +478,29 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitChordExpr(MusicParser.ChordExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code operator}
+	 * Enter a parse tree produced by the {@code paranthesesExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterOperator(MusicParser.OperatorContext ctx);
+	void enterParanthesesExpr(MusicParser.ParanthesesExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code operator}
+	 * Exit a parse tree produced by the {@code paranthesesExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitOperator(MusicParser.OperatorContext ctx);
+	void exitParanthesesExpr(MusicParser.ParanthesesExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code idExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdExpr(MusicParser.IdExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code idExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdExpr(MusicParser.IdExprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MusicParser#op}.
 	 * @param ctx the parse tree

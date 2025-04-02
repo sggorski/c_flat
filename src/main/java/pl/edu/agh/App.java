@@ -28,13 +28,11 @@ public class App
             MusicSuperListener listener = new MusicSuperListener();
             ParseTreeWalker.DEFAULT.walk(listener, program);
 
-            //MusicSuperVisitor visitor = new MusicSuperVisitor();
-            //visitor.visitProgram(program);
+            MusicSuperVisitor visitor = new MusicSuperVisitor();
+            visitor.visitProgram(program);
 
-        }catch (RuntimeException e){
-            System.out.println(e.getMessage());
         }catch (Exception e){
-            System.out.println("Listener znalazł errora");
+            System.out.println(e.getMessage());
         }
 
     }

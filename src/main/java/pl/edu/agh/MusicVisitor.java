@@ -53,6 +53,12 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStatement(MusicParser.StatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MusicParser#loopStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLoopStatement(MusicParser.LoopStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MusicParser#settings}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -114,6 +120,12 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitKey(MusicParser.KeyContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MusicParser#settingsValues}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSettingsValues(MusicParser.SettingsValuesContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MusicParser#assignment}.
 	 * @param ctx the parse tree
@@ -185,6 +197,12 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitForUpdate(MusicParser.ForUpdateContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MusicParser#forAssignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForAssignment(MusicParser.ForAssignmentContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MusicParser#breakStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -215,40 +233,54 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSettingsList(MusicParser.SettingsListContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code note}
+	 * Visit a parse tree produced by the {@code noteExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitNote(MusicParser.NoteContext ctx);
+	T visitNoteExpr(MusicParser.NoteExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code bool}
+	 * Visit a parse tree produced by the {@code intExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitBool(MusicParser.BoolContext ctx);
+	T visitIntExpr(MusicParser.IntExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code parantheses}
+	 * Visit a parse tree produced by the {@code notExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParantheses(MusicParser.ParanthesesContext ctx);
+	T visitNotExpr(MusicParser.NotExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code id}
+	 * Visit a parse tree produced by the {@code operatorExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitId(MusicParser.IdContext ctx);
+	T visitOperatorExpr(MusicParser.OperatorExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code int}
+	 * Visit a parse tree produced by the {@code keyExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitInt(MusicParser.IntContext ctx);
+	T visitKeyExpr(MusicParser.KeyExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code settingsExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSettingsExpr(MusicParser.SettingsExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code boolExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolExpr(MusicParser.BoolExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code chordExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
@@ -257,12 +289,19 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitChordExpr(MusicParser.ChordExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code operator}
+	 * Visit a parse tree produced by the {@code paranthesesExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitOperator(MusicParser.OperatorContext ctx);
+	T visitParanthesesExpr(MusicParser.ParanthesesExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code idExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdExpr(MusicParser.IdExprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MusicParser#op}.
 	 * @param ctx the parse tree
