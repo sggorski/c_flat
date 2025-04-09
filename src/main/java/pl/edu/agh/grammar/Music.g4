@@ -61,7 +61,7 @@ settingsAssigment
     ;
 
 settingsValues
-    :PACE
+    : PACE
     | SUSTAIN
     | INSTRUMENT
     | DISTORTION
@@ -70,6 +70,7 @@ settingsValues
     | VOLUME
     | KEY
     ;
+
 assignment
     : ID '=' expr ';'
     ;
@@ -154,6 +155,8 @@ chord
 trackStatement
     : ID 'ADD' functionCall ';' ;
 
+IMPORT: 'import';
+
 INT: 'int';
 BOOL: 'bool';
 CHORD: 'Chord';
@@ -161,8 +164,10 @@ NOTE: 'Note';
 TRACK : 'Track';
 
 BOOL_VAL: 'true' | 'false';
-INT_VAL : [0-9]+ ;
+INT_VAL : '-'?[1-9][0-9]* ;
 NOTE_VAL : [CDEFGABH]('#'|'b')?[01234] | [CDEFGABH]('#'|'b')?'-1' | [CDEFGABH]('#'|'b')?'-2';
+STRING_VAL: '"' (ESC|.)*? '"';
+ESC : '\\"' | '\\\\' ;
 
 PACE: 'PACE';
 DISTORTION : 'DISTORTION';
