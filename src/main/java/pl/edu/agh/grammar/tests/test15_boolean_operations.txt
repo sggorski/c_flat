@@ -1,0 +1,9 @@
+melody main() {
+	bool b1 = true;
+	bool b2 = false;
+	bool b3 = b1 AND b2 OR true;
+	bool b4 = NOT (true OR (b2 AND NOT b3));
+	bool b5;
+	b5 = (true AND false) OR NOT b1 AND NOT (b2 OR b3 AND NOT b4);
+	bool b6 = (b1 AND NOT(NOT b2 OR b3 AND b4) OR (b1 AND b5)) AND NOT (NOT b3 AND NOT b2 OR (b3 AND true));
+}

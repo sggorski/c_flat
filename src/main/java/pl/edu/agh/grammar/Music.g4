@@ -83,7 +83,7 @@ varDecl
 
 playStatement
     : PLAY NOTE_VAL INT_VAL ';' #playNote
-    | PLAY ID ID ';' #playWithWariables
+    | PLAY ID ID ';' #playWithVariables
     | PLAY ID INT_VAL ';' #playChord
     | PLAY functionCall ';' #playFunc
     | PLAY ID ';' #playTrack
