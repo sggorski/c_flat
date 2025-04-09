@@ -1,0 +1,5 @@
+melody main(){
+
+    PLAY C#1 C#2 nuta1 [C#2, C2] 100 C#1 nuta2 C3 liczba;
+
+}
