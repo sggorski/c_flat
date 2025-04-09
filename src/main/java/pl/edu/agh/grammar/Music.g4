@@ -79,7 +79,8 @@ selfAssignment
     : ID assOp expr ';';
 
 varDecl
-    : type ID '=' expr ';' | type ID ';'
+    : type ID '=' expr ';' #varDeclWithARg
+    | type ID ';' #varDeclWithoutArg
     ;
 
 playStatement
@@ -94,9 +95,9 @@ pauseStatement
     : PAUSE INT_VAL ';';
 
 controlStatement
-    : 'while' '(' expr ')' '{' (statement|loopStatement)+'}'
-    | 'if' '(' expr ')' '{' (statement|loopStatement)+ '}' ('else' 'if' '(' expr ')' '{' (statement|loopStatement)+ '}')* ('else' '{' (statement|loopStatement)+ '}')?
-    | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' '{' (statement|loopStatement)+ '}'
+    : 'while' '(' expr ')' '{' (statement|loopStatement)+'}' #whileLoop
+    | 'if' '(' expr ')' '{' (statement|loopStatement)+ '}' ('else' 'if' '(' expr ')' '{' (statement|loopStatement)+ '}')* ('else' '{' (statement|loopStatement)+ '}')? #if
+    | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' '{' (statement|loopStatement)+ '}' #forLoop
     ;
 
 forInit
@@ -131,20 +132,41 @@ settingsList
     ;
 
 expr
-    : NOTE_VAL #noteExpr
+    : LP expr RP  #paranthesesExpr
+    | NOT expr #notExpr
+    | expr mullDivOp expr #mullDivOperatorExpr
+    | expr addSubOp expr #addSubOperatorExpr
+    | expr orderOp expr #orderOperatorExpr
+    | expr eqOp expr #eqOperatorExpr
+    | expr andOp expr #andOperatorExpr
+    | expr orOp expr #orOperatorExpr
+    | chord #chordExpr
+    | settingsValues #settingsExpr
     | INT_VAL #intExpr
     | BOOL_VAL #boolExpr
     | KEY_VAL #keyExpr
-    | expr op expr #operatorExpr
-    | NOT expr #notExpr
-    | LP expr RP  #paranthesesExpr
-    | chord #chordExpr
+    | NOTE_VAL #noteExpr
     | ID #idExpr
-    | settingsValues #settingsExpr
+
     ;
 
-op
-    : LT | EQ | NEQ | GEQ | LEQ |  GT | DIV | MUL | SUB | ADD | PER | AND | OR;
+orderOp
+    : LT  | GEQ | LEQ |  GT ;
+
+eqOp:
+     EQ | NEQ;
+
+andOp
+    :  AND;
+
+orOp
+    : OR;
+
+addSubOp
+    : SUB | ADD;
+
+mullDivOp
+    : DIV | MUL | PER;
 
 assOp
     : SUMIS | SUBIS | MULIS | DIVIS ;
@@ -164,7 +186,7 @@ NOTE: 'Note';
 TRACK : 'Track';
 
 BOOL_VAL: 'true' | 'false';
-INT_VAL : '-'?[1-9][0-9]* ;
+INT_VAL : '-'?[1-9][0-9]* | '-'?'0' ;
 NOTE_VAL : [CDEFGABH]('#'|'b')?[01234] | [CDEFGABH]('#'|'b')?'-1' | [CDEFGABH]('#'|'b')?'-2';
 STRING_VAL: '"' (ESC|.)*? '"';
 ESC : '\\"' | '\\\\' ;
@@ -209,5 +231,7 @@ AND : 'AND' ;
 OR : 'OR' ;
 NOT : 'NOT' ;
 
+LINE_COMMENT: '//' ~[\r\n]* -> skip ;
+BLOCK_COMMENT: '/*' .*? '*/' -> skip ;
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 WS : [ \t\r\n]+ -> skip ;
