@@ -103,6 +103,7 @@ controlStatement
 forInit
     : ID
     | type ID '=' expr
+    | ID '=' expr
     ;
 
 forUpdate

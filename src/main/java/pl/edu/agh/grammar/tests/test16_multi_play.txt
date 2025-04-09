@@ -1,5 +1,6 @@
 melody main(){
-
+    Note nuta1 = B#3;
+    Note nuta2 = C#2;
+    int liczba = 50;
     PLAY C#1 C#2 nuta1 [C#2, C2] 100 C#1 nuta2 C3 liczba;
-
 }
