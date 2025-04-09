@@ -1,0 +1,37 @@
+melody mel1(Note n1, int dist) {
+	SET DISTORTION = dist;
+	PLAY n1 100;
+	Note n2 = n1 + 4;
+	PLAY n2 200;
+}
+
+melody mel2() {
+	int n=100;
+	PLAY C1 500;
+	PAUSE 200;
+	PLAY H3 50;
+	PLAY C4 200;
+}
+
+melody mel3(Note n1, int dist) {
+	SET DISTORTION = dist;
+	SET INSTRUMENT = VIOLIN;
+
+	PLAY n1 100;
+	Note n2 = n1 + 4;
+	PLAY n2 200;
+	
+	SET INSTRUMENT = PIANO;
+
+	int i=1;
+	while(true) {
+		PLAY E1 100;
+		PLAY F1 100;
+		PLAY F#1 100;
+		PLAY F1 100;
+		i+=1;
+		if(i==5) {
+			break;
+		}
+	}
+}

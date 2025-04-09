@@ -1,0 +1,15 @@
+melody main() {
+	Note n1 = G#3;
+	Note n2 = C#2;
+	int i1 = 300;
+	int i2 = -500;
+	
+	PLAY n1 i1;
+	i2 = i2 + 2*i1;
+	PLAY n2 i2;
+	
+	int i3 = ((2 + 2*3) / (2 + 6 - 9)) * (1 / (2*9 - 3*3));
+	i3 += 200;
+	n1 *= 2;
+	PLAY n1 i3;
+}
