@@ -1,6 +1,10 @@
 grammar Music;
 
-program : functionDecl* mainDecl EOF;
+program : imports* functionDecl* mainDecl? EOF;
+
+imports
+    : IMPORT STRING_VAL ';'
+    ;
 
 functionDecl
     : 'melody' ID LP parameters? RP '{' statement* '}'
@@ -57,7 +61,7 @@ settingsAssigment
     ;
 
 settingsValues
-    :PACE
+    : PACE
     | SUSTAIN
     | INSTRUMENT
     | DISTORTION
@@ -79,6 +83,7 @@ varDecl
 
 playStatement
     : PLAY NOTE_VAL INT_VAL ';' #playNote
+    | PLAY ID ID ';' #playWithWariables
     | PLAY ID INT_VAL ';' #playChord
     | PLAY functionCall ';' #playFunc
     | PLAY ID ';' #playTrack
@@ -149,6 +154,8 @@ chord
 trackStatement
     : ID 'ADD' functionCall ';' ;
 
+IMPORT: 'import';
+
 INT: 'int';
 BOOL: 'bool';
 CHORD: 'Chord';
@@ -156,8 +163,10 @@ NOTE: 'Note';
 TRACK : 'Track';
 
 BOOL_VAL: 'true' | 'false';
-INT_VAL : [0-9]+ ;
+INT_VAL : '-'?[1-9][0-9]* ;
 NOTE_VAL : [CDEFGABH]('#'|'b')?[01234] | [CDEFGABH]('#'|'b')?'-1' | [CDEFGABH]('#'|'b')?'-2';
+STRING_VAL: '"' (ESC|.)*? '"';
+ESC : '\\"' | '\\\\' ;
 
 PACE: 'PACE';
 DISTORTION : 'DISTORTION';
