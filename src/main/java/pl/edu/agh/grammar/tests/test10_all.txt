@@ -27,7 +27,6 @@ melody main() {
 	SET BLUES = true;
 	SET VOLUME = 100;
 	SET INSTRUMENT = DRUMS;
-	SET KEY = C;
 
 	Note n1 = C2;
 	Note n2 = G4;

@@ -1,6 +1,5 @@
 melody main() {
 	SET INSTRUMENT = VIOLIN;
-	SET KEY = Gm;
 	SET SUSTAIN = 20;
 	SET BLUES = true;
 

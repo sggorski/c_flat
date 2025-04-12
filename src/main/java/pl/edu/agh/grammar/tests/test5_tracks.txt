@@ -15,7 +15,6 @@ melody mel2() {
 
 melody main() {
 	SET INSTRUMENT = VIOLIN;
-	SET KEY = F#m;
 	SET DISTORTION = 100;
 	SET BLUES = true;
 

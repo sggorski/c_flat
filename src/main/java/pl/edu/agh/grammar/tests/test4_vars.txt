@@ -6,7 +6,6 @@ melody main() {
 	SET BLUES = true;
 	SET VOLUME = 100;
 	SET INSTRUMENT = DRUMS;
-	SET KEY = C#m;
 
 	int n = 5;
 	int n2 = 10;

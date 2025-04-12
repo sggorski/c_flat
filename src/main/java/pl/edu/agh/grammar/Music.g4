@@ -57,7 +57,6 @@ settingsAssigment
     | JAZZ '=' (BOOL_VAL|ID) #jazz
     | BLUES '=' (BOOL_VAL|ID) #blues
     | VOLUME '=' (INT_VAL|ID) #volume
-    | KEY '=' (KEY_VAL|ID) #key
     ;
 
 settingsValues
@@ -68,7 +67,6 @@ settingsValues
     | JAZZ
     | BLUES
     | VOLUME
-    | KEY
     ;
 
 assignment
@@ -146,7 +144,6 @@ expr
     | settingsValues #settingsExpr
     | INT_VAL #intExpr
     | BOOL_VAL #boolExpr
-    | KEY_VAL #keyExpr
     | NOTE_VAL #noteExpr
     | ID #idExpr
 
@@ -200,11 +197,8 @@ JAZZ : 'JAZZ';
 BLUES : 'BLUES';
 INSTRUMENT : 'INSTRUMENT';
 SUSTAIN : 'SUSTAIN';
-KEY : 'KEY';
 
 INSTRUMENT_VALUE : 'PIANO' |  'VIOLIN' | 'DRUMS' | 'HARP';
-KEY_VAL : 'C' | 'C#' | 'D' | 'Eb' | 'E' | 'F' | 'F#' | 'G' | 'Ab' | 'A' | 'B' | 'H' |
-          'Cm' | 'C#m' | 'Dm' | 'Ebm' | 'Em' | 'Fm' | 'F#m' | 'Gm' | 'G#m' | 'Am' | 'Bm' | 'Hm' ;
 
 SET : 'SET';
 PLAY : 'PLAY';
