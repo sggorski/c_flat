@@ -84,9 +84,10 @@ varDecl
     ;
 
 playStatement
-    : PLAY NOTE_VAL INT_VAL ';' #playNote
-    | PLAY ID INT_VAL ';' #playChord
+    : PLAY NOTE_VAL (INT_VAL|ID) ';' #playNote
+    | PLAY chord (INT_VAL|ID) ';' #playChord
     | PLAY functionCall ';' #playFunc
+    | PLAY ID (INT_VAL|ID) ';' #playVariables
     | PLAY ID ';' #playTrack
     | PLAY ((ID|NOTE_VAL|chord) ((ID|NOTE_VAL|chord))* (INT_VAL|ID))+ ';' #playMulti
     ;
