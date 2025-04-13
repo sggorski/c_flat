@@ -142,7 +142,7 @@ expr
     | expr orOp expr #orOperatorExpr
     | chord #chordExpr
     | settingsValues #settingsExpr
-    | INT_VAL #intExpr
+    | intVal #intExpr
     | BOOL_VAL #boolExpr
     | NOTE_VAL #noteExpr
     | ID #idExpr
@@ -176,6 +176,9 @@ chord
 trackStatement
     : ID 'ADD' functionCall ';' ;
 
+intVal
+    : '-'? INT_VAL;
+
 IMPORT: 'import';
 
 INT: 'int';
@@ -185,7 +188,7 @@ NOTE: 'Note';
 TRACK : 'Track';
 
 BOOL_VAL: 'true' | 'false';
-INT_VAL : '-'?[1-9][0-9]* | '-'?'0' ;
+INT_VAL : [1-9][0-9]* | '0' ;
 NOTE_VAL : [CDEFGABH]('#'|'b')?[01234] | [CDEFGABH]('#'|'b')?'-1' | [CDEFGABH]('#'|'b')?'-2';
 STRING_VAL: '"' (ESC|.)*? '"';
 ESC : '\\"' | '\\\\' ;
