@@ -1,17 +1,12 @@
 // Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
+import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
+
 import javax.sound.midi.*;
 
-import static pl.edu.agh.Instrument.DRUMS;
+import static pl.edu.agh.Instrument.*;
 
-/**
- * This class provides an empty implementation of {@link MusicVisitor},
- * which can be extended to create a visitor which only needs to handle a subset
- * of the available methods.
- *
- * @param <T> The return type of the visit operation. Use {@link Void} for
- * operations with no return type.
- */
+
 @SuppressWarnings("CheckReturnValue")
 public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVisitor<T> {
 	/**
@@ -36,6 +31,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 		}
 
 		return visitChildren(ctx); }
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitImports(MusicParser.ImportsContext ctx) {
+		return visitChildren(ctx);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -82,6 +87,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitStatement(MusicParser.StatementContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitLoopStatement(MusicParser.LoopStatementContext ctx) {
+		return visitChildren(ctx);	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -195,13 +209,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 		return visitChildren(ctx);
 	}
 
-	@Override public T visitKey(MusicParser.KeyContext ctx) { return visitChildren(ctx); }
 	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * @param ctx the parse tree
+	 * @return
 	 */
+	@Override
+	public T visitSettingsValues(MusicParser.SettingsValuesContext ctx) {
+		return visitChildren(ctx);	}
+
+
 	@Override public T visitAssignment(MusicParser.AssignmentContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -210,19 +226,31 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitSelfAssignment(MusicParser.SelfAssignmentContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitVarDeclWithoutArg(MusicParser.VarDeclWithoutArgContext ctx) {
+		return visitChildren(ctx);	}
+
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitVarDecl(MusicParser.VarDeclContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
+
 	@Override public T visitPlayNote(MusicParser.PlayNoteContext ctx) {
 
         try {
@@ -252,6 +280,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitPlayFunc(MusicParser.PlayFuncContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitPlayVariables(MusicParser.PlayVariablesContext ctx) {
+		return visitChildren(ctx);	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -259,6 +296,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitPlayTrack(MusicParser.PlayTrackContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitPlayMulti(MusicParser.PlayMultiContext ctx) {
+		return visitChildren(ctx);	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -276,19 +322,39 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 		}
 		return visitChildren(ctx);
 	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitWhileLoop(MusicParser.WhileLoopContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitIf(MusicParser.IfContext ctx) {
+		return visitChildren(ctx);	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitForLoop(MusicParser.ForLoopContext ctx) {
+		return visitChildren(ctx);	}
+
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitControlStatement(MusicParser.ControlStatementContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
+
 	@Override public T visitForInit(MusicParser.ForInitContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -297,6 +363,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitForUpdate(MusicParser.ForUpdateContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitForAssignment(MusicParser.ForAssignmentContext ctx) {
+		return visitChildren(ctx);	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -339,6 +414,55 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitNoteExpr(MusicParser.NoteExprContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitOrOperatorExpr(MusicParser.OrOperatorExprContext ctx) {
+		return visitChildren(ctx);	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitNotExpr(MusicParser.NotExprContext ctx) {
+		return visitChildren(ctx);	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitOrderOperatorExpr(MusicParser.OrderOperatorExprContext ctx) {
+		return visitChildren(ctx);	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitAddSubOperatorExpr(MusicParser.AddSubOperatorExprContext ctx) {
+		return visitChildren(ctx);	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitAndOperatorExpr(MusicParser.AndOperatorExprContext ctx) {
+		return visitChildren(ctx);	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitMullDivOperatorExpr(MusicParser.MullDivOperatorExprContext ctx) {
+		return visitChildren(ctx);	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -360,6 +484,56 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitIdExpr(MusicParser.IdExprContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitOrderOp(MusicParser.OrderOpContext ctx) {
+		return visitChildren(ctx);	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitEqOp(MusicParser.EqOpContext ctx) {
+		return visitChildren(ctx);	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitAndOp(MusicParser.AndOpContext ctx) {
+		return visitChildren(ctx);	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitOrOp(MusicParser.OrOpContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitAddSubOp(MusicParser.AddSubOpContext ctx) {
+		return visitChildren(ctx);	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitMullDivOp(MusicParser.MullDivOpContext ctx) {
+		return visitChildren(ctx);	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -368,6 +542,23 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 */
 	@Override
 	public T visitIntExpr(MusicParser.IntExprContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitEqOperatorExpr(MusicParser.EqOperatorExprContext ctx) {
+		return visitChildren(ctx);	}
+
+	/**
+	 * @param ctx the parse tree
+	 * @return
+	 */
+	@Override
+	public T visitSettingsExpr(MusicParser.SettingsExprContext ctx) {
+		return visitChildren(ctx);	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -381,20 +572,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitOperatorExpr(MusicParser.OperatorExprContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitOp(MusicParser.OpContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
+
+
 	@Override public T visitAssOp(MusicParser.AssOpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

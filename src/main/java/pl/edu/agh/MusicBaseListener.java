@@ -29,6 +29,18 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterImports(MusicParser.ImportsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitImports(MusicParser.ImportsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterFunctionDecl(MusicParser.FunctionDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -209,18 +221,6 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterKey(MusicParser.KeyContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitKey(MusicParser.KeyContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterSettingsValues(MusicParser.SettingsValuesContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -257,13 +257,25 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterVarDecl(MusicParser.VarDeclContext ctx) { }
+	@Override public void enterVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitVarDecl(MusicParser.VarDeclContext ctx) { }
+	@Override public void exitVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVarDeclWithoutArg(MusicParser.VarDeclWithoutArgContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVarDeclWithoutArg(MusicParser.VarDeclWithoutArgContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -305,6 +317,18 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPlayVariables(MusicParser.PlayVariablesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPlayVariables(MusicParser.PlayVariablesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterPlayTrack(MusicParser.PlayTrackContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -312,6 +336,18 @@ public class MusicBaseListener implements MusicListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitPlayTrack(MusicParser.PlayTrackContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPlayMulti(MusicParser.PlayMultiContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPlayMulti(MusicParser.PlayMultiContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -329,13 +365,37 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterControlStatement(MusicParser.ControlStatementContext ctx) { }
+	@Override public void enterWhileLoop(MusicParser.WhileLoopContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitControlStatement(MusicParser.ControlStatementContext ctx) { }
+	@Override public void exitWhileLoop(MusicParser.WhileLoopContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIf(MusicParser.IfContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIf(MusicParser.IfContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterForLoop(MusicParser.ForLoopContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitForLoop(MusicParser.ForLoopContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -437,6 +497,54 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterIntExpr(MusicParser.IntExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIntExpr(MusicParser.IntExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEqOperatorExpr(MusicParser.EqOperatorExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEqOperatorExpr(MusicParser.EqOperatorExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSettingsExpr(MusicParser.SettingsExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSettingsExpr(MusicParser.SettingsExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterParanthesesExpr(MusicParser.ParanthesesExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitParanthesesExpr(MusicParser.ParanthesesExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterNoteExpr(MusicParser.NoteExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -449,13 +557,13 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIntExpr(MusicParser.IntExprContext ctx) { }
+	@Override public void enterOrOperatorExpr(MusicParser.OrOperatorExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIntExpr(MusicParser.IntExprContext ctx) { }
+	@Override public void exitOrOperatorExpr(MusicParser.OrOperatorExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -473,37 +581,49 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterOperatorExpr(MusicParser.OperatorExprContext ctx) { }
+	@Override public void enterOrderOperatorExpr(MusicParser.OrderOperatorExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitOperatorExpr(MusicParser.OperatorExprContext ctx) { }
+	@Override public void exitOrderOperatorExpr(MusicParser.OrderOperatorExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterKeyExpr(MusicParser.KeyExprContext ctx) { }
+	@Override public void enterAddSubOperatorExpr(MusicParser.AddSubOperatorExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitKeyExpr(MusicParser.KeyExprContext ctx) { }
+	@Override public void exitAddSubOperatorExpr(MusicParser.AddSubOperatorExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSettingsExpr(MusicParser.SettingsExprContext ctx) { }
+	@Override public void enterAndOperatorExpr(MusicParser.AndOperatorExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSettingsExpr(MusicParser.SettingsExprContext ctx) { }
+	@Override public void exitAndOperatorExpr(MusicParser.AndOperatorExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMullDivOperatorExpr(MusicParser.MullDivOperatorExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMullDivOperatorExpr(MusicParser.MullDivOperatorExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -533,18 +653,6 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParanthesesExpr(MusicParser.ParanthesesExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitParanthesesExpr(MusicParser.ParanthesesExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterIdExpr(MusicParser.IdExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -557,13 +665,73 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterOp(MusicParser.OpContext ctx) { }
+	@Override public void enterOrderOp(MusicParser.OrderOpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitOp(MusicParser.OpContext ctx) { }
+	@Override public void exitOrderOp(MusicParser.OrderOpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEqOp(MusicParser.EqOpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEqOp(MusicParser.EqOpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAndOp(MusicParser.AndOpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAndOp(MusicParser.AndOpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOrOp(MusicParser.OrOpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOrOp(MusicParser.OrOpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAddSubOp(MusicParser.AddSubOpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAddSubOp(MusicParser.AddSubOpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMullDivOp(MusicParser.MullDivOpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMullDivOp(MusicParser.MullDivOpContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

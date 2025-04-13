@@ -28,12 +28,14 @@ public class App
         MusicLexer lexer = new MusicLexer(stream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         MusicParser parser = new MusicParser(tokens);
-        MusicParser.ProgramContext program = parser.program();
-        //parser.addParseListener(new MusicSuperListener());
+
         try{
+            parser.removeErrorListeners();
 
             MusicSuperListener listener = new MusicSuperListener();
-            ParseTreeWalker.DEFAULT.walk(listener, program);
+            parser.addParseListener(listener);
+
+            MusicParser.ProgramContext program = parser.program();
 
             MusicSuperVisitor visitor = new MusicSuperVisitor();
             visitor.visitProgram(program);
@@ -41,6 +43,7 @@ public class App
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
+
 
     }
 }
