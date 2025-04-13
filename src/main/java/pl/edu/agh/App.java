@@ -1,8 +1,7 @@
 package pl.edu.agh;
 
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
@@ -31,6 +30,10 @@ public class App
 
         try{
             parser.removeErrorListeners();
+//            for(ANTLRErrorListener e: parser.getErrorListeners() ){
+//                System.out.println(e.getClass().getName());
+//            }
+            parser.addErrorListener(new MusicErrorListener());
 
             MusicSuperListener listener = new MusicSuperListener();
             parser.addParseListener(listener);
@@ -40,8 +43,14 @@ public class App
             MusicSuperVisitor visitor = new MusicSuperVisitor();
             visitor.visitProgram(program);
 
-        }catch (Exception e){
+        }catch (ParseCancellationException e){
             System.out.println(e.getMessage());
+        }
+        catch (RecognitionException e){
+            //System.out.println(parser.error);
+            System.out.println(e.getMessage());
+        }catch (Exception e){
+            System.out.println("Other error");
         }
 
 
