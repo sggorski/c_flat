@@ -11,7 +11,7 @@ functionDecl
     ;
 
 mainDecl
-    : 'melody' 'main' LP  RP '{' statement* '}'
+    : 'melody' 'main' LP  RP '{' mainStatement* '}'
     ;
 
 parameters
@@ -26,8 +26,11 @@ type
     : INT
     | BOOL
     | CHORD
-    | NOTE
-    | TRACK;
+    | NOTE;
+
+mainStatement
+    : statement
+    |  trackStatements;
 
 statement
     : functionDecl
@@ -38,7 +41,6 @@ statement
     | playStatement
     | pauseStatement
     | controlStatement
-    | trackStatement
     ;
 
 loopStatement
@@ -173,8 +175,16 @@ assOp
 chord
     : '[' NOTE_VAL (',' NOTE_VAL) + ']';
 
+trackStatements
+    : trackStatement #trackAdd
+    | trackDeclaration #trackDeclare
+    ;
+
 trackStatement
     : ID 'ADD' functionCall ';' ;
+
+trackDeclaration
+    : TRACK ID ';';
 
 intVal
     : '-'? INT_VAL;
