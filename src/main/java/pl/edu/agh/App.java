@@ -18,21 +18,22 @@ public class App
         //System.out.println( "Hello World!" );
         CharStream stream;
         try{
-            stream = CharStreams.fromFileName(String.format("src/main/java/pl/edu/agh/grammar/hello_worlds/hello_world_%s.txt",args[0]));
+            //stream = CharStreams.fromFileName(String.format("src/main/java/pl/edu/agh/grammar/hello_worlds/hello_world_%s.txt",args[0]));
+            stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/hello_worlds/hello_world_moonlight_sonata.txt");
         }
         catch(Exception e){
             System.out.println("No such melody!");
             return;
         }
-        MusicLexer lexer = new MusicLexer(stream);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        MusicParser parser = new MusicParser(tokens);
 
         try{
+            MusicLexer lexer = new MusicLexer(stream);
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(new MusicErrorListener());
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            MusicParser parser = new MusicParser(tokens);
+
             parser.removeErrorListeners();
-//            for(ANTLRErrorListener e: parser.getErrorListeners() ){
-//                System.out.println(e.getClass().getName());
-//            }
             parser.addErrorListener(new MusicErrorListener());
 
             MusicSuperListener listener = new MusicSuperListener();
@@ -44,13 +45,14 @@ public class App
             visitor.visitProgram(program);
 
         }catch (ParseCancellationException e){
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage() + "ParseCancell");
         }
         catch (RecognitionException e){
             //System.out.println(parser.error);
+            System.out.println(e.getMessage() + "Recognition");
+        }
+        catch (Exception e){
             System.out.println(e.getMessage());
-        }catch (Exception e){
-            System.out.println("Other error");
         }
 
 
