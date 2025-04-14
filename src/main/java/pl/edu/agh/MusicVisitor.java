@@ -53,6 +53,12 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitType(MusicParser.TypeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MusicParser#mainStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMainStatement(MusicParser.MainStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MusicParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -415,9 +421,35 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitChord(MusicParser.ChordContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code trackAdd}
+	 * labeled alternative in {@link MusicParser#trackStatements}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTrackAdd(MusicParser.TrackAddContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code trackDeclare}
+	 * labeled alternative in {@link MusicParser#trackStatements}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTrackDeclare(MusicParser.TrackDeclareContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MusicParser#trackStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitTrackStatement(MusicParser.TrackStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MusicParser#trackDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTrackDeclaration(MusicParser.TrackDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MusicParser#intVal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIntVal(MusicParser.IntValContext ctx);
 }

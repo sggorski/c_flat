@@ -78,6 +78,16 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitType(MusicParser.TypeContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MusicParser#mainStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterMainStatement(MusicParser.MainStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#mainStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitMainStatement(MusicParser.MainStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MusicParser#statement}.
 	 * @param ctx the parse tree
 	 */
@@ -692,6 +702,30 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitChord(MusicParser.ChordContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code trackAdd}
+	 * labeled alternative in {@link MusicParser#trackStatements}.
+	 * @param ctx the parse tree
+	 */
+	void enterTrackAdd(MusicParser.TrackAddContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code trackAdd}
+	 * labeled alternative in {@link MusicParser#trackStatements}.
+	 * @param ctx the parse tree
+	 */
+	void exitTrackAdd(MusicParser.TrackAddContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code trackDeclare}
+	 * labeled alternative in {@link MusicParser#trackStatements}.
+	 * @param ctx the parse tree
+	 */
+	void enterTrackDeclare(MusicParser.TrackDeclareContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code trackDeclare}
+	 * labeled alternative in {@link MusicParser#trackStatements}.
+	 * @param ctx the parse tree
+	 */
+	void exitTrackDeclare(MusicParser.TrackDeclareContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MusicParser#trackStatement}.
 	 * @param ctx the parse tree
 	 */
@@ -701,4 +735,24 @@ public interface MusicListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTrackStatement(MusicParser.TrackStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MusicParser#trackDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterTrackDeclaration(MusicParser.TrackDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#trackDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitTrackDeclaration(MusicParser.TrackDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MusicParser#intVal}.
+	 * @param ctx the parse tree
+	 */
+	void enterIntVal(MusicParser.IntValContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#intVal}.
+	 * @param ctx the parse tree
+	 */
+	void exitIntVal(MusicParser.IntValContext ctx);
 }

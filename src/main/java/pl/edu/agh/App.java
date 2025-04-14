@@ -30,7 +30,9 @@ public class App
             MusicLexer lexer = new MusicLexer(stream);
             lexer.removeErrorListeners();
             lexer.addErrorListener(new MusicErrorListener());
+
             CommonTokenStream tokens = new CommonTokenStream(lexer);
+
             MusicParser parser = new MusicParser(tokens);
 
             parser.removeErrorListeners();
@@ -45,7 +47,7 @@ public class App
             visitor.visitProgram(program);
 
         }catch (ParseCancellationException e){
-            System.out.println(e.getMessage() + "ParseCancell");
+            System.out.println(e.getMessage() + "ParseCancel");
         }
         catch (RecognitionException e){
             //System.out.println(parser.error);
