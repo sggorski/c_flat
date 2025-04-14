@@ -1,0 +1,35 @@
+melody main(){
+    	SET PACE=350;
+    	SET INSTRUMENT=PIANO;
+    	SET SUSTAIN=0;
+    	SET JAZZ=false;
+    	SET DISTORTION=0;
+	SET VOLUME=90;
+
+	PAUSE 500;
+
+	PLAY [C0, C1, G1, C2, Eb2, G2] 1000;
+	PLAY [F-1, F0, Ab1, C2, Eb2, Ab2] 1000;
+	PLAY [G-1, G0, G1, H1, Eb2, G2] 750;
+	PLAY [D2, F2] 250;
+	PLAY [C0, G0, C1, Eb1, G1, C2, Eb2] 1000;
+	PLAY [Ab-1, Ab0, Eb1, Ab1, C2, Eb2] 1000;
+	PLAY [Db-1, Db0, F1, Ab1, Db2, F2] 1000;
+	PLAY [Eb-1, Eb0, Db1, Eb1, G1, C2, Eb2] 750;
+	PLAY [B1, Db2] 250;
+	PLAY [Ab-1, Ab0, C1, Eb1, Ab1, C2] 1000;
+	PLAY [G-1, G0, D1, F1, H1, D2] 1000;
+	PLAY [C-2, C-1, E1, G2, B1, C2, E2] 1000;
+	SET SUSTAIN=127;	
+	PLAY [F-1, F0, Ab1, C2, G2] 750;
+	PLAY F2 250;
+	SET SUSTAIN=0;
+	PLAY [C0, C1, G1, C2, Eb2] 1000;
+	PLAY [D0, A0, D1, F#1, C2, D2] 1000;
+	PLAY [G-1, G0, G1, H1, D2, G2] 1000;
+	SET SUSTAIN=127;
+	PLAY [D-1, D0, C2, D2, F#2, H2] 750;
+	PLAY A2 250;
+	SET SUSTAIN=0;
+	PLAY [G0, G1, H1, D2, G2] 1000;
+}
