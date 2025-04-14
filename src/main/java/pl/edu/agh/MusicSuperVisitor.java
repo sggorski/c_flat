@@ -1,10 +1,15 @@
 // Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
-import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
+import org.antlr.v4.runtime.tree.TerminalNode;
+import pl.edu.agh.utils.*;
+import pl.edu.agh.utils.Instrument;
 
 import javax.sound.midi.*;
 
-import static pl.edu.agh.Instrument.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static pl.edu.agh.utils.Instrument.*;
 
 
 @SuppressWarnings("CheckReturnValue")
@@ -109,9 +114,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPace(MusicParser.PaceContext ctx) {
+	@Override public T visitPace(MusicParser.PaceContext ctx) throws Exception {
 		if(mainCtx!=null){
-            main.pace= Integer.parseInt(ctx.INT_VAL().getText());
+            if(ctx.INT_VAL() != null) main.pace= Integer.parseInt(ctx.INT_VAL().getText());
+			else if (ctx.ID() != null) {
+				VarInfo var = main.memory.get(ctx.ID().getText());
+				if(var==null) throw new Exception("Variable not definied: " + ctx.ID().getText());
+				if(var.type != Type.INT) throw new Exception("Incorrect type of variable: " + ctx.ID().getText());
+				IntValue varInt = (IntValue)var.valueObj;
+				main.pace = varInt.value;
+			}
 		}
 
 		return visitChildren(ctx); }
@@ -121,12 +133,17 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitSustain(MusicParser.SustainContext ctx) {
+	@Override public T visitSustain(MusicParser.SustainContext ctx) throws Exception {
 		if(mainCtx!=null){
-			int sustain = Integer.parseInt(ctx.INT_VAL().getText());
-			main.sustain=sustain;
-			if(main.instrument==DRUMS) main.channels[9].controlChange(64, sustain);
-			else main.channels[0].controlChange(64, sustain);
+			if(ctx.INT_VAL() != null) main.sustain= Integer.parseInt(ctx.INT_VAL().getText());
+			else if (ctx.ID() != null) {
+				VarInfo var = main.memory.get(ctx.ID().getText());
+				if(var==null) throw new Exception("Variable not definied: " + ctx.ID().getText());
+				if(var.type != Type.INT) throw new Exception("Incorrect type of variable: " + ctx.ID().getText());
+				IntValue varInt = (IntValue)var.valueObj;
+				if(main.instrument==DRUMS) main.channels[9].controlChange(64, varInt.value);
+				else main.channels[0].controlChange(64, varInt.value);
+			}
 		}
 
 		return visitChildren(ctx); }
@@ -136,10 +153,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitInstrument(MusicParser.InstrumentContext ctx) {
+	@Override public T visitInstrument(MusicParser.InstrumentContext ctx) throws Exception {
 		if(main!=null){
+			if(ctx.INSTRUMENT_VALUE() == null) throw new Exception("Invalid instrument!");
 			String instrumentName = ctx.INSTRUMENT_VALUE().getText();
-			Instrument instrument = Instrument.valueOf(instrumentName);
+			Instrument instrument = valueOf(instrumentName);
 			main.instrument = instrument;
 			switch (instrument) {
 				case PIANO:
@@ -155,8 +173,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 					main.channels[9].programChange(35);
 					break;
 				default:
-					System.out.println("Nie istnieje taki instrument");
-					break;
+					throw new Exception("Invalid instrument!");
 			}
 		}
 		return visitChildren(ctx); }
@@ -166,12 +183,17 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitDistortion(MusicParser.DistortionContext ctx) {
-		if(mainCtx!=null){
-			int distortion = Integer.parseInt(ctx.INT_VAL().getText());
-			main.distortion=distortion;
-			if(main.instrument==DRUMS) main.channels[9].controlChange(93, distortion);
-			else main.channels[0].controlChange(93, distortion);
+	@Override public T visitDistortion(MusicParser.DistortionContext ctx) throws Exception {
+		if(mainCtx!=null) {
+			if (ctx.INT_VAL() != null) main.distortion = Integer.parseInt(ctx.INT_VAL().getText());
+			else if (ctx.ID() != null) {
+				VarInfo var = main.memory.get(ctx.ID().getText());
+				if (var == null) throw new Exception("Variable not definied: " + ctx.ID().getText());
+				if (var.type != Type.INT) throw new Exception("Incorrect type of variable: " + ctx.ID().getText());
+				IntValue varInt = (IntValue) var.valueObj;
+				if (main.instrument == DRUMS) main.channels[9].controlChange(93, varInt.value);
+				else main.channels[0].controlChange(93, varInt.value);
+			}
 		}
 
 		return visitChildren(ctx);
@@ -183,9 +205,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitJazz(MusicParser.JazzContext ctx) {
+	@Override public T visitJazz(MusicParser.JazzContext ctx) throws Exception {
 		if(mainCtx!=null){
-            main.jazz= ctx.BOOL_VAL().getText().equals("true");
+            if(ctx.BOOL_VAL() != null) main.jazz= ctx.BOOL_VAL().getText().equals("true");
+			else if(ctx.ID() != null){
+				VarInfo var = main.memory.get(ctx.ID().getText());
+				if (var == null) throw new Exception("Variable not definied: " + ctx.ID().getText());
+				if (var.type != Type.BOOL) throw new Exception("Incorrect type of variable: " + ctx.ID().getText());
+				BoolValue varBool = (BoolValue) var.valueObj;
+				main.jazz = varBool.value;
+			}
 		}
 		return visitChildren(ctx);
 	}
@@ -202,9 +231,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitVolume(MusicParser.VolumeContext ctx) {
+	@Override public T visitVolume(MusicParser.VolumeContext ctx) throws Exception {
 		if(mainCtx!=null){
-            main.volume= Integer.parseInt(ctx.INT_VAL().getText());
+			if(ctx.INT_VAL() != null) main.volume= Integer.parseInt(ctx.INT_VAL().getText());
+			else if (ctx.ID() != null) {
+				VarInfo var = main.memory.get(ctx.ID().getText());
+				if(var==null) throw new Exception("Variable not definied: " + ctx.ID().getText());
+				if(var.type != Type.INT) throw new Exception("Incorrect type of variable: " + ctx.ID().getText());
+				IntValue varInt = (IntValue)var.valueObj;
+				main.volume = varInt.value;
+			}
 		}
 		return visitChildren(ctx);
 	}
@@ -251,10 +287,18 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 
-	@Override public T visitPlayNote(MusicParser.PlayNoteContext ctx) {
+	@Override public T visitPlayNote(MusicParser.PlayNoteContext ctx) throws Exception {
 
         try {
-			int duration = Integer.parseInt(ctx.INT_VAL().getText());
+			int duration = 0;
+			if(ctx.INT_VAL() != null)  duration = Integer.parseInt(ctx.INT_VAL().getText());
+			else if(ctx.ID() != null){
+				VarInfo var = main.memory.get(ctx.ID().getText());
+				if(var==null) throw new Exception("Variable not definied: " + ctx.ID().getText());
+				if(var.type != Type.INT) throw new Exception("Incorrect type of variable: " + ctx.ID().getText());
+				IntValue varInt = (IntValue)var.valueObj;
+				duration = varInt.value;
+			}
 			Note note = Note.valueOf(ctx.NOTE_VAL().getText().replace('#', 's').replace('-', 'm'));
 			if(main.instrument==DRUMS){
 				main.playNote(main.channels[9],main.notes.get(note),duration,main.volume);
@@ -272,7 +316,31 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPlayChord(MusicParser.PlayChordContext ctx) { return visitChildren(ctx); }
+	@Override public T visitPlayChord(MusicParser.PlayChordContext ctx) throws Exception {
+		ChordValue chord = (ChordValue) visit(ctx.chord());
+		List<Integer> notes = new ArrayList<>();
+		for(NoteValue noteVal: chord.notes){
+			notes.add(main.notes.get(noteVal.note));
+		}
+		int duration = 0;
+		if(ctx.INT_VAL()!=null) duration = Integer.parseInt(ctx.INT_VAL().getText());
+		else if(ctx.ID() != null){
+			VarInfo var = main.memory.get(ctx.ID().getText());
+			if(var==null) throw new Exception("Variable not definied: " + ctx.ID().getText());
+			if(var.type != Type.INT) throw new Exception("Incorrect type of variable: " + ctx.ID().getText());
+			IntValue varInt = (IntValue)var.valueObj;
+			duration = varInt.value;
+
+		}
+		if(main.instrument==DRUMS){
+			main.playChord(main.channels[9],notes,duration,main.volume);
+		}
+		else{
+			main.playChord(main.channels[0],notes,duration,main.volume);
+		}
+		return visitChildren(ctx);
+
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -313,12 +381,22 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 */
 	@Override public T visitPauseStatement(MusicParser.PauseStatementContext ctx) {
 		if(mainCtx!=null){
+			/*
 			try{
-				int sleep = Integer.parseInt(ctx.INT_VAL().getText());
+
+				int sleep = 0;
+				if(ctx.INT_VAL() != null) sleep = Integer.parseInt(ctx.INT_VAL().getText());
+				else if(ctx.ID() != null ){
+					VarInfo var = main.memory.get(ctx.ID().getText());
+					if(var==null) throw new Exception("Variable not definied: " + ctx.ID().getText());
+					if(var.type != Type.INT) throw new Exception("Incorrect type of variable: " + ctx.ID().getText());
+					IntValue varInt = (IntValue)var.valueObj;
+					sleep = varInt.value;
+				}
 				Thread.sleep(sleep);
 			}catch (Exception e){
 				e.printStackTrace();
-			}
+			}*/
 		}
 		return visitChildren(ctx);
 	}
@@ -581,7 +659,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitChord(MusicParser.ChordContext ctx) { return visitChildren(ctx); }
+	@Override public T visitChord(MusicParser.ChordContext ctx) {
+		List<NoteValue> notes = new ArrayList<>();
+		for(TerminalNode node : ctx.NOTE_VAL()){
+			Note note = Note.valueOf(node.getText().replace('#', 's').replace('-', 'm'));
+			notes.add(new NoteValue(note));
+		}
+		return (T)(new ChordValue(notes));
+
+	}
 	/**
 	 * {@inheritDoc}
 	 *

@@ -93,7 +93,7 @@ playStatement
     ;
 
 pauseStatement
-    : PAUSE INT_VAL ';';
+    : PAUSE (INT_VAL|ID) ';';
 
 controlStatement
     : 'while' '(' expr ')' '{' (statement|loopStatement)+'}' #whileLoop

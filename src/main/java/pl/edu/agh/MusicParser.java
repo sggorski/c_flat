@@ -927,7 +927,13 @@ public class MusicParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MusicVisitor ) return ((MusicVisitor<? extends T>)visitor).visitVolume(this);
+			if ( visitor instanceof MusicVisitor ) {
+                try {
+                    return ((MusicVisitor<? extends T>)visitor).visitVolume(this);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -947,7 +953,13 @@ public class MusicParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MusicVisitor ) return ((MusicVisitor<? extends T>)visitor).visitJazz(this);
+			if ( visitor instanceof MusicVisitor ) {
+                try {
+                    return ((MusicVisitor<? extends T>)visitor).visitJazz(this);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -967,7 +979,13 @@ public class MusicParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MusicVisitor ) return ((MusicVisitor<? extends T>)visitor).visitPace(this);
+			if ( visitor instanceof MusicVisitor ) {
+                try {
+                    return ((MusicVisitor<? extends T>)visitor).visitPace(this);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -987,7 +1005,13 @@ public class MusicParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MusicVisitor ) return ((MusicVisitor<? extends T>)visitor).visitInstrument(this);
+			if ( visitor instanceof MusicVisitor ) {
+                try {
+                    return ((MusicVisitor<? extends T>)visitor).visitInstrument(this);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1007,7 +1031,13 @@ public class MusicParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MusicVisitor ) return ((MusicVisitor<? extends T>)visitor).visitSustain(this);
+			if ( visitor instanceof MusicVisitor ) {
+                try {
+                    return ((MusicVisitor<? extends T>)visitor).visitSustain(this);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1047,7 +1077,13 @@ public class MusicParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MusicVisitor ) return ((MusicVisitor<? extends T>)visitor).visitDistortion(this);
+			if ( visitor instanceof MusicVisitor ) {
+                try {
+                    return ((MusicVisitor<? extends T>)visitor).visitDistortion(this);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1578,7 +1614,13 @@ public class MusicParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MusicVisitor ) return ((MusicVisitor<? extends T>)visitor).visitPlayNote(this);
+			if ( visitor instanceof MusicVisitor ) {
+                try {
+                    return ((MusicVisitor<? extends T>)visitor).visitPlayNote(this);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1601,7 +1643,13 @@ public class MusicParser extends Parser {
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MusicVisitor ) return ((MusicVisitor<? extends T>)visitor).visitPlayChord(this);
+			if ( visitor instanceof MusicVisitor ) {
+                try {
+                    return ((MusicVisitor<? extends T>)visitor).visitPlayChord(this);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
 			else return visitor.visitChildren(this);
 		}
 	}

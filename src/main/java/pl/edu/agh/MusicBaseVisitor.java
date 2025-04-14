@@ -95,35 +95,35 @@ public class MusicBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPace(MusicParser.PaceContext ctx) { return visitChildren(ctx); }
+	@Override public T visitPace(MusicParser.PaceContext ctx) throws Exception { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitSustain(MusicParser.SustainContext ctx) { return visitChildren(ctx); }
+	@Override public T visitSustain(MusicParser.SustainContext ctx) throws Exception { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitInstrument(MusicParser.InstrumentContext ctx) { return visitChildren(ctx); }
+	@Override public T visitInstrument(MusicParser.InstrumentContext ctx) throws Exception { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitDistortion(MusicParser.DistortionContext ctx) { return visitChildren(ctx); }
+	@Override public T visitDistortion(MusicParser.DistortionContext ctx) throws Exception { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitJazz(MusicParser.JazzContext ctx) { return visitChildren(ctx); }
+	@Override public T visitJazz(MusicParser.JazzContext ctx) throws Exception { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -137,7 +137,7 @@ public class MusicBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitVolume(MusicParser.VolumeContext ctx) { return visitChildren(ctx); }
+	@Override public T visitVolume(MusicParser.VolumeContext ctx) throws Exception { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -179,14 +179,14 @@ public class MusicBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPlayNote(MusicParser.PlayNoteContext ctx) { return visitChildren(ctx); }
+	@Override public T visitPlayNote(MusicParser.PlayNoteContext ctx) throws Exception { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPlayChord(MusicParser.PlayChordContext ctx) { return visitChildren(ctx); }
+	@Override public T visitPlayChord(MusicParser.PlayChordContext ctx) throws Exception { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -1,8 +1,11 @@
 package pl.edu.agh;
 
+import pl.edu.agh.utils.*;
+
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.Synthesizer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public class MainMelody {
@@ -18,12 +21,16 @@ public class MainMelody {
     // hashmapy dla nut i kluczy
     public HashMap<Note,Integer> notes = new HashMap<>();
     public HashMap<Key,Integer> keys = new HashMap<>();
+    public HashMap<String, VarInfo> memory = new HashMap<>();
+
 
     Synthesizer synth;
     MidiChannel[] channels;
 
 
     public MainMelody(){
+        //variable registration
+        this.memory.put("zmienna",new VarInfo("zmienna", Type.INT, 2,new IntValue(100)));
         this.notes.put(Note.Cbm2, 0);
         this.notes.put(Note.Cm2, 0);
         this.notes.put(Note.Csm2, 1);
@@ -243,7 +250,7 @@ public class MainMelody {
         channel.noteOff(note);
     }
 
-    public  void playChord(MidiChannel channel, int[] chord, int duration, int volume) throws InterruptedException {
+    public  void playChord(MidiChannel channel, List<Integer> chord, int duration, int volume) throws InterruptedException {
         int adjustedDuration = (60000/this.pace)*duration/100;
         for (int note : chord) {
             if(this.jazz) note=getJazzNote(note);

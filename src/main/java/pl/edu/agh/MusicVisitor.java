@@ -82,35 +82,35 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPace(MusicParser.PaceContext ctx);
+	T visitPace(MusicParser.PaceContext ctx) throws Exception;
 	/**
 	 * Visit a parse tree produced by the {@code sustain}
 	 * labeled alternative in {@link MusicParser#settingsAssigment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSustain(MusicParser.SustainContext ctx);
+	T visitSustain(MusicParser.SustainContext ctx) throws Exception;
 	/**
 	 * Visit a parse tree produced by the {@code instrument}
 	 * labeled alternative in {@link MusicParser#settingsAssigment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitInstrument(MusicParser.InstrumentContext ctx);
+	T visitInstrument(MusicParser.InstrumentContext ctx) throws Exception;
 	/**
 	 * Visit a parse tree produced by the {@code distortion}
 	 * labeled alternative in {@link MusicParser#settingsAssigment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDistortion(MusicParser.DistortionContext ctx);
+	T visitDistortion(MusicParser.DistortionContext ctx) throws Exception;
 	/**
 	 * Visit a parse tree produced by the {@code jazz}
 	 * labeled alternative in {@link MusicParser#settingsAssigment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitJazz(MusicParser.JazzContext ctx);
+	T visitJazz(MusicParser.JazzContext ctx) throws Exception;
 	/**
 	 * Visit a parse tree produced by the {@code blues}
 	 * labeled alternative in {@link MusicParser#settingsAssigment}.
@@ -124,7 +124,7 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitVolume(MusicParser.VolumeContext ctx);
+	T visitVolume(MusicParser.VolumeContext ctx) throws Exception;
 	/**
 	 * Visit a parse tree produced by {@link MusicParser#settingsValues}.
 	 * @param ctx the parse tree
@@ -163,14 +163,14 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPlayNote(MusicParser.PlayNoteContext ctx);
+	T visitPlayNote(MusicParser.PlayNoteContext ctx) throws Exception;
 	/**
 	 * Visit a parse tree produced by the {@code playChord}
 	 * labeled alternative in {@link MusicParser#playStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPlayChord(MusicParser.PlayChordContext ctx);
+	T visitPlayChord(MusicParser.PlayChordContext ctx) throws Exception;
 	/**
 	 * Visit a parse tree produced by the {@code playFunc}
 	 * labeled alternative in {@link MusicParser#playStatement}.
