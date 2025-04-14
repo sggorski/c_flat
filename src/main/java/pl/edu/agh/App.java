@@ -20,7 +20,7 @@ public class App
         try{
             // stream = CharStreams.fromFileName(String.format("src/main/java/pl/edu/agh/grammar/hello_worlds/hello_world_%s.txt",args[0]));
             // stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/hello_worlds/hello_world_moonlight_sonata.txt");
-            stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/second_stage/turkish_march.txt");
+            stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/second_stage/chopin_prelude_c_minor.txt");
         }
         catch(Exception e){
             System.out.println("No such melody!");

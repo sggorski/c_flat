@@ -1,9 +1,9 @@
 melody main(){
-    	SET PACE=350;
-    	SET INSTRUMENT=PIANO;
-    	SET SUSTAIN=0;
-    	SET JAZZ=false;
-    	SET DISTORTION=0;
+    SET PACE=350;
+    SET INSTRUMENT=PIANO;
+    SET SUSTAIN=0;
+    SET JAZZ=false;
+    SET DISTORTION=0;
 	SET VOLUME=90;
 
 	PAUSE 500;
@@ -32,4 +32,57 @@ melody main(){
 	PLAY A2 250;
 	SET SUSTAIN=0;
 	PLAY [G0, G1, H1, D2, G2] 1000;
+
+    SET VOLUME=60;
+    PLAY [C0, C1, Eb2, G2, Eb3] 1000;
+    PLAY [C1, C2, Eb2, Ab2, Eb3] 1000;
+    PLAY [H0, H1, D2, Ab2, D3] 750;
+    PLAY F#2 250;
+    PLAY [B0, B1, D2, G2, D3] 1000;
+    PLAY [A0, A1, C2, G2, C3] 1000;
+    PLAY [Ab0, Ab1, C2, D2, F#2, D3] 1000;
+    PLAY [G0, G1, D2, G2, H2] 750;
+    PLAY [C2, A2] 250;
+    PLAY [F0, F1, H1, D2, G2] 1000;
+    PLAY [Eb0, Eb1, C2, G2, C3] 1000;
+    PLAY [F0, F1, Ab1, C1, Ab2] 1000;
+    PLAY [H-1, H0, G1, D2, G2] 750;
+    PLAY F2 250;
+    PLAY [C0, C1, G1, C2, Eb2] 1000;
+    SET VOLUME=55;
+    PLAY [Ab-1, Ab0, Eb1, Ab1, C2, Eb2] 1000;
+    PLAY [Db-1, Db0, F1, Ab1, Db2, F2] 1000;
+    SET VOLUME=50;
+    PLAY [G-1, G0, F1, G1, H1, Eb1] 750;
+    PLAY D2 250;
+    PLAY [C-1, C0, Eb1, G1, C2] 1000;
+
+    SET VOLUME=45;
+    PLAY [C0, C1, Eb2, G2, Eb3] 1000;
+    PLAY [C1, C2, Eb2, Ab2, Eb3] 1000;
+    PLAY [H0, H1, D2, Ab2, D3] 750;
+    PLAY F#2 250;
+    PLAY [B0, B1, D2, G2, D3] 1000;
+    SET VOLUME=50;
+    PLAY [A0, A1, C2, G2, C3] 1000;
+    PLAY [Ab0, Ab1, C2, D2, F#2, D3] 1000;
+    SET VOLUME=55;
+    PLAY [G0, G1, D2, G2, H2] 750;
+    PLAY [C2, A2] 250;
+    PLAY [F0, F1, H1, D2, G2] 1000;
+    SET VOLUME=60;
+    PLAY [Eb0, Eb1, C2, G2, C3] 1000;
+    PLAY [F0, F1, Ab1, C1, Ab2] 1000;
+    SET VOLUME=65;
+    PLAY [H-1, H0, G1, D2, G2] 750;
+    PLAY F2 250;
+    PLAY [C0, C1, G1, C2, Eb2] 1000;
+    SET VOLUME=70;
+    PLAY [Ab-1, Ab0, Eb1, Ab1, C2, Eb2] 1000;
+    PLAY [Db-1, Db0, F1, Ab1, Db2, F2] 1000;
+    SET VOLUME=60;
+    PLAY [G-1, G0, F1, G1, H1, Eb1] 750;
+    PLAY D2 250;
+    PLAY [C-1, C0, Eb1, G1, C2] 1500;
+    PLAY [C1, G1, C2, Eb2, G2, C3] 3000;
 }
