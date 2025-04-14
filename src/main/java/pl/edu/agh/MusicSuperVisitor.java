@@ -381,6 +381,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 */
 	@Override public T visitPauseStatement(MusicParser.PauseStatementContext ctx) {
 		if(mainCtx!=null){
+			int sleep = 0;
+			if(ctx.INT_VAL() != null) sleep = Integer.parseInt(ctx.INT_VAL().getText());
+			try {
+				Thread.sleep(sleep);
+			}catch(Exception e){
+				System.out.println("ddddddddd");
+			}
 			/*
 			try{
 
