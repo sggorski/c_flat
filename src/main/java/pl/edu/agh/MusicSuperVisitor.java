@@ -149,9 +149,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 				if(var==null) throw new ScopeError("Variable not definied: " + ctx.ID().getText(), ctx.start.getLine(), ctx.start.getCharPositionInLine());
 				if(var.type != Type.INT) throw new RuntimeException("Incorrect type of variable: " + ctx.ID().getText());
 				IntValue varInt = (IntValue)var.valueObj;
-				if(main.instrument==DRUMS) main.channels[9].controlChange(64, varInt.value);
-				else main.channels[0].controlChange(64, varInt.value);
+				main.sustain = varInt.value;
 			}
+			if(main.instrument==DRUMS) main.channels[9].controlChange(64, main.sustain);
+			else main.channels[0].controlChange(64, main.sustain);
 		}
 
 		return visitChildren(ctx); }
@@ -193,7 +194,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 	 */
 	@Override public T visitDistortion(MusicParser.DistortionContext ctx) {
 		if(mainCtx!=null) {
-			if (ctx.INT_VAL() != null) main.distortion = Integer.parseInt(ctx.INT_VAL().getText());
+			if (ctx.INT_VAL() != null){
+				main.distortion = Integer.parseInt(ctx.INT_VAL().getText());
+				if (main.instrument == DRUMS) main.channels[9].controlChange(93, main.distortion);
+				else main.channels[0].controlChange(93, main.distortion);
+			}
 			else if (ctx.ID() != null) {
 				VarInfo var = main.memory.get(ctx.ID().getText());
 				if (var == null) throw new ScopeError("Variable not definied: " + ctx.ID().getText(), ctx.start.getLine(), ctx.start.getCharPositionInLine());
