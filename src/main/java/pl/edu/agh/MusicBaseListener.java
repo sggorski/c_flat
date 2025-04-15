@@ -293,6 +293,18 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterPlayStatement(MusicParser.PlayStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPlayStatement(MusicParser.PlayStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterPlayNote(MusicParser.PlayNoteContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -329,25 +341,13 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPlayVariables(MusicParser.PlayVariablesContext ctx) { }
+	@Override public void enterPlayIDVariants(MusicParser.PlayIDVariantsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitPlayVariables(MusicParser.PlayVariablesContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterPlayTrack(MusicParser.PlayTrackContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitPlayTrack(MusicParser.PlayTrackContext ctx) { }
+	@Override public void exitPlayIDVariants(MusicParser.PlayIDVariantsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -1,8 +1,11 @@
 package pl.edu.agh;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import pl.edu.agh.errors.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+
+import java.util.stream.Collectors;
 
 public class MusicErrorListener extends BaseErrorListener {
 
@@ -13,17 +16,20 @@ public class MusicErrorListener extends BaseErrorListener {
         if(recognizer instanceof Parser) {
             CommonToken token = (CommonToken) offendingSymbol;
             MusicParser parser = (MusicParser) recognizer;
-            ParserRuleContext ctx = parser.getContext();
+            ParserRuleContext ctx = parser.getRuleContext();
             String rulename = parser.getRuleNames()[ctx.getRuleIndex()];
+            System.out.println(parser.getVocabulary().getDisplayName(parser.getExpectedTokens().get(0)));
+            System.out.println(rulename  + " " + token.getText() + " " +  ctx.start.getText());
+
         }else {
 
             MusicLexer lexer = (MusicLexer) recognizer; // Cast recognizer to lexer, because it's lexer's stage
 
             CodePointCharStream charStream = (CodePointCharStream) lexer.getInputStream(); // Retrieve input stream at the time of an error
-            // (Our is CodePoint32BitCharStream but I used parent class just in case)
+            // (Our is CodePoint32BitCharStream ,but I used parent class just in case)
 
             String errorChar = new String(Character.toChars(charStream.LA(1))); //Return char that caused the error
-            // Using Character class to handle extended unicode character (e.g emojis)
+            // Using Character class to handle extended Unicode character (e.g. emojis)
 
             throw new SyntaxError("Unrecognized character: " + errorChar, lexer.getLine(), lexer.getCharPositionInLine());
         }

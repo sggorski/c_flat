@@ -84,12 +84,15 @@ varDecl
     ;
 
 playStatement
-    : PLAY NOTE_VAL (INT_VAL|ID) ';' #playNote
-    | PLAY chord (INT_VAL|ID) ';' #playChord
-    | PLAY functionCall ';' #playFunc
-    | PLAY ID (INT_VAL|ID) ';' #playVariables
-    | PLAY ID ';' #playTrack
-    | PLAY ((ID|NOTE_VAL|chord) ((ID|NOTE_VAL|chord))* (INT_VAL|ID))+ ';' #playMulti
+    : PLAY playValues ';'
+    ;
+
+playValues
+    : NOTE_VAL (INT_VAL | ID)                                # playNote
+    | chord (INT_VAL | ID)                                   # playChord
+    | functionCall                                           # playFunc
+    | ID (INT_VAL | ID)?                                     # playIDVariants
+    | ((NOTE_VAL | chord | ID)+ (INT_VAL | ID))+             # playMulti
     ;
 
 pauseStatement
@@ -240,7 +243,9 @@ AND : 'AND' ;
 OR : 'OR' ;
 NOT : 'NOT' ;
 
+
 LINE_COMMENT: '//' ~[\r\n]* -> skip ;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip ;
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 WS : [ \t\r\n]+ -> skip ;
+SEMICOLON : ';';

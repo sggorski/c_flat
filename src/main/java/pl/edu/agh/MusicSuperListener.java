@@ -103,6 +103,17 @@ public class MusicSuperListener extends MusicBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override public void exitType(MusicParser.TypeContext ctx) { }
+
+    @Override
+    public void enterMainStatement(MusicParser.MainStatementContext ctx) {
+
+    }
+
+    @Override
+    public void exitMainStatement(MusicParser.MainStatementContext ctx) {
+
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -303,6 +314,16 @@ public class MusicSuperListener extends MusicBaseListener {
 
     }
 
+    @Override
+    public void enterPlayStatement(MusicParser.PlayStatementContext ctx) {
+
+    }
+
+    @Override
+    public void exitPlayStatement(MusicParser.PlayStatementContext ctx) {
+
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -345,34 +366,16 @@ public class MusicSuperListener extends MusicBaseListener {
      */
     @Override public void exitPlayFunc(MusicParser.PlayFuncContext ctx) { }
 
-    /**
-     * @param ctx the parse tree
-     */
     @Override
-    public void enterPlayVariables(MusicParser.PlayVariablesContext ctx) {
+    public void enterPlayIDVariants(MusicParser.PlayIDVariantsContext ctx) {
 
     }
 
-    /**
-     * @param ctx the parse tree
-     */
     @Override
-    public void exitPlayVariables(MusicParser.PlayVariablesContext ctx) {
+    public void exitPlayIDVariants(MusicParser.PlayIDVariantsContext ctx) {
 
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override public void enterPlayTrack(MusicParser.PlayTrackContext ctx) { }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override public void exitPlayTrack(MusicParser.PlayTrackContext ctx) { }
 
     /**
      * @param ctx the parse tree
@@ -876,6 +879,27 @@ public class MusicSuperListener extends MusicBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override public void exitChord(MusicParser.ChordContext ctx) { }
+
+    @Override
+    public void enterTrackAdd(MusicParser.TrackAddContext ctx) {
+
+    }
+
+    @Override
+    public void exitTrackAdd(MusicParser.TrackAddContext ctx) {
+
+    }
+
+    @Override
+    public void enterTrackDeclare(MusicParser.TrackDeclareContext ctx) {
+
+    }
+
+    @Override
+    public void exitTrackDeclare(MusicParser.TrackDeclareContext ctx) {
+
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -888,6 +912,26 @@ public class MusicSuperListener extends MusicBaseListener {
      * <p>The default implementation does nothing.</p>
      */
     @Override public void exitTrackStatement(MusicParser.TrackStatementContext ctx) { }
+
+    @Override
+    public void enterTrackDeclaration(MusicParser.TrackDeclarationContext ctx) {
+
+    }
+
+    @Override
+    public void exitTrackDeclaration(MusicParser.TrackDeclarationContext ctx) {
+
+    }
+
+    @Override
+    public void enterIntVal(MusicParser.IntValContext ctx) {
+
+    }
+
+    @Override
+    public void exitIntVal(MusicParser.IntValContext ctx) {
+
+    }
 
     /**
      * {@inheritDoc}

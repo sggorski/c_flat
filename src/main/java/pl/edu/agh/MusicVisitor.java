@@ -82,35 +82,35 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPace(MusicParser.PaceContext ctx) throws Exception;
+	T visitPace(MusicParser.PaceContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code sustain}
 	 * labeled alternative in {@link MusicParser#settingsAssigment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSustain(MusicParser.SustainContext ctx) throws Exception;
+	T visitSustain(MusicParser.SustainContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code instrument}
 	 * labeled alternative in {@link MusicParser#settingsAssigment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitInstrument(MusicParser.InstrumentContext ctx) throws Exception;
+	T visitInstrument(MusicParser.InstrumentContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code distortion}
 	 * labeled alternative in {@link MusicParser#settingsAssigment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDistortion(MusicParser.DistortionContext ctx) throws Exception;
+	T visitDistortion(MusicParser.DistortionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code jazz}
 	 * labeled alternative in {@link MusicParser#settingsAssigment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitJazz(MusicParser.JazzContext ctx) throws Exception;
+	T visitJazz(MusicParser.JazzContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code blues}
 	 * labeled alternative in {@link MusicParser#settingsAssigment}.
@@ -124,7 +124,7 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitVolume(MusicParser.VolumeContext ctx) throws Exception;
+	T visitVolume(MusicParser.VolumeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MusicParser#settingsValues}.
 	 * @param ctx the parse tree
@@ -158,43 +158,42 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarDeclWithoutArg(MusicParser.VarDeclWithoutArgContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code playNote}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * Visit a parse tree produced by {@link MusicParser#playStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPlayNote(MusicParser.PlayNoteContext ctx) throws Exception;
+	T visitPlayStatement(MusicParser.PlayStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code playNote}
+	 * labeled alternative in {@link MusicParser#playValues}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPlayNote(MusicParser.PlayNoteContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code playChord}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPlayChord(MusicParser.PlayChordContext ctx) throws Exception;
+	T visitPlayChord(MusicParser.PlayChordContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code playFunc}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitPlayFunc(MusicParser.PlayFuncContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code playVariables}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * Visit a parse tree produced by the {@code playIDVariants}
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPlayVariables(MusicParser.PlayVariablesContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code playTrack}
-	 * labeled alternative in {@link MusicParser#playStatement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPlayTrack(MusicParser.PlayTrackContext ctx);
+	T visitPlayIDVariants(MusicParser.PlayIDVariantsContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code playMulti}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */

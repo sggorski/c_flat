@@ -256,74 +256,72 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitVarDeclWithoutArg(MusicParser.VarDeclWithoutArgContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MusicParser#playStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterPlayStatement(MusicParser.PlayStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#playStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitPlayStatement(MusicParser.PlayStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code playNote}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 */
 	void enterPlayNote(MusicParser.PlayNoteContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code playNote}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 */
 	void exitPlayNote(MusicParser.PlayNoteContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code playChord}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 */
 	void enterPlayChord(MusicParser.PlayChordContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code playChord}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 */
 	void exitPlayChord(MusicParser.PlayChordContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code playFunc}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 */
 	void enterPlayFunc(MusicParser.PlayFuncContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code playFunc}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 */
 	void exitPlayFunc(MusicParser.PlayFuncContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code playVariables}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * Enter a parse tree produced by the {@code playIDVariants}
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 */
-	void enterPlayVariables(MusicParser.PlayVariablesContext ctx);
+	void enterPlayIDVariants(MusicParser.PlayIDVariantsContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code playVariables}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * Exit a parse tree produced by the {@code playIDVariants}
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 */
-	void exitPlayVariables(MusicParser.PlayVariablesContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code playTrack}
-	 * labeled alternative in {@link MusicParser#playStatement}.
-	 * @param ctx the parse tree
-	 */
-	void enterPlayTrack(MusicParser.PlayTrackContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code playTrack}
-	 * labeled alternative in {@link MusicParser#playStatement}.
-	 * @param ctx the parse tree
-	 */
-	void exitPlayTrack(MusicParser.PlayTrackContext ctx);
+	void exitPlayIDVariants(MusicParser.PlayIDVariantsContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code playMulti}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 */
 	void enterPlayMulti(MusicParser.PlayMultiContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code playMulti}
-	 * labeled alternative in {@link MusicParser#playStatement}.
+	 * labeled alternative in {@link MusicParser#playValues}.
 	 * @param ctx the parse tree
 	 */
 	void exitPlayMulti(MusicParser.PlayMultiContext ctx);
