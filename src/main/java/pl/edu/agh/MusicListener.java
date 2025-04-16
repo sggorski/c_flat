@@ -326,6 +326,16 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitPlayMulti(MusicParser.PlayMultiContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MusicParser#multiPlayValues}.
+	 * @param ctx the parse tree
+	 */
+	void enterMultiPlayValues(MusicParser.MultiPlayValuesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#multiPlayValues}.
+	 * @param ctx the parse tree
+	 */
+	void exitMultiPlayValues(MusicParser.MultiPlayValuesContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MusicParser#pauseStatement}.
 	 * @param ctx the parse tree
 	 */

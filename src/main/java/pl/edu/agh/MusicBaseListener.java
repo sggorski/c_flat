@@ -365,6 +365,18 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterMultiPlayValues(MusicParser.MultiPlayValuesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMultiPlayValues(MusicParser.MultiPlayValuesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterPauseStatement(MusicParser.PauseStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}

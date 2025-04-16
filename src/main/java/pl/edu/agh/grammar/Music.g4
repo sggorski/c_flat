@@ -92,8 +92,11 @@ playValues
     | chord (INT_VAL | ID)                                   # playChord
     | functionCall                                           # playFunc
     | ID (INT_VAL | ID)?                                     # playIDVariants
-    | ((NOTE_VAL | chord | ID)+ (INT_VAL | ID))+             # playMulti
+    | (multiPlayValues)+                                     # playMulti
     ;
+    
+multiPlayValues:
+    (NOTE_VAL | chord | ID)+ (INT_VAL | ID);
 
 pauseStatement
     : PAUSE (INT_VAL|ID) ';';

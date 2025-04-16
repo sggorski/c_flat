@@ -393,6 +393,16 @@ public class MusicSuperListener extends MusicBaseListener {
 
     }
 
+    @Override
+    public void enterMultiPlayValues(MusicParser.MultiPlayValuesContext ctx) {
+
+    }
+
+    @Override
+    public void exitMultiPlayValues(MusicParser.MultiPlayValuesContext ctx) {
+
+    }
+
     /**
      * {@inheritDoc}
      *

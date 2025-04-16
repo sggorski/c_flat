@@ -199,6 +199,12 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPlayMulti(MusicParser.PlayMultiContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MusicParser#multiPlayValues}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMultiPlayValues(MusicParser.MultiPlayValuesContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MusicParser#pauseStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
