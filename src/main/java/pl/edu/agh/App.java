@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import pl.edu.agh.errors.ScopeError;
 import pl.edu.agh.errors.SyntaxError;
+import pl.edu.agh.errors.ValueError;
 
 import javax.xml.transform.ErrorListener;
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class App
         try{
             // stream = CharStreams.fromFileName(String.format("src/main/java/pl/edu/agh/grammar/hello_worlds/hello_world_%s.txt",args[0]));
             // stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/hello_worlds/hello_world_moonlight_sonata.txt");
-            stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/second_stage/turkish_march.txt");
+            stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/second_stage/ChatRushE.txt");
         }
         catch(Exception e){
             System.out.println("No such melody!");
@@ -50,17 +51,13 @@ public class App
             visitor.visitProgram(program);
 
         }catch (ParseCancellationException e){
-            System.out.println(e.getMessage() + "ParseCancel");
+            System.out.println(e.getMessage() + " ParseCancel");
         }
         catch (RecognitionException e){
-            //System.out.println(parser.error);
-            System.out.println(e.getMessage() + "Recognition");
+            System.out.println(e.getMessage() + " Recognition");
         }
-        catch (ScopeError e){
-            System.out.println(e.getMessage());
-        }
-        catch (SyntaxError e){
-            System.out.println(e.getMessage());
+        catch (SyntaxError | ValueError | ScopeError e){
+            System.out.println(e.getMessage() + " Errors");
         }
 
 
