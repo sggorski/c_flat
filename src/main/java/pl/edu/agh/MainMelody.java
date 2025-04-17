@@ -29,8 +29,11 @@ public class MainMelody {
 
 
     public MainMelody(){
-        //variable registration
-        this.memory.put("zmienna",new VarInfo("zmienna", Type.INT, 2,new IntValue(100)));
+        //variable registration, just for debugging
+        this.memory.put("zmienna1",new VarInfo("zmienna1", Type.NOTE, 2,new NoteValue(null)));
+        this.memory.put("zmienna2",new VarInfo("zmienna2", Type.CHORD, 2,new ChordValue(null)));
+        this.memory.put("zmienna3",new VarInfo("zmienna3", Type.INT, 2,new IntValue(0)));
+        this.memory.put("zmienna4",new VarInfo("zmienna4", Type.BOOL, 2,new BoolValue(false)));
         this.notes.put(Note.Cbm2, 0);
         this.notes.put(Note.Cm2, 0);
         this.notes.put(Note.Csm2, 1);

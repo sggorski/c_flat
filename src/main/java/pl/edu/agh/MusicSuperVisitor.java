@@ -1,6 +1,7 @@
 // Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
 
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -330,6 +331,18 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitAssignment(MusicParser.AssignmentContext ctx) {
+        VarInfo varInfo =null;
+        if(ctx.ID() != null)  varInfo = main.memory.get(ctx.ID().getText());
+        if(varInfo==null) throw new ScopeError("Variable not definied: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
+        Value exprValue = (Value) visit(ctx.expr());
+        if(exprValue.getType()!=varInfo.type){
+            throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + varInfo.type + "not: " + exprValue.getType(), getLine(ctx), getCol(ctx));
+        }
+        varInfo.valueObj = exprValue;
+
+        //To check if everything is okey, will be deleted in a future
+        System.out.println(main.memory.get(varInfo.name).toString());
+
         return visitChildren(ctx);
     }
 
@@ -514,6 +527,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 throw new RuntimeException(e);
             }
         }
+
         return visitChildren(ctx);
     }
 
@@ -639,7 +653,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitNoteExpr(MusicParser.NoteExprContext ctx) {
-        return visitChildren(ctx);
+        return (T) parseNote(ctx.NOTE_VAL().getText());
     }
 
     /**
@@ -675,6 +689,18 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitAddSubOperatorExpr(MusicParser.AddSubOperatorExprContext ctx) {
+        Value firstValue = (Value) visit(ctx.expr(0));
+        Value secondValue = (Value) visit(ctx.expr(1));
+        if(firstValue.getType()==Type.INT && secondValue.getType()==Type.INT ) {
+            int firstInt = ((IntValue)firstValue).value;
+            int secondInt = ((IntValue)secondValue).value;
+            int resultInt = 0;
+            if(ctx.addSubOp().SUB() != null) resultInt = firstInt - secondInt;
+            else resultInt = firstInt + secondInt;
+            Value result = new IntValue(resultInt);
+            return (T) result;
+        }
+        // not yet finished, adding integer to a note expected in a near future
         return visitChildren(ctx);
     }
 
@@ -704,7 +730,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitBoolExpr(MusicParser.BoolExprContext ctx) {
-        return visitChildren(ctx);
+        if(ctx.BOOL_VAL()!=null){
+            BoolValue result = new BoolValue(ctx.BOOL_VAL().getText().equals("true"));
+            return (T) result;
+        }
+        throw new SyntaxError("Bool value not found", getLine(ctx), getCol(ctx));
     }
 
     /**
@@ -791,7 +821,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitIntExpr(MusicParser.IntExprContext ctx) {
-        return visitChildren(ctx);
+        return visit(ctx.intVal());
     }
 
     /**
@@ -881,7 +911,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitIntVal(MusicParser.IntValContext ctx) {
-        return (T) ctx;
+        IntValue valueInt = new IntValue(Integer.parseInt(ctx.INT_VAL().getText()));
+        if(ctx.SUB() != null) valueInt.value *= -1;
+        return (T) valueInt;
     }
 
     /**

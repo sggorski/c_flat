@@ -12,4 +12,14 @@ public class VarInfo {
         this.type = type;
         this.valueObj = val;
     }
+
+    @Override
+    public String toString() {
+        return "VarInfo{" +
+                "line=" + line +
+                ", name='" + name + '\'' +
+                ", valueObj=" + valueObj +
+                ", type=" + type +
+                '}';
+    }
 }
