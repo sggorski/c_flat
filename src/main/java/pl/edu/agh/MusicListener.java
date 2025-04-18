@@ -202,6 +202,114 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitVolume(MusicParser.VolumeContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code vibrato}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void enterVibrato(MusicParser.VibratoContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code vibrato}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void exitVibrato(MusicParser.VibratoContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code balance}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void enterBalance(MusicParser.BalanceContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code balance}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void exitBalance(MusicParser.BalanceContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code sostenutoPedal}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void enterSostenutoPedal(MusicParser.SostenutoPedalContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code sostenutoPedal}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void exitSostenutoPedal(MusicParser.SostenutoPedalContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code softPedal}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void enterSoftPedal(MusicParser.SoftPedalContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code softPedal}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void exitSoftPedal(MusicParser.SoftPedalContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code resonance}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void enterResonance(MusicParser.ResonanceContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code resonance}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void exitResonance(MusicParser.ResonanceContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code reverb}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void enterReverb(MusicParser.ReverbContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code reverb}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void exitReverb(MusicParser.ReverbContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code tremolo}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void enterTremolo(MusicParser.TremoloContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code tremolo}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void exitTremolo(MusicParser.TremoloContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code chorus}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void enterChorus(MusicParser.ChorusContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code chorus}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void exitChorus(MusicParser.ChorusContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code phraser}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void enterPhraser(MusicParser.PhraserContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code phraser}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 */
+	void exitPhraser(MusicParser.PhraserContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MusicParser#settingsValues}.
 	 * @param ctx the parse tree
 	 */
@@ -557,6 +665,18 @@ public interface MusicListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitOrderOperatorExpr(MusicParser.OrderOperatorExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code instrumentOperatorExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterInstrumentOperatorExpr(MusicParser.InstrumentOperatorExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code instrumentOperatorExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitInstrumentOperatorExpr(MusicParser.InstrumentOperatorExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code addSubOperatorExpr}
 	 * labeled alternative in {@link MusicParser#expr}.

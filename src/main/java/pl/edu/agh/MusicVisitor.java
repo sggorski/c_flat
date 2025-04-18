@@ -126,6 +126,69 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVolume(MusicParser.VolumeContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code vibrato}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVibrato(MusicParser.VibratoContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code balance}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBalance(MusicParser.BalanceContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code sostenutoPedal}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSostenutoPedal(MusicParser.SostenutoPedalContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code softPedal}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSoftPedal(MusicParser.SoftPedalContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code resonance}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitResonance(MusicParser.ResonanceContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code reverb}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReverb(MusicParser.ReverbContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code tremolo}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTremolo(MusicParser.TremoloContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code chorus}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitChorus(MusicParser.ChorusContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code phraser}
+	 * labeled alternative in {@link MusicParser#settingsAssigment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPhraser(MusicParser.PhraserContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MusicParser#settingsValues}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -335,6 +398,13 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitOrderOperatorExpr(MusicParser.OrderOperatorExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code instrumentOperatorExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInstrumentOperatorExpr(MusicParser.InstrumentOperatorExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code addSubOperatorExpr}
 	 * labeled alternative in {@link MusicParser#expr}.

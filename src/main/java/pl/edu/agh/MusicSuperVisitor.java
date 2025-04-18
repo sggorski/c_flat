@@ -1,7 +1,7 @@
-// Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
 
 
+import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -383,6 +383,51 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
+    @Override
+    public T visitVibrato(MusicParser.VibratoContext ctx) {
+        return null;
+    }
+
+    @Override
+    public T visitBalance(MusicParser.BalanceContext ctx) {
+        return null;
+    }
+
+    @Override
+    public T visitSostenutoPedal(MusicParser.SostenutoPedalContext ctx) {
+        return null;
+    }
+
+    @Override
+    public T visitSoftPedal(MusicParser.SoftPedalContext ctx) {
+        return null;
+    }
+
+    @Override
+    public T visitResonance(MusicParser.ResonanceContext ctx) {
+        return null;
+    }
+
+    @Override
+    public T visitReverb(MusicParser.ReverbContext ctx) {
+        return null;
+    }
+
+    @Override
+    public T visitTremolo(MusicParser.TremoloContext ctx) {
+        return null;
+    }
+
+    @Override
+    public T visitChorus(MusicParser.ChorusContext ctx) {
+        return null;
+    }
+
+    @Override
+    public T visitPhraser(MusicParser.PhraserContext ctx) {
+        return null;
+    }
+
     /**
      * @param ctx the parse tree
      * @return
@@ -753,6 +798,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitOrderOperatorExpr(MusicParser.OrderOperatorExprContext ctx) {
         return visitChildren(ctx);
+    }
+
+    @Override
+    public T visitInstrumentOperatorExpr(MusicParser.InstrumentOperatorExprContext ctx) {
+        return null;
     }
 
     /**

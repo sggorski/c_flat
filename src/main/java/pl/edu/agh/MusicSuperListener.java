@@ -240,6 +240,96 @@ public class MusicSuperListener extends MusicBaseListener {
      */
     @Override public void exitVolume(MusicParser.VolumeContext ctx) { }
 
+    @Override
+    public void enterVibrato(MusicParser.VibratoContext ctx) {
+
+    }
+
+    @Override
+    public void exitVibrato(MusicParser.VibratoContext ctx) {
+
+    }
+
+    @Override
+    public void enterBalance(MusicParser.BalanceContext ctx) {
+
+    }
+
+    @Override
+    public void exitBalance(MusicParser.BalanceContext ctx) {
+
+    }
+
+    @Override
+    public void enterSostenutoPedal(MusicParser.SostenutoPedalContext ctx) {
+
+    }
+
+    @Override
+    public void exitSostenutoPedal(MusicParser.SostenutoPedalContext ctx) {
+
+    }
+
+    @Override
+    public void enterSoftPedal(MusicParser.SoftPedalContext ctx) {
+
+    }
+
+    @Override
+    public void exitSoftPedal(MusicParser.SoftPedalContext ctx) {
+
+    }
+
+    @Override
+    public void enterResonance(MusicParser.ResonanceContext ctx) {
+
+    }
+
+    @Override
+    public void exitResonance(MusicParser.ResonanceContext ctx) {
+
+    }
+
+    @Override
+    public void enterReverb(MusicParser.ReverbContext ctx) {
+
+    }
+
+    @Override
+    public void exitReverb(MusicParser.ReverbContext ctx) {
+
+    }
+
+    @Override
+    public void enterTremolo(MusicParser.TremoloContext ctx) {
+
+    }
+
+    @Override
+    public void exitTremolo(MusicParser.TremoloContext ctx) {
+
+    }
+
+    @Override
+    public void enterChorus(MusicParser.ChorusContext ctx) {
+
+    }
+
+    @Override
+    public void exitChorus(MusicParser.ChorusContext ctx) {
+
+    }
+
+    @Override
+    public void enterPhraser(MusicParser.PhraserContext ctx) {
+
+    }
+
+    @Override
+    public void exitPhraser(MusicParser.PhraserContext ctx) {
+
+    }
+
     /**
      * @param ctx the parse tree
      */
@@ -624,6 +714,16 @@ public class MusicSuperListener extends MusicBaseListener {
      */
     @Override
     public void exitOrderOperatorExpr(MusicParser.OrderOperatorExprContext ctx) {
+
+    }
+
+    @Override
+    public void enterInstrumentOperatorExpr(MusicParser.InstrumentOperatorExprContext ctx) {
+
+    }
+
+    @Override
+    public void exitInstrumentOperatorExpr(MusicParser.InstrumentOperatorExprContext ctx) {
 
     }
 
