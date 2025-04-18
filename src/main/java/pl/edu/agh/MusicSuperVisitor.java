@@ -1,18 +1,10 @@
 package pl.edu.agh;
-
-
-import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.errors.*;
 import pl.edu.agh.utils.*;
 import pl.edu.agh.utils.Instrument;
-
-import javax.sound.midi.*;
-import javax.swing.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +14,6 @@ import static pl.edu.agh.utils.Instrument.*;
 
 @SuppressWarnings("CheckReturnValue")
 public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVisitor<T> {
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     MainMelody main;
     MusicParser.MainDeclContext mainCtx = null;
     MusicParser.FunctionDeclContext funcCtx = null;
@@ -37,73 +23,42 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         try {
             main = new MainMelody();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
     @Override
     public T visitImports(MusicParser.ImportsContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitFunctionDecl(MusicParser.FunctionDeclContext ctx) {
         funcCtx = ctx;
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitMainDecl(MusicParser.MainDeclContext ctx) {
         mainCtx = ctx;
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override
     public T visitParameters(MusicParser.ParametersContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitParameter(MusicParser.ParameterContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitType(MusicParser.TypeContext ctx) {
         return visitChildren(ctx);
@@ -114,100 +69,56 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitStatement(MusicParser.StatementContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
     @Override
     public T visitLoopStatement(MusicParser.LoopStatementContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override
     public T visitSettings(MusicParser.SettingsContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override
     public T visitPace(MusicParser.PaceContext ctx) {
         if (mainCtx != null) {
             if (ctx.INT_VAL() != null) main.pace = Integer.parseInt(ctx.INT_VAL().getText());
             else if (ctx.ID() != null) {
-                VarInfo var = main.memory.get(ctx.ID().getText());
-                if (var == null)
-                    throw new ScopeError("Variable not defined: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
-                if (var.type != Type.INT)
-                    throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
-                IntValue varInt = (IntValue) var.valueObj;
+                IntValue varInt = (IntValue) extractVariable(ctx,ctx.ID(),Type.INT).valueObj;
                 main.pace = varInt.value;
             }
         }
-
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitSustain(MusicParser.SustainContext ctx) {
         if (mainCtx != null) {
             if (ctx.INT_VAL() != null) main.sustain = Integer.parseInt(ctx.INT_VAL().getText());
             else if (ctx.ID() != null) {
-                VarInfo var = main.memory.get(ctx.ID().getText());
-                if (var == null)
-                    throw new ScopeError("Variable not defined: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
-                if (var.type != Type.INT)
-                    throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
-                IntValue varInt = (IntValue) var.valueObj;
+                IntValue varInt = (IntValue) extractVariable(ctx, ctx.ID(),Type.INT).valueObj;
                 main.sustain = varInt.value;
             }
             if (main.instrument == DRUMS) main.channels[9].controlChange(64, main.sustain);
             else main.channels[0].controlChange(64, main.sustain);
         }
-
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitInstrument(MusicParser.InstrumentContext ctx) {
         if (main != null) {
             // If not Instrument_Value then it is recognised as ID, if not then it should be a lexer error
             if (ctx.INSTRUMENT_VALUE() == null)
                 throw new ValueError(ctx.ID() + " is not valid INSTRUMENT", getLine(ctx), getCol(ctx));
-            ;
             String instrumentName = ctx.INSTRUMENT_VALUE().getText();
             Instrument instrument = valueOf(instrumentName);
             main.instrument = instrument;
@@ -294,12 +205,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitDistortion(MusicParser.DistortionContext ctx) {
         if (mainCtx != null) {
@@ -308,72 +214,40 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 if (main.instrument == DRUMS) main.channels[9].controlChange(93, main.distortion);
                 else main.channels[0].controlChange(93, main.distortion);
             } else if (ctx.ID() != null) {
-                VarInfo var = main.memory.get(ctx.ID().getText());
-                if (var == null)
-                    throw new ScopeError("Variable not definied: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
-                if (var.type != Type.INT)
-                    throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
-                IntValue varInt = (IntValue) var.valueObj;
+                IntValue varInt = (IntValue) extractVariable(ctx,ctx.ID(),Type.INT).valueObj;
                 if (main.instrument == DRUMS) main.channels[9].controlChange(93, varInt.value);
                 else main.channels[0].controlChange(93, varInt.value);
             }
         }
-
         return visitChildren(ctx);
 
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitJazz(MusicParser.JazzContext ctx) {
         if (mainCtx != null) {
             if (ctx.BOOL_VAL() != null) main.jazz = ctx.BOOL_VAL().getText().equals("true");
             else if (ctx.ID() != null) {
-                VarInfo var = main.memory.get(ctx.ID().getText());
-                if (var == null)
-                    throw new ScopeError("Variable not definied: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
-                if (var.type != Type.BOOL)
-                    throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
-                BoolValue varBool = (BoolValue) var.valueObj;
+                BoolValue varBool = (BoolValue) extractVariable(ctx,ctx.ID(),Type.BOOL).valueObj;
                 main.jazz = varBool.value;
             }
         }
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override
     public T visitBlues(MusicParser.BluesContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitVolume(MusicParser.VolumeContext ctx) {
         if (mainCtx != null) {
             if (ctx.INT_VAL() != null) main.volume = Integer.parseInt(ctx.INT_VAL().getText());
             else if (ctx.ID() != null) {
-                VarInfo var = main.memory.get(ctx.ID().getText());
-                if (var == null)
-                    throw new ScopeError("Variable not definied: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
-                if (var.type != Type.INT)
-                    throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
-                IntValue varInt = (IntValue) var.valueObj;
+                IntValue varInt = (IntValue) extractVariable(ctx, ctx.ID(),Type.INT).valueObj;
                 main.volume = varInt.value;
             }
         }
@@ -425,10 +299,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return null;
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     @SuppressWarnings("unchecked")
     public T visitSettingsValues(MusicParser.SettingsValuesContext ctx) {
@@ -456,34 +327,22 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         //To check if everything is okey, will be deleted in a future
         System.out.println(main.memory.get(varInfo.name).toString());
-
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitSelfAssignment(MusicParser.SelfAssignmentContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitVarDeclWithoutArg(MusicParser.VarDeclWithoutArgContext ctx) {
         return visitChildren(ctx);
@@ -494,26 +353,14 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
 
     @Override
     public T visitPlayNote(MusicParser.PlayNoteContext ctx) {
-
-
-        int duration = 0;
+        int duration;
         if (ctx.INT_VAL() != null) duration = Integer.parseInt(ctx.INT_VAL().getText());
-        else if (ctx.ID() != null) {
-            VarInfo var = main.memory.get(ctx.ID().getText());
-            if (var == null)
-                throw new ScopeError("Variable not definied: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
-            if (var.type != Type.INT)
-                throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
-            IntValue varInt = (IntValue) var.valueObj;
+        else {
+            IntValue varInt = (IntValue) extractVariable(ctx,ctx.ID(),Type.INT).valueObj;
             duration = varInt.value;
         }
         Note note = Note.valueOf(ctx.NOTE_VAL().getText().replace('#', 's').replace('-', 'm'));
@@ -521,50 +368,28 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitPlayChord(MusicParser.PlayChordContext ctx) {
         ChordValue chord = (ChordValue) visit(ctx.chord());
         int duration = 0;
         if (ctx.INT_VAL() != null) duration = Integer.parseInt(ctx.INT_VAL().getText());
         else if (ctx.ID() != null) {
-            VarInfo var = main.memory.get(ctx.ID().getText());
-            if (var == null)
-                throw new ScopeError("Variable not definied: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
-            if (var.type != Type.INT)
-                throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
-            IntValue varInt = (IntValue) var.valueObj;
+            IntValue varInt = (IntValue) extractVariable(ctx,ctx.ID(),Type.INT).valueObj;
             duration = varInt.value;
-
         }
         playChord(chord.notes, duration);
-
         return visitChildren(ctx);
 
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override
     public T visitPlayFunc(MusicParser.PlayFuncContext ctx) {
         return visitChildren(ctx);
     }
 
 
-    /**
-     * Function for handling playing an id which requires setting up length for it
-     * or playing a track which does not require that
-     * Just check whether it has any id/int_val that is after the first appearance of the id
-     */
+
     @Override
     public T visitPlayIDVariants(MusicParser.PlayIDVariantsContext ctx) {
         //playing note
@@ -576,12 +401,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             int duration = 0;
             if (ctx.INT_VAL() != null) duration = Integer.parseInt(ctx.INT_VAL().getText());
             else if (ctx.ID(1) != null) {
-                VarInfo var = main.memory.get(ctx.ID(0).getText());
-                if (var == null)
-                    throw new ScopeError("Variable not definied: " + ctx.ID(1).getText(), getLine(ctx), getCol(ctx));
-                if (var.type != Type.INT)
-                    throw new ValueError("Incorrect type of variable: " + ctx.ID(1).getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
-                IntValue varInt = (IntValue) var.valueObj;
+                IntValue varInt = (IntValue) extractVariable(ctx,ctx.ID(1),Type.INT).valueObj;
                 duration = varInt.value;
             }
             playNote(noteVal.note, duration);
@@ -590,12 +410,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
 
     @Override
     public T visitPlayMulti(MusicParser.PlayMultiContext ctx) {
@@ -633,17 +447,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitPauseStatement(MusicParser.PauseStatementContext ctx) {
         if (mainCtx != null) {
             try {
-
                 int sleep = 0;
                 if (ctx.INT_VAL() != null) sleep = Integer.parseInt(ctx.INT_VAL().getText());
                 else if (ctx.ID() != null) {
@@ -660,140 +468,81 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 throw new RuntimeException(e);
             }
         }
-
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitWhileLoop(MusicParser.WhileLoopContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitIf(MusicParser.IfContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitForLoop(MusicParser.ForLoopContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
 
     @Override
     public T visitForInit(MusicParser.ForInitContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitForUpdate(MusicParser.ForUpdateContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitForAssignment(MusicParser.ForAssignmentContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitBreakStatement(MusicParser.BreakStatementContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitContinueStatement(MusicParser.ContinueStatementContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override
     public T visitFunctionCall(MusicParser.FunctionCallContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override
     public T visitArguments(MusicParser.ArgumentsContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitSettingsList(MusicParser.SettingsListContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override
+    @SuppressWarnings("unchecked")
     public T visitNoteExpr(MusicParser.NoteExprContext ctx) {
         return (T) parseNote(ctx.NOTE_VAL().getText());
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
     @Override
+    @SuppressWarnings("unchecked")
     public T visitOrOperatorExpr(MusicParser.OrOperatorExprContext ctx) {
         Value firstValue = (Value) visit(ctx.expr(0));
         Value secondValue = (Value) visit(ctx.expr(1));
@@ -811,11 +560,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             throw new ValueError("Incorrect type of expression: "   +firstValue.getType() + " not BOOL", getLine(ctx), getCol(ctx));
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
+    @SuppressWarnings("unchecked")
     public T visitNotExpr(MusicParser.NotExprContext ctx) {
         Value expr = (Value)visit(ctx.expr());
         if(expr == null)
@@ -828,10 +575,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         else throw new  ValueError("Incorrect type of expression: "   +expr.getType() + " not BOOL", getLine(ctx), getCol(ctx));
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitOrderOperatorExpr(MusicParser.OrderOperatorExprContext ctx) {
         return visitChildren(ctx);
@@ -842,25 +586,23 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return null;
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
     @Override
+    @SuppressWarnings("unchecked")
     public T visitAddSubOperatorExpr(MusicParser.AddSubOperatorExprContext ctx) {
         Value firstValue = (Value) visit(ctx.expr(0));
         Value secondValue = (Value) visit(ctx.expr(1));
         if(firstValue == null || secondValue == null){
             //That means it's INSTRUMENT in expr which is prohibited
-            //TODO
-            throw new ArithmeticException("Cannot interpret instrument value in add/sub operation");
+            throw new ArithmeticException("Cannot interpret instrument value in add/sub operation"); //TODO
         }
         if(firstValue.getType()==Type.INT && secondValue.getType()==Type.INT ) {
             int firstInt = ((IntValue)firstValue).value;
             int secondInt = ((IntValue)secondValue).value;
-            int resultInt = 0;
-            if(ctx.addSubOp().SUB() != null) resultInt = firstInt - secondInt;
-            else resultInt = firstInt + secondInt;
+            int resultInt;
+            if(ctx.addSubOp().SUB() != null)
+                resultInt = firstInt - secondInt;
+            else
+                resultInt = firstInt + secondInt;
             Value result = new IntValue(resultInt);
             return (T) result;
         }
@@ -868,26 +610,21 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             Note note = ((NoteValue)firstValue).note;
             int intVal = ((IntValue)secondValue).value;
             int noteIntVal = main.notes.get(note);
+
             if(ctx.addSubOp().SUB() != null) noteIntVal -= intVal;
             else noteIntVal +=  intVal;
-            if(noteIntVal<0 || noteIntVal >84) throw new ArithmeticException("Note's limit exceeded"); //TODO
-            int finalNoteIntVal = noteIntVal;
-            Note newNote = main.notes.entrySet().stream()
-                    .filter(pair -> pair.getValue().equals(finalNoteIntVal))
-                    .findFirst()
-                    .map(Map.Entry::getKey).orElse(null);
-            if(newNote == null) throw new RuntimeException(); //TODO
-            Value result = new NoteValue(newNote);
+
+            if(noteIntVal<0 || noteIntVal >84)
+                throw new ArithmeticException("Note's limit exceeded"); //TODO
+
+            Value result = new NoteValue(findNote(noteIntVal));
             return (T) result;
         }
         else throw new ArithmeticException("Invalid arguments for add/subtract operation"); //TODO: create new exception
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
     @Override
+    @SuppressWarnings("unchecked")
     public T visitAndOperatorExpr(MusicParser.AndOperatorExprContext ctx) {
         Value firstValue = (Value) visit(ctx.expr(0));
         Value secondValue = (Value) visit(ctx.expr(1));
@@ -905,23 +642,20 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             throw new ValueError("Incorrect type of expression: "   +firstValue.getType() + " not BOOL", getLine(ctx), getCol(ctx));
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
+    @SuppressWarnings("unchecked")
     public T visitMullDivOperatorExpr(MusicParser.MullDivOperatorExprContext ctx) {
         Value firstValue = (Value) visit(ctx.expr(0));
         Value secondValue = (Value) visit(ctx.expr(1));
         if(firstValue == null || secondValue == null){
             //That means it's INSTRUMENT in expr which is prohibited
-            //TODO
-            throw new ArithmeticException("Cannot interpret instrument value in add/sub operation");
+            throw new ArithmeticException("Cannot interpret instrument value in add/sub operation"); //TODO
         }
         if(firstValue.getType()==Type.INT && secondValue.getType()==Type.INT ) {
             int firstInt = ((IntValue)firstValue).value;
             int secondInt = ((IntValue)secondValue).value;
-            int resultInt = 0;
+            int resultInt;
 
             if(ctx.mullDivOp().MUL() != null) resultInt = firstInt * secondInt;
             else if(secondInt !=0) resultInt = firstInt / secondInt;
@@ -933,31 +667,24 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             Note note = ((NoteValue)firstValue).note;
             int intVal = ((IntValue)secondValue).value;
             int noteIntVal = main.notes.get(note);
-            if(noteIntVal<1) throw new ArithmeticException("Invalid operation"); //TODO
 
-            if(ctx.mullDivOp().MUL() != null) noteIntVal += (intVal-1)*12;
-            else noteIntVal -=  (intVal-1)*12;
+            if(noteIntVal<1)
+                throw new ArithmeticException("Invalid operation"); //TODO
+            if(ctx.mullDivOp().MUL() != null)
+                noteIntVal += (intVal-1)*12;
+            else
+                noteIntVal -=  (intVal-1)*12;
+
             noteIntVal = Math.abs(noteIntVal)%85;
-
-            int finalNoteIntVal = noteIntVal;
-            Note newNote = main.notes.entrySet().stream()
-                    .filter(pair -> pair.getValue().equals(finalNoteIntVal))
-                    .findFirst()
-                    .map(Map.Entry::getKey).orElse(null);
-            if(newNote == null) throw new RuntimeException(); //TODO
-            Value result = new NoteValue(newNote);
+            Value result = new NoteValue(findNote(noteIntVal));
             return (T) result;
         }
         else throw new ArithmeticException("Invalid arguments for mull/div operation"); //TODO: create new exception
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
+    @SuppressWarnings("unchecked")
     public T visitBoolExpr(MusicParser.BoolExprContext ctx) {
         if(ctx.BOOL_VAL()!=null){
             BoolValue result = new BoolValue(ctx.BOOL_VAL().getText().equals("true"));
@@ -966,130 +693,78 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         throw new SyntaxError("Bool value not found", getLine(ctx), getCol(ctx));
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
     public T visitParanthesesExpr(MusicParser.ParanthesesExprContext ctx) {
         return visit(ctx.expr());
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
+
     @Override
+    @SuppressWarnings("unchecked")
     public T visitIdExpr(MusicParser.IdExprContext ctx) {
         VarInfo varInfo = main.memory.get(ctx.ID().getText());
         if(varInfo == null) throw new RuntimeException("No such variable defined"); //TODO
         return (T)varInfo.valueObj;
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitOrderOp(MusicParser.OrderOpContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitEqOp(MusicParser.EqOpContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitAndOp(MusicParser.AndOpContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitOrOp(MusicParser.OrOpContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitAddSubOp(MusicParser.AddSubOpContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitMullDivOp(MusicParser.MullDivOpContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override
     public T visitIntExpr(MusicParser.IntExprContext ctx) {
         return visit(ctx.intVal());
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitEqOperatorExpr(MusicParser.EqOperatorExprContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * @param ctx the parse tree
-     * @return
-     */
+
     @Override
     public T visitSettingsExpr(MusicParser.SettingsExprContext ctx) {
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override
     public T visitChordExpr(MusicParser.ChordExprContext ctx) {
         return visitChildren(ctx);
     }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
 
 
     @Override
@@ -1097,13 +772,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override
+    @SuppressWarnings("unchecked")
     public T visitChord(MusicParser.ChordContext ctx) {
         List<NoteValue> notes = new ArrayList<>();
         for (TerminalNode node : ctx.NOTE_VAL()) {
@@ -1124,12 +794,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation returns the result of calling
-     * {@link #visitChildren} on {@code ctx}.</p>
-     */
     @Override
     public T visitTrackStatement(MusicParser.TrackStatementContext ctx) {
         return visitChildren(ctx);
@@ -1141,17 +805,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T visitIntVal(MusicParser.IntValContext ctx) {
         IntValue valueInt = new IntValue(Integer.parseInt(ctx.INT_VAL().getText()));
         if(ctx.SUB() != null) valueInt.value *= -1;
         return (T) valueInt;
     }
 
-    /**
-     * This function is invoked when visiting Terminal Nodes
-     * for now it only tries to parse it as Note
-     */
     @Override
+    @SuppressWarnings("unchecked")
     public T visitTerminal(TerminalNode node) {
         if (parseNote(node.getText()) != null) {
             return (T) parseNote(node.getText());
@@ -1205,5 +867,21 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             throw new RuntimeException(e);
         }
     }
+    private VarInfo extractVariable(ParserRuleContext ctx, TerminalNode id, Type type) {
+        VarInfo var = main.memory.get(id.getText());
+        if (var == null)
+            throw new ScopeError("Variable not defined: " + id.getText(), getLine(ctx), getCol(ctx));
+        if (var.type != type)
+            throw new ValueError("Incorrect type of variable: " + id.getText() + "Type " + var.type + " not " + type, getLine(ctx), getCol(ctx));
+        return var;
+    }
 
+    private Note findNote(int value){
+        Note newNote = main.notes.entrySet().stream()
+                .filter(pair -> pair.getValue().equals(value))
+                .findFirst()
+                .map(Map.Entry::getKey).orElse(null);
+        if(newNote == null) throw new RuntimeException(); //TODO
+        return newNote;
+    }
 }
