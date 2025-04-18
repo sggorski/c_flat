@@ -218,11 +218,74 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 case PIANO:
                     main.channels[0].programChange(0);
                     break;
-                case HARP:
-                    main.channels[0].programChange(46);
+                case HARPSICHORD:
+                    main.channels[0].programChange(6);
+                    break;
+                case XYLOPHONE:
+                    main.channels[0].programChange(13);
+                    break;
+                case ORGAN:
+                    main.channels[0].programChange(16);
+                    break;
+                case CHURCH_ORGAN:
+                    main.channels[0].programChange(19);
+                    break;
+                case ACCORDION:
+                    main.channels[0].programChange(21);
+                    break;
+                case HARMONICA:
+                    main.channels[0].programChange(22);
+                    break;
+                case GUITAR:
+                    main.channels[0].programChange(25);
+                    break;
+                case ELECTRIC_GUITAR:
+                    main.channels[0].programChange(27);
+                    break;
+                case BASS:
+                    main.channels[0].programChange(33);
                     break;
                 case VIOLIN:
                     main.channels[0].programChange(40);
+                    break;
+                case VIOLA:
+                    main.channels[0].programChange(41);
+                    break;
+                case CELLO:
+                    main.channels[0].programChange(42);
+                    break;
+                case CONTRABASS:
+                    main.channels[0].programChange(43);
+                    break;
+                case HARP:
+                    main.channels[0].programChange(46);
+                    break;
+                case TRUMPET:
+                    main.channels[0].programChange(56);
+                    break;
+                case TROMBONE:
+                    main.channels[0].programChange(57);
+                    break;
+                case TUBA:
+                    main.channels[0].programChange(58);
+                    break;
+                case SAXOPHONE:
+                    main.channels[0].programChange(65);
+                    break;
+                case OBOE:
+                    main.channels[0].programChange(68);
+                    break;
+                case ENGLISH_HORN:
+                    main.channels[0].programChange(69);
+                    break;
+                case BASSOON:
+                    main.channels[0].programChange(70);
+                    break;
+                case CLARINET:
+                    main.channels[0].programChange(71);
+                    break;
+                case FLUTE:
+                    main.channels[0].programChange(73);
                     break;
                 case DRUMS:
                     main.channels[9].programChange(35);
