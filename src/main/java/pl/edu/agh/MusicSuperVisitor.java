@@ -35,10 +35,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitProgram(MusicParser.ProgramContext ctx) throws RuntimeException {
         try {
             main = new MainMelody();
-            main.synth = MidiSystem.getSynthesizer();
-            main.synth.open();
-            main.channels = main.synth.getChannels();
-            main.channels[0].programChange(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -570,6 +566,25 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitPlayIDVariants(MusicParser.PlayIDVariantsContext ctx) {
+        //playing note
+        if(ctx.INT_VAL() !=null || ctx.ID(1)!=null){
+            VarInfo noteInfo = main.memory.get(ctx.ID(0).getText());
+            if (noteInfo == null)
+                throw new ScopeError("Variable not definied: " + ctx.ID(0).getText(), getLine(ctx), getCol(ctx));
+            NoteValue noteVal = (NoteValue) noteInfo.valueObj;
+            int duration = 0;
+            if (ctx.INT_VAL() != null) duration = Integer.parseInt(ctx.INT_VAL().getText());
+            else if (ctx.ID(1) != null) {
+                VarInfo var = main.memory.get(ctx.ID(0).getText());
+                if (var == null)
+                    throw new ScopeError("Variable not definied: " + ctx.ID(1).getText(), getLine(ctx), getCol(ctx));
+                if (var.type != Type.INT)
+                    throw new ValueError("Incorrect type of variable: " + ctx.ID(1).getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
+                IntValue varInt = (IntValue) var.valueObj;
+                duration = varInt.value;
+            }
+            playNote(noteVal.note, duration);
+        }
         return visitChildren(ctx);
     }
 
@@ -935,7 +950,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitIdExpr(MusicParser.IdExprContext ctx) {
-        return visitChildren(ctx);
+        VarInfo varInfo = main.memory.get(ctx.ID().getText());
+        if(varInfo == null) throw new RuntimeException("No such variable defined"); //TODO
+        return (T)varInfo.valueObj;
     }
 
     /**

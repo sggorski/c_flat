@@ -3,6 +3,8 @@ package pl.edu.agh;
 import pl.edu.agh.utils.*;
 
 import javax.sound.midi.MidiChannel;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Synthesizer;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +30,12 @@ public class MainMelody {
     MidiChannel[] channels;
 
 
-    public MainMelody(){
+    public MainMelody() throws MidiUnavailableException {
+        //start up
+        this.synth = MidiSystem.getSynthesizer();
+        this.synth.open();
+        this.channels = this.synth.getChannels();
+        this.channels[0].programChange(0);
         //variable registration, just for debugging
         this.memory.put("zmienna1",new VarInfo("zmienna1", Type.NOTE, 2,new NoteValue(null)));
         this.memory.put("zmienna2",new VarInfo("zmienna2", Type.CHORD, 2,new ChordValue(null)));
