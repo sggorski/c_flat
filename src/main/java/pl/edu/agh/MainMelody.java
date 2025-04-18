@@ -1,7 +1,6 @@
 package pl.edu.agh;
 
 import pl.edu.agh.utils.*;
-
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -13,16 +12,15 @@ import java.util.Random;
 public class MainMelody {
     public int sustain = 0;
     public int volume = 100;
-    public int pace = 600; //default
     public int distortion = 0;
+    public int pace = 600;
     public boolean jazz = false;
     public boolean blues = false;
-    public Key key;
     public Instrument instrument;
 
-    // hashmapy dla nut i kluczy
     public HashMap<Note,Integer> notes = new HashMap<>();
-    public HashMap<Key,Integer> keys = new HashMap<>();
+    public HashMap<Effect, Value> effects = new HashMap<>();
+    public HashMap<Effect, Integer> effectControllers = new HashMap<>();
     public HashMap<String, VarInfo> memory = new HashMap<>();
 
 
@@ -216,32 +214,33 @@ public class MainMelody {
         this.notes.put(Note.H4, 83);
         this.notes.put(Note.Hs4, 84);
 
+        this.effects.put(Effect.PACE, new IntValue(600));
+        this.effects.put(Effect.VOLUME, new IntValue(100));
+        this.effects.put(Effect.JAZZ, new BoolValue(false));
+        this.effects.put(Effect.BLUES, new BoolValue(false));
+        this.effects.put(Effect.SUSTAIN, new IntValue(0));
+        this.effects.put(Effect.SOSTENUTO, new IntValue(0));
+        this.effects.put(Effect.SOFT, new IntValue(0));
+        this.effects.put(Effect.DISTORTION, new IntValue(0));
+        this.effects.put(Effect.VIBRATO, new IntValue(0));
+        this.effects.put(Effect.BALANCE, new IntValue(0));
+        this.effects.put(Effect.RESONANCE, new IntValue(0));
+        this.effects.put(Effect.REVERB, new IntValue(0));
+        this.effects.put(Effect.TREMOLO, new IntValue(0));
+        this.effects.put(Effect.CHORUS, new IntValue(0));
+        this.effects.put(Effect.PHRASER, new IntValue(0));
 
-        this.keys.put(Key.G, -6827);
-        this.keys.put(Key.Ab, -5461);
-        this.keys.put(Key.A, -4096);
-        this.keys.put(Key.B, -2731);
-        this.keys.put(Key.H, -1365);
-        this.keys.put(Key.C, 0);
-        this.keys.put(Key.Cs, 1365);
-        this.keys.put(Key.D, 2731);
-        this.keys.put(Key.Eb, 4096);
-        this.keys.put(Key.E, 5461);
-        this.keys.put(Key.F, 6827);
-        this.keys.put(Key.Fs, 8191);
-
-        this.keys.put(Key.Em, -6827);
-        this.keys.put(Key.Fm, -5461);
-        this.keys.put(Key.Fsm, -4096);
-        this.keys.put(Key.Gm, -2731);
-        this.keys.put(Key.Gsm, -1365);
-        this.keys.put(Key.Am, 0);
-        this.keys.put(Key.Bm, 1365);
-        this.keys.put(Key.Hm, 2731);
-        this.keys.put(Key.Cm, 4096);
-        this.keys.put(Key.Csm, 5461);
-        this.keys.put(Key.Dm, 6827);
-        this.keys.put(Key.Ebm, 8191);
+        this.effectControllers.put(Effect.SUSTAIN, 64);
+        this.effectControllers.put(Effect.SOSTENUTO, 66);
+        this.effectControllers.put(Effect.SOFT, 67);
+        this.effectControllers.put(Effect.DISTORTION, 93);
+        this.effectControllers.put(Effect.VIBRATO, 1);
+        this.effectControllers.put(Effect.BALANCE, 10);
+        this.effectControllers.put(Effect.RESONANCE, 71);
+        this.effectControllers.put(Effect.REVERB, 91);
+        this.effectControllers.put(Effect.TREMOLO, 92);
+        this.effectControllers.put(Effect.CHORUS, 93);
+        this.effectControllers.put(Effect.PHRASER, 95);
     }
 
     public int getJazzNote(int note){
@@ -252,7 +251,8 @@ public class MainMelody {
         else note -=howMuch;
         return note;
     }
-    public  void playNote(MidiChannel channel, int note, int duration, int volume) throws InterruptedException {
+
+    public void playNote(MidiChannel channel, int note, int duration, int volume) throws InterruptedException {
         int adjustedDuration = (60000/this.pace)*duration/100;
         if(this.jazz) note=getJazzNote(note);
         channel.noteOn(note, volume);
@@ -260,7 +260,7 @@ public class MainMelody {
         channel.noteOff(note);
     }
 
-    public  void playChord(MidiChannel channel, List<Integer> chord, int duration, int volume) throws InterruptedException {
+    public void playChord(MidiChannel channel, List<Integer> chord, int duration, int volume) throws InterruptedException {
         int adjustedDuration = (60000/this.pace)*duration/100;
         for (int note : chord) {
             if(this.jazz) note=getJazzNote(note);
@@ -270,5 +270,9 @@ public class MainMelody {
         for (int note : chord) {
             channel.noteOff(note);
         }
+    }
+
+    public void editEffect(MusicParser.MainDeclContext mainCtx, MusicParser.SettingsAssigmentContext ctx, Effect effect, Value newValue) {
+
     }
 }

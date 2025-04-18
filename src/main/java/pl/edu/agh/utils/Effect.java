@@ -1,0 +1,6 @@
+package pl.edu.agh.utils;
+
+public enum Effect {
+    PACE, VOLUME, JAZZ, BLUES, SUSTAIN, SOSTENUTO, SOFT, DISTORTION,
+    VIBRATO, BALANCE, RESONANCE, REVERB, TREMOLO, CHORUS, PHRASER
+}
