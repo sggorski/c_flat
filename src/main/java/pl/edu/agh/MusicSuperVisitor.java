@@ -11,6 +11,7 @@ import pl.edu.agh.utils.*;
 import pl.edu.agh.utils.Instrument;
 
 import javax.sound.midi.*;
+import javax.swing.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -794,7 +795,20 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitOrOperatorExpr(MusicParser.OrOperatorExprContext ctx) {
-        return visitChildren(ctx);
+        Value firstValue = (Value) visit(ctx.expr(0));
+        Value secondValue = (Value) visit(ctx.expr(1));
+        if(firstValue == null || secondValue == null){
+            throw new ValueError("Incorrect type of expression: INSTRUMENT not BOOL", getLine(ctx), getCol(ctx));
+        }
+        if(firstValue instanceof BoolValue && secondValue instanceof BoolValue) {
+            BoolValue boolExpr1 = (BoolValue) firstValue;
+            BoolValue boolExpr2 = (BoolValue) secondValue;
+            return (T)(new BoolValue(boolExpr1.value || boolExpr2.value));
+        }
+        else if(firstValue instanceof BoolValue)
+            throw new ValueError("Incorrect type of expression: "   +secondValue.getType() + " not BOOL", getLine(ctx), getCol(ctx));
+        else
+            throw new ValueError("Incorrect type of expression: "   +firstValue.getType() + " not BOOL", getLine(ctx), getCol(ctx));
     }
 
     /**
@@ -803,7 +817,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitNotExpr(MusicParser.NotExprContext ctx) {
-        return visitChildren(ctx);
+        Value expr = (Value)visit(ctx.expr());
+        if(expr == null)
+            throw new ValueError("Incorrect type of expression: INSTRUMENT not BOOL", getLine(ctx), getCol(ctx));
+        if (expr instanceof BoolValue) {
+            BoolValue boolExpr = (BoolValue) expr;
+            boolExpr.value = !boolExpr.value;
+            return (T) boolExpr;
+        }
+        else throw new  ValueError("Incorrect type of expression: "   +expr.getType() + " not BOOL", getLine(ctx), getCol(ctx));
     }
 
     /**
@@ -867,7 +889,20 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitAndOperatorExpr(MusicParser.AndOperatorExprContext ctx) {
-        return visitChildren(ctx);
+        Value firstValue = (Value) visit(ctx.expr(0));
+        Value secondValue = (Value) visit(ctx.expr(1));
+        if(firstValue == null || secondValue == null){
+            throw new ValueError("Incorrect type of expression: INSTRUMENT not BOOL", getLine(ctx), getCol(ctx));
+        }
+        if(firstValue instanceof BoolValue && secondValue instanceof BoolValue) {
+            BoolValue boolExpr1 = (BoolValue) firstValue;
+            BoolValue boolExpr2 = (BoolValue) secondValue;
+            return (T)(new BoolValue(boolExpr1.value && boolExpr2.value));
+        }
+        else if(firstValue instanceof BoolValue)
+            throw new ValueError("Incorrect type of expression: "   +secondValue.getType() + " not BOOL", getLine(ctx), getCol(ctx));
+        else
+            throw new ValueError("Incorrect type of expression: "   +firstValue.getType() + " not BOOL", getLine(ctx), getCol(ctx));
     }
 
     /**
