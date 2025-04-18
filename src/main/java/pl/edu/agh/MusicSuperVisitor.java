@@ -161,7 +161,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             else if (ctx.ID() != null) {
                 VarInfo var = main.memory.get(ctx.ID().getText());
                 if (var == null)
-                    throw new ScopeError("Variable not definied: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
+                    throw new ScopeError("Variable not defined: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
                 if (var.type != Type.INT)
                     throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
                 IntValue varInt = (IntValue) var.valueObj;
@@ -185,7 +185,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             else if (ctx.ID() != null) {
                 VarInfo var = main.memory.get(ctx.ID().getText());
                 if (var == null)
-                    throw new ScopeError("Variable not definied: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
+                    throw new ScopeError("Variable not defined: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
                 if (var.type != Type.INT)
                     throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
                 IntValue varInt = (IntValue) var.valueObj;

@@ -59,6 +59,15 @@ settingsAssigment
     | JAZZ '=' (BOOL_VAL|ID) #jazz
     | BLUES '=' (BOOL_VAL|ID) #blues
     | VOLUME '=' (INT_VAL|ID) #volume
+    | VIBRATO '=' (INT_VAL|ID) #vibrato
+    | BALANCE '=' (INT_VAL|ID) #balance
+    | SOSTENUTO '=' (INT_VAL|ID) #sostenutoPedal
+    | SOFT '=' (INT_VAL|ID) #softPedal
+    | RESONANCE '=' (INT_VAL|ID) #resonance
+    | REVERB '=' (INT_VAL|ID) #reverb
+    | TREMOLO '=' (INT_VAL|ID) #tremolo
+    | CHORUS '=' (INT_VAL|ID) #chorus
+    | PHRASER '=' (INT_VAL|ID) #phraser
     ;
 
 settingsValues
@@ -219,6 +228,15 @@ JAZZ : 'JAZZ';
 BLUES : 'BLUES';
 INSTRUMENT : 'INSTRUMENT';
 SUSTAIN : 'SUSTAIN';
+VIBRATO : 'VIBRATO';
+BALANCE : 'BALANCE';
+SOSTENUTO : 'SOSTENUTO';
+SOFT : 'SOFT';
+RESONANCE : 'RESONANCE';
+REVERB : 'REVERB';
+TREMOLO : 'TREMOLO';
+CHORUS : 'CHORUS';
+PHRASER : 'PHRASER';
 
 INSTRUMENT_VALUE : 'PIANO' | 'HARPSICHORD' | 'XYLOPHONE' | 'ORGAN' | 'CHURCH_ORGAN' | 'ACCORDION' | 'HARMONICA' |
                    'GUITAR' | 'ELECTRIC_GUITAR' | 'BASS' | 'VIOLIN' | 'VIOLA' | 'CELLO' | 'CONTRABASS' | 'HARP' |
