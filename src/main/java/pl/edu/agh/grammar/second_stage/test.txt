@@ -1,7 +1,4 @@
 melody main(){
-    zmienna1 = C2;
-    zmienna2 = [C2, C1];
-    zmienna3 = 1 + 1 - 2 + 4 - 10;
-    zmienna4 = true;
-    PAUSE 10;
+    zmienna3 = ((2 + 2*3) / (2 + 6 - 9)) * (100 / (2*9 - 3*3));
+    zmienna1 = (C2 +2)*2;
 }

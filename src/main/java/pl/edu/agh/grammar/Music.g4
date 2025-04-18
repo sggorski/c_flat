@@ -148,6 +148,7 @@ expr
     | expr eqOp expr #eqOperatorExpr
     | expr andOp expr #andOperatorExpr
     | expr orOp expr #orOperatorExpr
+    | INSTRUMENT eqOp INSTRUMENT_VALUE #instrumentOperatorExpr
     | chord #chordExpr
     | settingsValues #settingsExpr
     | intVal #intExpr
@@ -157,11 +158,13 @@ expr
 
     ;
 
+
 orderOp
     : LT  | GEQ | LEQ |  GT ;
 
 eqOp:
      EQ | NEQ;
+
 
 andOp
     :  AND;

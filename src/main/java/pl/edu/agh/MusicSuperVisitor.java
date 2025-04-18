@@ -14,6 +14,7 @@ import javax.sound.midi.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static pl.edu.agh.utils.Instrument.*;
 
@@ -324,8 +325,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      * @return
      */
     @Override
+    @SuppressWarnings("unchecked")
     public T visitSettingsValues(MusicParser.SettingsValuesContext ctx) {
-        return visitChildren(ctx);
+        if(ctx.BLUES() != null) return (T)(new BoolValue(main.blues));
+        if(ctx.JAZZ() != null) return (T)(new BoolValue(main.jazz));
+        if(ctx.SUSTAIN() != null) return (T)(new IntValue(main.sustain));
+        if(ctx.DISTORTION() != null) return (T)(new IntValue(main.distortion));
+        if(ctx.PACE() != null) return (T)(new IntValue(main.pace));
+        if(ctx.VOLUME() != null) return (T)(new IntValue(main.volume));
+        if(ctx.INSTRUMENT() != null) return (T)(main.instrument);
+        else throw new SyntaxError("Syntax error", getLine(ctx), getCol(ctx));
     }
 
 
@@ -691,6 +700,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitAddSubOperatorExpr(MusicParser.AddSubOperatorExprContext ctx) {
         Value firstValue = (Value) visit(ctx.expr(0));
         Value secondValue = (Value) visit(ctx.expr(1));
+        if(firstValue == null || secondValue == null){
+            //That means it's INSTRUMENT in expr which is prohibited
+            //TODO
+            throw new ArithmeticException("Cannot interpret instrument value in add/sub operation");
+        }
         if(firstValue.getType()==Type.INT && secondValue.getType()==Type.INT ) {
             int firstInt = ((IntValue)firstValue).value;
             int secondInt = ((IntValue)secondValue).value;
@@ -700,8 +714,23 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             Value result = new IntValue(resultInt);
             return (T) result;
         }
-        // not yet finished, adding integer to a note expected in a near future
-        return visitChildren(ctx);
+        if(firstValue.getType()==Type.NOTE && secondValue.getType()==Type.INT ){
+            Note note = ((NoteValue)firstValue).note;
+            int intVal = ((IntValue)secondValue).value;
+            int noteIntVal = main.notes.get(note);
+            if(ctx.addSubOp().SUB() != null) noteIntVal -= intVal;
+            else noteIntVal +=  intVal;
+            if(noteIntVal<0 || noteIntVal >84) throw new ArithmeticException("Note's limit exceeded"); //TODO
+            int finalNoteIntVal = noteIntVal;
+            Note newNote = main.notes.entrySet().stream()
+                    .filter(pair -> pair.getValue().equals(finalNoteIntVal))
+                    .findFirst()
+                    .map(Map.Entry::getKey).orElse(null);
+            if(newNote == null) throw new RuntimeException(); //TODO
+            Value result = new NoteValue(newNote);
+            return (T) result;
+        }
+        else throw new ArithmeticException("Invalid arguments for add/subtract operation"); //TODO: create new exception
     }
 
     /**
@@ -719,7 +748,44 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitMullDivOperatorExpr(MusicParser.MullDivOperatorExprContext ctx) {
-        return visitChildren(ctx);
+        Value firstValue = (Value) visit(ctx.expr(0));
+        Value secondValue = (Value) visit(ctx.expr(1));
+        if(firstValue == null || secondValue == null){
+            //That means it's INSTRUMENT in expr which is prohibited
+            //TODO
+            throw new ArithmeticException("Cannot interpret instrument value in add/sub operation");
+        }
+        if(firstValue.getType()==Type.INT && secondValue.getType()==Type.INT ) {
+            int firstInt = ((IntValue)firstValue).value;
+            int secondInt = ((IntValue)secondValue).value;
+            int resultInt = 0;
+
+            if(ctx.mullDivOp().MUL() != null) resultInt = firstInt * secondInt;
+            else if(secondInt !=0) resultInt = firstInt / secondInt;
+            else throw new ArithmeticException("Division by zero!"); //TODO
+            Value result = new IntValue(resultInt);
+            return (T) result;
+        }
+        if(firstValue.getType()==Type.NOTE && secondValue.getType()==Type.INT ){
+            Note note = ((NoteValue)firstValue).note;
+            int intVal = ((IntValue)secondValue).value;
+            int noteIntVal = main.notes.get(note);
+            if(noteIntVal<1) throw new ArithmeticException("Invalid operation"); //TODO
+
+            if(ctx.mullDivOp().MUL() != null) noteIntVal += (intVal-1)*12;
+            else noteIntVal -=  (intVal-1)*12;
+            noteIntVal = Math.abs(noteIntVal)%85;
+
+            int finalNoteIntVal = noteIntVal;
+            Note newNote = main.notes.entrySet().stream()
+                    .filter(pair -> pair.getValue().equals(finalNoteIntVal))
+                    .findFirst()
+                    .map(Map.Entry::getKey).orElse(null);
+            if(newNote == null) throw new RuntimeException(); //TODO
+            Value result = new NoteValue(newNote);
+            return (T) result;
+        }
+        else throw new ArithmeticException("Invalid arguments for mull/div operation"); //TODO: create new exception
     }
 
     /**
@@ -745,7 +811,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitParanthesesExpr(MusicParser.ParanthesesExprContext ctx) {
-        return visitChildren(ctx);
+        return visit(ctx.expr());
     }
 
     /**
