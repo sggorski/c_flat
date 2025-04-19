@@ -89,13 +89,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitPace(MusicParser.PaceContext ctx) {
-        if (mainCtx != null) {
-            if (ctx.INT_VAL() != null) main.pace = Integer.parseInt(ctx.INT_VAL().getText());
-            else if (ctx.ID() != null) {
-                IntValue varInt = (IntValue) extractVariable(ctx,ctx.ID(),Type.INT).valueObj;
-                main.pace = varInt.value;
-            }
-        }
+        this.main.editEffect(mainCtx, ctx, Effect.PACE, this);
         return visitChildren(ctx);
     }
 
@@ -228,31 +222,20 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitJazz(MusicParser.JazzContext ctx) {
-        if (mainCtx != null) {
-            if (ctx.BOOL_VAL() != null) main.jazz = ctx.BOOL_VAL().getText().equals("true");
-            else if (ctx.ID() != null) {
-                BoolValue varBool = (BoolValue) extractVariable(ctx,ctx.ID(),Type.BOOL).valueObj;
-                main.jazz = varBool.value;
-            }
-        }
+        this.main.editEffect(mainCtx, ctx, Effect.JAZZ, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitBlues(MusicParser.BluesContext ctx) {
+        this.main.editEffect(mainCtx, ctx, Effect.BLUES, this);
         return visitChildren(ctx);
     }
 
 
     @Override
     public T visitVolume(MusicParser.VolumeContext ctx) {
-        if (mainCtx != null) {
-            if (ctx.INT_VAL() != null) main.volume = Integer.parseInt(ctx.INT_VAL().getText());
-            else if (ctx.ID() != null) {
-                IntValue varInt = (IntValue) extractVariable(ctx, ctx.ID(),Type.INT).valueObj;
-                main.volume = varInt.value;
-            }
-        }
+        this.main.editEffect(mainCtx, ctx, Effect.VOLUME, this);
         return visitChildren(ctx);
     }
 
@@ -305,12 +288,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     @SuppressWarnings("unchecked")
     public T visitSettingsValues(MusicParser.SettingsValuesContext ctx) {
-        if(ctx.BLUES() != null) return (T)(new BoolValue(main.blues));
-        if(ctx.JAZZ() != null) return (T)(new BoolValue(main.jazz));
+        if(ctx.BLUES() != null) return (T)(main.effects.get(Effect.BLUES));
+        if(ctx.JAZZ() != null) return (T)(main.effects.get(Effect.JAZZ));
         if(ctx.SUSTAIN() != null) return (T)(new IntValue(main.sustain));
         if(ctx.DISTORTION() != null) return (T)(new IntValue(main.distortion));
-        if(ctx.PACE() != null) return (T)(new IntValue(main.pace));
-        if(ctx.VOLUME() != null) return (T)(new IntValue(main.volume));
+        if(ctx.PACE() != null) return (T)(main.effects.get(Effect.PACE));
+        if(ctx.VOLUME() != null) return (T)(main.effects.get(Effect.VOLUME));
         if(ctx.INSTRUMENT() != null) return (T)(main.instrument);
         else throw new SyntaxError("Syntax error", getLine(ctx), getCol(ctx));
     }
@@ -906,9 +889,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         try {
             if (main.instrument == DRUMS) {
-                main.playChord(main.channels[9], notesInt, duration, main.volume);
+                main.playChord(main.channels[9], notesInt, duration, ((IntValue)main.effects.get(Effect.VOLUME)).value);
             } else {
-                main.playChord(main.channels[0], notesInt, duration, main.volume);
+                main.playChord(main.channels[0], notesInt, duration, ((IntValue)main.effects.get(Effect.VOLUME)).value);
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -919,15 +902,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         Integer noteInt = main.notes.get(note);
         try {
             if (main.instrument == DRUMS) {
-                main.playNote(main.channels[9], noteInt, duration, main.volume);
+                main.playNote(main.channels[9], noteInt, duration, ((IntValue)main.effects.get(Effect.VOLUME)).value);
             } else {
-                main.playNote(main.channels[0], noteInt, duration, main.volume);
+                main.playNote(main.channels[0], noteInt, duration, ((IntValue)main.effects.get(Effect.VOLUME)).value);
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
-    private VarInfo extractVariable(ParserRuleContext ctx, TerminalNode id, Type type) {
+
+    public VarInfo extractVariable(ParserRuleContext ctx, TerminalNode id, Type type) {
         VarInfo var = main.memory.get(id.getText());
         if (var == null)
             throw new ScopeError("Variable not defined: " + id.getText(), getLine(ctx), getCol(ctx));

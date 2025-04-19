@@ -78,6 +78,15 @@ settingsValues
     | JAZZ
     | BLUES
     | VOLUME
+    | VIBRATO
+    | BALANCE
+    | SOSTENUTO
+    | SOFT
+    | RESONANCE
+    | REVERB
+    | TREMOLO
+    | CHORUS
+    | PHRASER
     ;
 
 assignment

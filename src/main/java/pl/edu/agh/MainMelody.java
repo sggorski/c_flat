@@ -1,5 +1,7 @@
 package pl.edu.agh;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.utils.*;
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
@@ -11,11 +13,7 @@ import java.util.Random;
 
 public class MainMelody {
     public int sustain = 0;
-    public int volume = 100;
     public int distortion = 0;
-    public int pace = 600;
-    public boolean jazz = false;
-    public boolean blues = false;
     public Instrument instrument=Instrument.PIANO;
 
     public HashMap<Note,Integer> notes = new HashMap<>();
@@ -254,17 +252,17 @@ public class MainMelody {
     }
 
     public void playNote(MidiChannel channel, int note, int duration, int volume) throws InterruptedException {
-        int adjustedDuration = (60000/this.pace)*duration/100;
-        if(this.jazz) note=getJazzNote(note);
+        int adjustedDuration = (60000/((IntValue)this.effects.get(Effect.PACE)).value)*duration/100;
+        if(((BoolValue)this.effects.get(Effect.JAZZ)).value) note=getJazzNote(note);
         channel.noteOn(note, volume);
         Thread.sleep(adjustedDuration);
         channel.noteOff(note);
     }
 
     public void playChord(MidiChannel channel, List<Integer> chord, int duration, int volume) throws InterruptedException {
-        int adjustedDuration = (60000/this.pace)*duration/100;
+        int adjustedDuration = (60000/((IntValue)this.effects.get(Effect.PACE)).value)*duration/100;
         for (int note : chord) {
-            if(this.jazz) note=getJazzNote(note);
+            if(((BoolValue)this.effects.get(Effect.JAZZ)).value) note=getJazzNote(note);
             channel.noteOn(note, volume);
         }
         Thread.sleep(adjustedDuration);
@@ -273,7 +271,43 @@ public class MainMelody {
         }
     }
 
-    public void editEffect(MusicParser.MainDeclContext mainCtx, MusicParser.SettingsAssigmentContext ctx, Effect effect, Value newValue) {
+    public void editEffect(MusicParser.MainDeclContext mainCtx, MusicParser.SettingsAssigmentContext ctx, Effect effect, MusicSuperVisitor msv) {
+        if(effect == Effect.PACE || effect == Effect.VOLUME) {
+            if (mainCtx != null) {
+                if (ctx.children.get(2) != null && isNumeric(String.valueOf(ctx.children.get(2))))
+                    this.effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(ctx.children.get(2)))));
+                else if (ctx.children.get(2) != null) {
+                    IntValue varInt = (IntValue) msv.extractVariable(ctx, (TerminalNode) ctx.children.get(2), Type.INT).valueObj;
+                    this.effects.put(effect, varInt);
+                }
+            }
+        } else if (effect == Effect.JAZZ || effect == Effect.BLUES) {
+            if (mainCtx != null) {
+                if (ctx.children.get(2) != null && isBoolean(String.valueOf(ctx.children.get(2))))
+                    this.effects.put(effect, new BoolValue(Boolean.parseBoolean(String.valueOf(ctx.children.get(2)))));
+                else if (ctx.children.get(2) != null) {
+                    BoolValue varBool = (BoolValue) msv.extractVariable(ctx, (TerminalNode) ctx.children.get(2), Type.BOOL).valueObj;
+                    this.effects.put(effect, varBool);
+                }
+            }
+        }
+    }
 
+    private static boolean isNumeric(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch(NumberFormatException e){
+            return false;
+        }
+    }
+
+    private static boolean isBoolean(String str) {
+        try {
+            Boolean.parseBoolean(str);
+            return true;
+        } catch(NumberFormatException e){
+            return false;
+        }
     }
 }
