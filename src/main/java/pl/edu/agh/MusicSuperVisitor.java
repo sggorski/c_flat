@@ -1,4 +1,5 @@
 package pl.edu.agh;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -35,13 +36,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-
     @Override
     public T visitFunctionDecl(MusicParser.FunctionDeclContext ctx) {
         funcCtx = ctx;
         return visitChildren(ctx);
     }
-
 
     @Override
     public T visitMainDecl(MusicParser.MainDeclContext ctx) {
@@ -54,12 +53,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-
     @Override
     public T visitParameter(MusicParser.ParameterContext ctx) {
         return visitChildren(ctx);
     }
-
 
     @Override
     public T visitType(MusicParser.TypeContext ctx) {
@@ -70,7 +67,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitMainStatement(MusicParser.MainStatementContext ctx) {
         return visitChildren(ctx);
     }
-
 
     @Override
     public T visitStatement(MusicParser.StatementContext ctx) {
@@ -93,18 +89,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-
     @Override
     public T visitSustain(MusicParser.SustainContext ctx) {
-        if (mainCtx != null) {
-            if (ctx.INT_VAL() != null) main.sustain = Integer.parseInt(ctx.INT_VAL().getText());
-            else if (ctx.ID() != null) {
-                IntValue varInt = (IntValue) extractVariable(ctx, ctx.ID(),Type.INT).valueObj;
-                main.sustain = varInt.value;
-            }
-            if (main.instrument == DRUMS) main.channels[9].controlChange(64, main.sustain);
-            else main.channels[0].controlChange(64, main.sustain);
-        }
+        this.main.editEffect(mainCtx, ctx, Effect.SUSTAIN, this);
         return visitChildren(ctx);
     }
 
@@ -204,21 +191,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitDistortion(MusicParser.DistortionContext ctx) {
-        if (mainCtx != null) {
-            if (ctx.INT_VAL() != null) {
-                main.distortion = Integer.parseInt(ctx.INT_VAL().getText());
-                if (main.instrument == DRUMS) main.channels[9].controlChange(93, main.distortion);
-                else main.channels[0].controlChange(93, main.distortion);
-            } else if (ctx.ID() != null) {
-                IntValue varInt = (IntValue) extractVariable(ctx,ctx.ID(),Type.INT).valueObj;
-                if (main.instrument == DRUMS) main.channels[9].controlChange(93, varInt.value);
-                else main.channels[0].controlChange(93, varInt.value);
-            }
-        }
+        this.main.editEffect(mainCtx, ctx, Effect.DISTORTION, this);
         return visitChildren(ctx);
-
     }
-
 
     @Override
     public T visitJazz(MusicParser.JazzContext ctx) {
@@ -232,7 +207,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-
     @Override
     public T visitVolume(MusicParser.VolumeContext ctx) {
         this.main.editEffect(mainCtx, ctx, Effect.VOLUME, this);
@@ -241,63 +215,70 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitVibrato(MusicParser.VibratoContext ctx) {
-        return null;
+        this.main.editEffect(mainCtx, ctx, Effect.VIBRATO, this);
+        return visitChildren(ctx);
     }
 
     @Override
     public T visitBalance(MusicParser.BalanceContext ctx) {
-        return null;
+        this.main.editEffect(mainCtx, ctx, Effect.BALANCE, this);
+        return visitChildren(ctx);
     }
 
     @Override
     public T visitSostenutoPedal(MusicParser.SostenutoPedalContext ctx) {
-        return null;
+        this.main.editEffect(mainCtx, ctx, Effect.SOSTENUTO, this);
+        return visitChildren(ctx);
     }
 
     @Override
     public T visitSoftPedal(MusicParser.SoftPedalContext ctx) {
-        return null;
+        this.main.editEffect(mainCtx, ctx, Effect.SOFT, this);
+        return visitChildren(ctx);
     }
 
     @Override
     public T visitResonance(MusicParser.ResonanceContext ctx) {
-        return null;
+        this.main.editEffect(mainCtx, ctx, Effect.RESONANCE, this);
+        return visitChildren(ctx);
     }
 
     @Override
     public T visitReverb(MusicParser.ReverbContext ctx) {
-        return null;
+        this.main.editEffect(mainCtx, ctx, Effect.REVERB, this);
+        return visitChildren(ctx);
     }
 
     @Override
     public T visitTremolo(MusicParser.TremoloContext ctx) {
-        return null;
+        this.main.editEffect(mainCtx, ctx, Effect.TREMOLO, this);
+        return visitChildren(ctx);
     }
 
     @Override
     public T visitChorus(MusicParser.ChorusContext ctx) {
-        return null;
+        this.main.editEffect(mainCtx, ctx, Effect.CHORUS, this);
+        return visitChildren(ctx);
     }
 
     @Override
     public T visitPhraser(MusicParser.PhraserContext ctx) {
-        return null;
+        this.main.editEffect(mainCtx, ctx, Effect.PHRASER, this);
+        return visitChildren(ctx);
     }
-
 
     @Override
     @SuppressWarnings("unchecked")
     public T visitSettingsValues(MusicParser.SettingsValuesContext ctx) {
         if(ctx.BLUES() != null) return (T)(main.effects.get(Effect.BLUES));
         if(ctx.JAZZ() != null) return (T)(main.effects.get(Effect.JAZZ));
-        if(ctx.SUSTAIN() != null) return (T)(new IntValue(main.sustain));
-        if(ctx.DISTORTION() != null) return (T)(new IntValue(main.distortion));
+        if(ctx.SUSTAIN() != null) return (T)(main.effects.get(Effect.SUSTAIN));
+        if(ctx.DISTORTION() != null) return (T)(main.effects.get(Effect.DISTORTION));
         if(ctx.PACE() != null) return (T)(main.effects.get(Effect.PACE));
         if(ctx.VOLUME() != null) return (T)(main.effects.get(Effect.VOLUME));
         if(ctx.INSTRUMENT() != null) return (T)(main.instrument);
         else throw new SyntaxError("Syntax error", getLine(ctx), getCol(ctx));
     }
-
 
     @Override
     public T visitAssignment(MusicParser.AssignmentContext ctx) {

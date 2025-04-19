@@ -20,12 +20,11 @@ public class App
     public static void main( String[] args ) throws IOException {
         //System.out.println( "Hello World!" );
         CharStream stream;
-        try{
+        try {
             // stream = CharStreams.fromFileName(String.format("src/main/java/pl/edu/agh/grammar/hello_worlds/hello_world_%s.txt",args[0]));
             stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/second_stage/turkish_march.txt");
 //            stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/second_stage/turkish_march.txt");
-        }
-        catch(Exception e){
+        } catch(Exception e) {
             System.out.println("No such melody!");
             return;
         }
@@ -50,17 +49,12 @@ public class App
             MusicSuperVisitor visitor = new MusicSuperVisitor();
             visitor.visitProgram(program);
 
-        }catch (ParseCancellationException e){
+        } catch (ParseCancellationException e) {
             System.out.println(e.getMessage() + " ParseCancel");
-        }
-        catch (RecognitionException e){
+        } catch (RecognitionException e) {
             System.out.println(e.getMessage() + " Recognition");
-        }
-        catch (SyntaxError | ValueError | ScopeError e){
+        } catch (SyntaxError | ValueError | ScopeError e) {
             System.out.println(e.getMessage() + " Errors");
         }
-
-
-
     }
 }

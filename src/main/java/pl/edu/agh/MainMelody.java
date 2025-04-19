@@ -11,16 +11,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import static pl.edu.agh.utils.Instrument.DRUMS;
+
 public class MainMelody {
-    public int sustain = 0;
-    public int distortion = 0;
     public Instrument instrument=Instrument.PIANO;
 
     public HashMap<Note,Integer> notes = new HashMap<>();
     public HashMap<Effect, Value> effects = new HashMap<>();
     public HashMap<Effect, Integer> effectControllers = new HashMap<>();
     public HashMap<String, VarInfo> memory = new HashMap<>();
-
 
     Synthesizer synth;
     MidiChannel[] channels;
@@ -272,7 +271,7 @@ public class MainMelody {
     }
 
     public void editEffect(MusicParser.MainDeclContext mainCtx, MusicParser.SettingsAssigmentContext ctx, Effect effect, MusicSuperVisitor msv) {
-        if(effect == Effect.PACE || effect == Effect.VOLUME) {
+        if (effect == Effect.PACE || effect == Effect.VOLUME) {
             if (mainCtx != null) {
                 if (ctx.children.get(2) != null && isNumeric(String.valueOf(ctx.children.get(2))))
                     this.effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(ctx.children.get(2)))));
@@ -288,6 +287,22 @@ public class MainMelody {
                 else if (ctx.children.get(2) != null) {
                     BoolValue varBool = (BoolValue) msv.extractVariable(ctx, (TerminalNode) ctx.children.get(2), Type.BOOL).valueObj;
                     this.effects.put(effect, varBool);
+                }
+            }
+        } else {
+            if (mainCtx != null) {
+                if (ctx.children.get(2) != null && isNumeric(String.valueOf(ctx.children.get(2)))) {
+                    this.effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(ctx.children.get(2)))));
+                    if (this.instrument == DRUMS)
+                        this.channels[9].controlChange(this.effectControllers.get(effect), ((IntValue)this.effects.get(effect)).value);
+                    else
+                        this.channels[0].controlChange(this.effectControllers.get(effect), ((IntValue)this.effects.get(effect)).value);
+                } else if (ctx.children.get(2) != null) {
+                    IntValue varInt = (IntValue) msv.extractVariable(ctx, (TerminalNode) ctx.children.get(2), Type.INT).valueObj;
+                    if (this.instrument == DRUMS)
+                        this.channels[9].controlChange(this.effectControllers.get(effect), varInt.value);
+                    else
+                        this.channels[0].controlChange(this.effectControllers.get(effect), varInt.value);
                 }
             }
         }
