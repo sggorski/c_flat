@@ -276,6 +276,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if(ctx.DISTORTION() != null) return (T)(main.effects.get(Effect.DISTORTION));
         if(ctx.PACE() != null) return (T)(main.effects.get(Effect.PACE));
         if(ctx.VOLUME() != null) return (T)(main.effects.get(Effect.VOLUME));
+        if(ctx.VIBRATO() != null) return (T)(main.effects.get(Effect.VIBRATO));
+        if(ctx.BALANCE() != null) return (T)(main.effects.get(Effect.BALANCE));
+        if(ctx.SOSTENUTO() != null) return (T)(main.effects.get(Effect.SOSTENUTO));
+        if(ctx.SOFT() != null) return (T)(main.effects.get(Effect.SOFT));
+        if(ctx.RESONANCE() != null) return (T)(main.effects.get(Effect.RESONANCE));
+        if(ctx.REVERB() != null) return (T)(main.effects.get(Effect.REVERB));
+        if(ctx.TREMOLO() != null) return (T)(main.effects.get(Effect.TREMOLO));
+        if(ctx.CHORUS() != null) return (T)(main.effects.get(Effect.CHORUS));
+        if(ctx.PHRASER() != null) return (T)(main.effects.get(Effect.PHRASER));
         if(ctx.INSTRUMENT() != null) return (T)(main.instrument);
         else throw new SyntaxError("Syntax error", getLine(ctx), getCol(ctx));
     }
