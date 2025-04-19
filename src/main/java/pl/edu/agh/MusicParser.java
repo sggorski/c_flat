@@ -1591,6 +1591,15 @@ public class MusicParser extends Parser {
 		public TerminalNode JAZZ() { return getToken(MusicParser.JAZZ, 0); }
 		public TerminalNode BLUES() { return getToken(MusicParser.BLUES, 0); }
 		public TerminalNode VOLUME() { return getToken(MusicParser.VOLUME, 0); }
+		public TerminalNode VIBRATO() { return getToken(MusicParser.VIBRATO, 0); }
+		public TerminalNode BALANCE() { return getToken(MusicParser.BALANCE, 0); }
+		public TerminalNode SOSTENUTO() { return getToken(MusicParser.SOSTENUTO, 0); }
+		public TerminalNode SOFT() { return getToken(MusicParser.SOFT, 0); }
+		public TerminalNode RESONANCE() { return getToken(MusicParser.RESONANCE, 0); }
+		public TerminalNode REVERB() { return getToken(MusicParser.REVERB, 0); }
+		public TerminalNode TREMOLO() { return getToken(MusicParser.TREMOLO, 0); }
+		public TerminalNode CHORUS() { return getToken(MusicParser.CHORUS, 0); }
+		public TerminalNode PHRASER() { return getToken(MusicParser.PHRASER, 0); }
 		public SettingsValuesContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1619,7 +1628,7 @@ public class MusicParser extends Parser {
 			{
 			setState(219);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 17045651456L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 8795958804480L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -2709,7 +2718,7 @@ public class MusicParser extends Parser {
 				setState(340);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((((_la - 13)) & ~0x3f) == 0 && ((1L << (_la - 13)) & 81628018126081537L) != 0)) {
+				if (((((_la - 13)) & ~0x3f) == 0 && ((1L << (_la - 13)) & 81628019197726209L) != 0)) {
 					{
 					setState(339);
 					expr(0);
@@ -4662,7 +4671,7 @@ public class MusicParser extends Parser {
 		"\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0016\u0018\u001a\u001c\u001e"+
 		" \"$&(*,.02468:<>@BDFHJLNPR\u0000\n\u0001\u0000\u0011\u0014\u0002\u0000"+
 		"\u0017\u0017EE\u0002\u0000++EE\u0002\u0000\u0016\u0016EE\u0001\u0000\u001b"+
-		"!\u0001\u00007:\u0001\u000056\u0001\u0000=>\u0002\u0000;<??\u0001\u0000"+
+		"*\u0001\u00007:\u0001\u000056\u0001\u0000=>\u0002\u0000;<??\u0001\u0000"+
 		"/2\u0228\u0000W\u0001\u0000\u0000\u0000\u0002e\u0001\u0000\u0000\u0000"+
 		"\u0004i\u0001\u0000\u0000\u0000\u0006y\u0001\u0000\u0000\u0000\b\u0086"+
 		"\u0001\u0000\u0000\u0000\n\u008e\u0001\u0000\u0000\u0000\f\u0091\u0001"+

@@ -8,7 +8,6 @@ import pl.edu.agh.errors.ScopeError;
 import pl.edu.agh.errors.SyntaxError;
 import pl.edu.agh.errors.ValueError;
 
-import javax.xml.transform.ErrorListener;
 import java.io.IOException;
 
 /**
