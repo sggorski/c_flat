@@ -1,5 +1,7 @@
 package pl.edu.agh.utils;
 
+import java.util.Objects;
+
 public class NoteValue implements Value {
     public Type type = Type.NOTE;
     public  Note note; // np. C4, D#5
@@ -13,5 +15,23 @@ public class NoteValue implements Value {
                 "type=" + type +
                 ", note=" + note +
                 '}';
+    }
+    @Override
+    public BoolValue equals(Value value) {
+        NoteValue other = (NoteValue) value;
+        return new BoolValue(this.note.equals(other.note));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NoteValue noteValue = (NoteValue) o;
+        return type == noteValue.type && note == noteValue.note;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, note);
     }
 }

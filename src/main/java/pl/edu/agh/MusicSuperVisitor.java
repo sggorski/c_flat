@@ -8,6 +8,8 @@ import pl.edu.agh.utils.Instrument;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import static pl.edu.agh.utils.Instrument.*;
 
@@ -392,19 +394,25 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitPlayIDVariants(MusicParser.PlayIDVariantsContext ctx) {
-        //playing note
+        //playing note or chord
         if(ctx.INT_VAL() !=null || ctx.ID(1)!=null){
-            VarInfo noteInfo = main.memory.get(ctx.ID(0).getText());
-            if (noteInfo == null)
+            VarInfo varInfo = main.memory.get(ctx.ID(0).getText());
+            if (varInfo == null)
                 throw new ScopeError("Variable not definied: " + ctx.ID(0).getText(), getLine(ctx), getCol(ctx));
-            NoteValue noteVal = (NoteValue) noteInfo.valueObj;
             int duration = 0;
             if (ctx.INT_VAL() != null) duration = Integer.parseInt(ctx.INT_VAL().getText());
             else if (ctx.ID(1) != null) {
                 IntValue varInt = (IntValue) extractVariable(ctx,ctx.ID(1),Type.INT).valueObj;
                 duration = varInt.value;
             }
-            playNote(noteVal.note, duration);
+            if(varInfo.type==Type.NOTE){
+                NoteValue noteVal = (NoteValue) varInfo.valueObj;
+                playNote(noteVal.note, duration);
+            }
+            else{
+                ChordValue chordval = (ChordValue) varInfo.valueObj;
+                playChord(chordval.notes, duration);
+            }
         }
         return visitChildren(ctx);
     }
@@ -442,6 +450,17 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             } else if (visit(child) instanceof NoteValue) {
                 NoteValue note = (NoteValue) visit(child);
                 playNote(note.note, duration);
+            }
+            else{
+                VarInfo varInfo = main.memory.get(ctx.ID(0).getText());
+                if(varInfo.type==Type.NOTE){
+                    NoteValue noteVal = (NoteValue) varInfo.valueObj;
+                    playNote(noteVal.note, duration);
+                }
+                else{
+                    ChordValue chordVal = (ChordValue) varInfo.valueObj;
+                    playChord(chordVal.notes, duration);
+                }
             }
         }
         return visitChildren(ctx);
@@ -577,13 +596,33 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public T visitOrderOperatorExpr(MusicParser.OrderOperatorExprContext ctx) {
-        return visitChildren(ctx);
+        if(visit(ctx.expr(0)) instanceof Instrument || visit(ctx.expr(1)) instanceof Instrument ){
+            throw new ValueError("Incorrect type of expression: INSTRUMENT not allowed here", getLine(ctx), getCol(ctx));
+        }
+        Value firstValue = (Value) visit(ctx.expr(0));
+        Value secondValue = (Value) visit(ctx.expr(1));
+
+        BiPredicate<Integer, Integer> predicate = (x,y) -> false;
+        if(ctx.orderOp().GT() != null) predicate = (x,y) -> x > y;
+        if(ctx.orderOp().LT() != null) predicate = (x,y) -> x < y;
+        if(ctx.orderOp().GEQ() != null) predicate = (x,y) -> x >= y;
+        if(ctx.orderOp().LEQ() != null) predicate = (x,y) -> x <= y;
+
+        if(firstValue instanceof IntValue && secondValue instanceof IntValue) {
+            return (T) new BoolValue(predicate.test(((IntValue) firstValue).value, ((IntValue) secondValue).value));
+        }
+        else if(firstValue instanceof NoteValue && secondValue instanceof NoteValue) {
+            return (T) new BoolValue(predicate.test(main.notes.get(((NoteValue) firstValue).note), main.notes.get(((NoteValue) secondValue).note)));
+        }
+        else throw new ValueError("Incorrect type of comparison!", getLine(ctx), getCol(ctx)); //TODO
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T visitInstrumentOperatorExpr(MusicParser.InstrumentOperatorExprContext ctx) {
-        return null;
+        return (T)new BoolValue(main.instrument.toString().equals(ctx.INSTRUMENT_VALUE().getText()));
     }
 
     @Override
@@ -751,8 +790,23 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public T visitEqOperatorExpr(MusicParser.EqOperatorExprContext ctx) {
-        return visitChildren(ctx);
+        Value firstValue = (Value)visit(ctx.expr(0));
+        Value secondValue = (Value)visit(ctx.expr(1));
+        //Comparing instruments done in other node, they should be recognised as a different node
+        if(firstValue == null || secondValue == null){
+            throw new ArithmeticException("Cannot interpret instrument value in eq/neq operation"); //TODO
+        }
+        if(firstValue.getType()!=secondValue.getType()) {
+            return  (T) new BoolValue(false);
+        }
+        BoolValue result = firstValue.equals(secondValue);
+        if(ctx.eqOp().EQ() != null) return (T) result;
+        else{
+            if(result.value) return (T) new BoolValue(false);
+            else return (T) new BoolValue(true);
+        }
     }
 
 
@@ -762,8 +816,14 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T visitChordExpr(MusicParser.ChordExprContext ctx) {
-        return visitChildren(ctx);
+        List<NoteValue> notes = new ArrayList<>();
+        for (TerminalNode node : ctx.chord().NOTE_VAL()) {
+            Note note = Note.valueOf(node.getText().replace('#', 's').replace('-', 'm'));
+            notes.add(new NoteValue(note));
+        }
+        return (T) (new ChordValue(notes));
     }
 
 

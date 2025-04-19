@@ -14,4 +14,10 @@ public class IntValue implements Value {
                 ", value=" + value +
                 '}';
     }
+
+    @Override
+    public BoolValue equals(Value value) {
+        IntValue other = (IntValue) value;
+        return new BoolValue(this.value == other.value);
+    }
 }
