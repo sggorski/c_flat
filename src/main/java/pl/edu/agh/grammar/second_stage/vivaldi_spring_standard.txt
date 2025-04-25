@@ -41,7 +41,7 @@ melody main() {
 	PLAY H3 800;
 	PLAY A3 G#3 400;
 	PLAY F#3 E3 200;
-	PLAY F#3 E3 F#3 E3 F#3 E3 F#3 E3 50;
+	PLAY F#3 E3 F#3 E3 F#3 E3 67;
 	PLAY E3 800;
 	PAUSE 500;
 }

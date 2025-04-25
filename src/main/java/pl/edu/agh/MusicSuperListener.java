@@ -2,10 +2,14 @@
 package pl.edu.agh;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.VocabularyImpl;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import pl.edu.agh.errors.VariableDeclarationError;
+import pl.edu.agh.utils.*;
 
 import java.sql.SQLOutput;
+import java.util.Arrays;
 
 @SuppressWarnings("CheckReturnValue")
 
@@ -13,7 +17,17 @@ import java.sql.SQLOutput;
  * Tu można zrobić całe sprawdzanie składni oraz czy semantyka jest poprawna
  */
 
-public class MusicSuperListener extends MusicBaseListener {
+public class MusicSuperListener extends MusicBaseListener implements MusicListener {
+    MainMelody main;
+    MusicLexer lexer;
+    MusicParser.MainDeclContext mainCtx = null;
+    MusicParser.FunctionDeclContext funcCtx = null;
+
+    public MusicSuperListener(MainMelody main, MusicLexer musicLexer) {
+        this.main = main;
+        this.lexer = musicLexer;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -377,7 +391,37 @@ public class MusicSuperListener extends MusicBaseListener {
      */
     @Override
     public void enterVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) {
+        String varName = ctx.ID().getText();
 
+        if(this.main.memory.containsKey(varName))
+            throw new VariableDeclarationError("Redeclaration of a variable: " + varName, getLine(ctx), getCol(ctx));
+        if(Arrays.asList(((VocabularyImpl)this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
+            throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
+        if(isAnInstrument(varName))
+            throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
+        if(isANote(varName))
+            throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
+
+        switch (ctx.type().getText()) {
+            case "int":
+                VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), new IntValue(0));
+                this.main.memory.put(varName, intInfo);
+                break;
+            case "bool":
+                VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), new BoolValue(false));
+                this.main.memory.put(varName, boolInfo);
+                break;
+            case "Note":
+                VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), new NoteValue(null));
+                this.main.memory.put(varName, noteInfo);
+                break;
+            case "Chord":
+                VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), new ChordValue(null));
+                this.main.memory.put(varName, chordInfo);
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -393,7 +437,37 @@ public class MusicSuperListener extends MusicBaseListener {
      */
     @Override
     public void enterVarDeclWithoutArg(MusicParser.VarDeclWithoutArgContext ctx) {
+        String varName = ctx.ID().getText();
 
+        if(this.main.memory.containsKey(varName))
+            throw new VariableDeclarationError("Redeclaration of a variable: " + varName, getLine(ctx), getCol(ctx));
+        if(Arrays.asList(((VocabularyImpl)this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
+            throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
+        if(isAnInstrument(varName))
+            throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
+        if(isANote(varName))
+            throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
+
+        switch (ctx.type().getText()) {
+            case "int":
+                VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), new IntValue(0));
+                this.main.memory.put(varName, intInfo);
+                break;
+            case "bool":
+                VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), new BoolValue(false));
+                this.main.memory.put(varName, boolInfo);
+                break;
+            case "Note":
+                VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), new NoteValue(null));
+                this.main.memory.put(varName, noteInfo);
+                break;
+            case "Chord":
+                VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), new ChordValue(null));
+                this.main.memory.put(varName, chordInfo);
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -1068,6 +1142,35 @@ public class MusicSuperListener extends MusicBaseListener {
      */
     @Override public void visitErrorNode(ErrorNode node){
         throw new RuntimeException("An error has occurred");
+    }
+
+
+
+
+    private int getLine(ParserRuleContext ctx) {
+        return ctx.getStart().getLine();
+    }
+
+    private int getCol(ParserRuleContext ctx) {
+        return ctx.getStart().getCharPositionInLine();
+    }
+
+    private static boolean isAnInstrument(String value) {
+        for (Instrument i : Instrument.values()) {
+            if (i.name().equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isANote(String value) {
+        for (Note n : Note.values()) {
+            if (n.name().equals(value)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

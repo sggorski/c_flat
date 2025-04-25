@@ -21,13 +21,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     MusicParser.MainDeclContext mainCtx = null;
     MusicParser.FunctionDeclContext funcCtx = null;
 
+    public MusicSuperVisitor(MainMelody main) {
+        this.main = main;
+    }
+
     @Override
     public T visitProgram(MusicParser.ProgramContext ctx) throws RuntimeException {
-        try {
-            main = new MainMelody();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
         return visitChildren(ctx);
     }
 

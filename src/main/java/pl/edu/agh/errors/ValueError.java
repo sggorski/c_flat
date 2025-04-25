@@ -12,6 +12,13 @@ public class ValueError extends RuntimeException {
         this.column = column;
     }
 
+    public int getLine() {
+        return line;
+    }
+    public int getColumn() {
+        return column;
+    }
+
     @Override
     public String getMessage() {
         return message;
