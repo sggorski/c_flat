@@ -332,7 +332,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             NoteValue noteValue = (NoteValue)exprValue;
             ChordValue chordValue = (ChordValue)varInfo.valueObj;
             if(ctx.assOp().SUMIS() != null ) chordValue.notes.add(noteValue);
-            else if(ctx.assOp().SUBIS() != null) chordValue.notes.remove(noteValue);
+            else if(ctx.assOp().SUBIS() != null){
+                if(chordValue.notes.size()<=2) throw new ArithmeticException("Invalid operation with chords"); //TODO
+                chordValue.notes.remove(noteValue);
+            }
             else throw new ArithmeticException("Invalid operation with chords"); //TODO
         }
         else throw new ArithmeticException("Invalid operation"); //TODO
