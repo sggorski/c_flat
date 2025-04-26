@@ -348,8 +348,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) {
         String varName = ctx.ID().getText();
         VarInfo varInfo = this.main.memory.get(varName);
-
-        Value val = (Value)visit(ctx.expr());
+        Value val = tryCasting(ctx.expr());
         if(val.getType()!=varInfo.type) {
             throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + val.getType(), getLine(ctx), getCol(ctx));
         }
