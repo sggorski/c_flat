@@ -295,7 +295,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if(varInfo==null) throw new ScopeError("Variable not definied: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
         Value exprValue = (Value) visit(ctx.expr());
         if(exprValue.getType()!=varInfo.type){
-            throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + varInfo.type + "not: " + exprValue.getType(), getLine(ctx), getCol(ctx));
+            throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + exprValue.getType(), getLine(ctx), getCol(ctx));
         }
         varInfo.valueObj = exprValue;
 
@@ -313,6 +313,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) {
+        String varName = ctx.ID().getText();
+        VarInfo varInfo = this.main.memory.get(varName);
+
+        Value val = (Value)visit(ctx.expr());
+        if(val.getType()!=varInfo.type) {
+            throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + val.getType(), getLine(ctx), getCol(ctx));
+        }
+        varInfo.valueObj = val;
+
+        System.out.println(main.memory.get(varInfo.name).toString());
         return visitChildren(ctx);
     }
 
@@ -423,8 +433,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 NoteValue note = (NoteValue) visit(child);
                 playNote(note.note, duration);
             }
-            else{
-                VarInfo varInfo = main.memory.get(ctx.ID(0).getText());
+            else {
+                VarInfo varInfo = main.memory.get(ctx.ID(i).getText());
                 if(varInfo.type==Type.NOTE){
                     NoteValue noteVal = (NoteValue) varInfo.valueObj;
                     playNote(noteVal.note, duration);
