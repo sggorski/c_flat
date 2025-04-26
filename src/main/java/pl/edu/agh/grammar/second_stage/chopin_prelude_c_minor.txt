@@ -8,10 +8,17 @@ melody main(){
 
 	PAUSE 500;
 
-	PLAY [C0, C1, G1, C2, Eb2, G2] 1000;
-	PLAY [F-1, F0, Ab1, C2, Eb2, Ab2] 1000;
+	Chord ch1 = [C0, C1, G1, C2, Eb2, G2];
+	Chord ch2 = [F-1, F0, Ab1, C2, Eb2];
+	ch2 += Ab2;
+	Chord ch3 = [D2, F2, A2];
+	ch3 -= A2;
+	Chord ch4 = ch3;
+
+	PLAY ch1 1000;
+	PLAY ch2 1000;
 	PLAY [G-1, G0, G1, H1, Eb2, G2] 750;
-	PLAY [D2, F2] 250;
+	PLAY ch3 250;
 	PLAY [C0, G0, C1, Eb1, G1, C2, Eb2] 1000;
 	PLAY [Ab-1, Ab0, Eb1, Ab1, C2, Eb2] 1000;
 	PLAY [Db-1, Db0, F1, Ab1, Db2, F2] 1000;
@@ -57,9 +64,17 @@ melody main(){
     PLAY D2 250;
     PLAY [C-1, C0, Eb1, G1, C2] 1000;
 
+    Chord ch5 = [C0, C1, Eb2, G2, Eb3];
+
     SET VOLUME=45;
-    PLAY [C0, C1, Eb2, G2, Eb3] 1000;
-    PLAY [C1, C2, Eb2, Ab2, Eb3] 1000;
+    PLAY ch5 1000;
+
+    ch5 -= G2;
+    ch5 += Ab2;
+    ch5 -= C0;
+    ch5 += C2;
+
+    PLAY ch5 1000;
     PLAY [H0, H1, D2, Ab2, D3] 750;
     PLAY F#2 250;
     PLAY [B0, B1, D2, G2, D3] 1000;
