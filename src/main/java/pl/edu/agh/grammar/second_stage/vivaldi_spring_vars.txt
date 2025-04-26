@@ -48,7 +48,10 @@ melody main() {
     PLAY n3 600;
     PLAY n3 A3 200;
 
-    tmp = tmp - 200;
+    tmp -= 300;
+    tmp *= 2;
+    tmp /= 2;
+    tmp += 100;
 
     PLAY G#3 tmp;
     PLAY n4 H3 200;
@@ -77,6 +80,7 @@ melody main() {
     PLAY A3 G#3 400;
     PLAY F#3 E3 200;
     PLAY note2 note1 note2 note1 note2 note1 67;
+    PLAY note1 200;
     PLAY note1 800;
     PAUSE 500;
 }

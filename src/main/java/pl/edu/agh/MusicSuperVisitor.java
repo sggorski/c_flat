@@ -312,7 +312,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             if(ctx.assOp().SUMIS() != null) intVar.value += intValue.value;
             else if(ctx.assOp().SUBIS() != null) intVar.value -= intValue.value;
             else if (ctx.assOp().MULIS() != null) intVar.value *= intValue.value;
-            else if (ctx.assOp().DIVIS() != null && intValue.value!=0) intVar.value *= intValue.value;
+            else if (ctx.assOp().DIVIS() != null && intValue.value!=0) intVar.value /= intValue.value;
             else throw new ArithmeticException("Division by zero"); //TODO
         }
         else if (varInfo.type == Type.NOTE && exprValue.getType()==Type.INT){
