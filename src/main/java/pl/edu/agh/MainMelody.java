@@ -31,12 +31,6 @@ public class MainMelody {
         this.synth.open();
         this.channels = this.synth.getChannels();
         this.channels[0].programChange(0);
-        //variable registration, just for debugging
-        this.memory.put("var_note",new VarInfo("var_note", Type.NOTE, 2,new NoteValue(null)));
-        this.memory.put("var_chord",new VarInfo("var_chord", Type.CHORD, 2,new ChordValue(null)));
-        this.memory.put("var_int",new VarInfo("var_int", Type.INT, 2,new IntValue(0)));
-        this.memory.put("var_bool",new VarInfo("var_bool", Type.BOOL, 2,new BoolValue(false)));
-        this.memory.put("var_test",new VarInfo("var_test", Type.INT, 2,new IntValue(0)));
         this.notes.put(Note.Cbm2, 0);
         this.notes.put(Note.Cm2, 0);
         this.notes.put(Note.Csm2, 1);

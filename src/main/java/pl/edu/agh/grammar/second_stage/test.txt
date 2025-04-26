@@ -1,5 +1,11 @@
-melody main(){
-    SET PACE=zmienna;
-    // zmienna3 = ((2 + 2*3) / (2 + 6 - 9)) * (100 / (2*9 - 3*3));
-    // zmienna1 = (C2 +2)*2;
+melody main() {
+	Chord ch1;
+	Note n1;
+	n1 = C1;
+	ch1 = [C1,C2];
+	PLAY ch1 1000;
+	ch1+= C3;
+	PLAY ch1 1000;
+	ch1-= n1;
+	PLAY ch1 1000;
 }

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 import static pl.edu.agh.utils.Instrument.*;
 
@@ -290,16 +289,14 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitAssignment(MusicParser.AssignmentContext ctx) {
-        VarInfo varInfo =null;
-        if(ctx.ID() != null)  varInfo = main.memory.get(ctx.ID().getText());
-        if(varInfo==null) throw new ScopeError("Variable not definied: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
-        Value exprValue = (Value) visit(ctx.expr());
+        VarInfo varInfo = extractVariable(ctx, ctx.ID(),null);
+        Value exprValue = tryCasting(ctx.expr());
         if(exprValue.getType()!=varInfo.type){
             throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + varInfo.type + "not: " + exprValue.getType(), getLine(ctx), getCol(ctx));
         }
         varInfo.valueObj = exprValue;
 
-        //To check if everything is okey, will be deleted in a future
+        //To check if everything is ok, will be deleted in a future
         System.out.println(main.memory.get(varInfo.name).toString());
         return visitChildren(ctx);
     }
@@ -307,6 +304,39 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitSelfAssignment(MusicParser.SelfAssignmentContext ctx) {
+        VarInfo varInfo = extractVariable(ctx,ctx.ID(),null);
+        Value exprValue = tryCasting(ctx.expr());
+        if(varInfo.type == Type.INT && exprValue.getType()==Type.INT){
+            IntValue intValue = (IntValue)exprValue;
+            IntValue intVar = (IntValue)varInfo.valueObj;
+            if(ctx.assOp().SUMIS() != null) intVar.value += intValue.value;
+            else if(ctx.assOp().SUBIS() != null) intVar.value -= intValue.value;
+            else if (ctx.assOp().MULIS() != null) intVar.value *= intValue.value;
+            else if (ctx.assOp().DIVIS() != null && intValue.value!=0) intVar.value *= intValue.value;
+            else throw new ArithmeticException("Division by zero"); //TODO
+        }
+        else if (varInfo.type == Type.NOTE && exprValue.getType()==Type.INT){
+            IntValue intValue = (IntValue)exprValue;
+            NoteValue noteValue = (NoteValue)varInfo.valueObj;
+            int newNoteValue;
+            int oldNoteValue = main.notes.get(noteValue.note);
+            if(ctx.assOp().SUMIS() != null) newNoteValue = oldNoteValue + intValue.value;
+            else if(ctx.assOp().SUBIS() != null) newNoteValue = oldNoteValue - intValue.value;
+            else if(ctx.assOp().MULIS() != null && intValue.value>=1) newNoteValue = oldNoteValue + (intValue.value-1)*12;
+            else if(ctx.assOp().DIVIS() != null && intValue.value>=1) newNoteValue = oldNoteValue - (intValue.value-1)*12;
+            else throw new ArithmeticException("Invalid operation with notes"); //TODO
+            newNoteValue = Math.abs(newNoteValue)%85;
+            noteValue.note = findNote(newNoteValue);
+        }
+        else if(varInfo.type == Type.CHORD && exprValue.getType()==Type.NOTE){
+            NoteValue noteValue = (NoteValue)exprValue;
+            ChordValue chordValue = (ChordValue)varInfo.valueObj;
+            if(ctx.assOp().SUMIS() != null ) chordValue.notes.add(noteValue);
+            else if(ctx.assOp().SUBIS() != null) chordValue.notes.remove(noteValue);
+            else throw new ArithmeticException("Invalid operation with chords"); //TODO
+        }
+        else throw new ArithmeticException("Invalid operation"); //TODO
+        System.out.println(varInfo);
         return visitChildren(ctx);
     }
 
@@ -370,7 +400,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if(ctx.INT_VAL() !=null || ctx.ID(1)!=null){
             VarInfo varInfo = main.memory.get(ctx.ID(0).getText());
             if (varInfo == null)
-                throw new ScopeError("Variable not definied: " + ctx.ID(0).getText(), getLine(ctx), getCol(ctx));
+                throw new ScopeError("Variable not defined: " + ctx.ID(0).getText(), getLine(ctx), getCol(ctx));
             int duration = 0;
             if (ctx.INT_VAL() != null) duration = Integer.parseInt(ctx.INT_VAL().getText());
             else if (ctx.ID(1) != null) {
@@ -382,8 +412,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 playNote(noteVal.note, duration);
             }
             else{
-                ChordValue chordval = (ChordValue) varInfo.valueObj;
-                playChord(chordval.notes, duration);
+                ChordValue chordVal = (ChordValue) varInfo.valueObj;
+                playChord(chordVal.notes, duration);
             }
         }
         return visitChildren(ctx);
@@ -408,7 +438,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             duration = Integer.parseInt(ctx.INT_VAL().getText());
         } else if (ctx.ID(lastId) != null) {
             VarInfo var = main.memory.get(ctx.ID(lastId).getText());
-            if (var == null) throw new ScopeError("Variable not definied: ", getLine(ctx), getCol(ctx));
+            if (var == null) throw new ScopeError("Variable not defined: ", getLine(ctx), getCol(ctx));
             if (var.type != Type.INT)
                 throw new ValueError("Incorrect type of variable: " + ctx.ID(lastId).getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
             duration = ((IntValue) var.valueObj).value;
@@ -448,7 +478,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 else if (ctx.ID() != null) {
                     VarInfo var = main.memory.get(ctx.ID().getText());
                     if (var == null)
-                        throw new ScopeError("Variable not definied: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
+                        throw new ScopeError("Variable not defined: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
                     if (var.type != Type.INT)
                         throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
                     IntValue varInt = (IntValue) var.valueObj;
@@ -535,11 +565,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     @SuppressWarnings("unchecked")
     public T visitOrOperatorExpr(MusicParser.OrOperatorExprContext ctx) {
-        Value firstValue = (Value) visit(ctx.expr(0));
-        Value secondValue = (Value) visit(ctx.expr(1));
-        if(firstValue == null || secondValue == null){
-            throw new ValueError("Incorrect type of expression: INSTRUMENT not BOOL", getLine(ctx), getCol(ctx));
-        }
+        Value firstValue = tryCasting(ctx.expr(0));
+        Value secondValue = tryCasting(ctx.expr(1));
+
         if(firstValue instanceof BoolValue && secondValue instanceof BoolValue) {
             BoolValue boolExpr1 = (BoolValue) firstValue;
             BoolValue boolExpr2 = (BoolValue) secondValue;
@@ -555,9 +583,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     @SuppressWarnings("unchecked")
     public T visitNotExpr(MusicParser.NotExprContext ctx) {
-        Value expr = (Value)visit(ctx.expr());
-        if(expr == null)
-            throw new ValueError("Incorrect type of expression: INSTRUMENT not BOOL", getLine(ctx), getCol(ctx));
+        Value expr = tryCasting(ctx.expr());
         if (expr instanceof BoolValue) {
             BoolValue boolExpr = (BoolValue) expr;
             boolExpr.value = !boolExpr.value;
@@ -570,11 +596,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     @SuppressWarnings("unchecked")
     public T visitOrderOperatorExpr(MusicParser.OrderOperatorExprContext ctx) {
-        if(visit(ctx.expr(0)) instanceof Instrument || visit(ctx.expr(1)) instanceof Instrument ){
-            throw new ValueError("Incorrect type of expression: INSTRUMENT not allowed here", getLine(ctx), getCol(ctx));
-        }
-        Value firstValue = (Value) visit(ctx.expr(0));
-        Value secondValue = (Value) visit(ctx.expr(1));
+        Value firstValue =  tryCasting(ctx.expr(0));
+        Value secondValue = tryCasting(ctx.expr(1));
 
         BiPredicate<Integer, Integer> predicate = (x,y) -> false;
         if(ctx.orderOp().GT() != null) predicate = (x,y) -> x > y;
@@ -600,12 +623,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     @SuppressWarnings("unchecked")
     public T visitAddSubOperatorExpr(MusicParser.AddSubOperatorExprContext ctx) {
-        Value firstValue = (Value) visit(ctx.expr(0));
-        Value secondValue = (Value) visit(ctx.expr(1));
-        if(firstValue == null || secondValue == null){
-            //That means it's INSTRUMENT in expr which is prohibited
-            throw new ArithmeticException("Cannot interpret instrument value in add/sub operation"); //TODO
-        }
+        Value firstValue = tryCasting(ctx.expr(0));
+        Value secondValue = tryCasting(ctx.expr(1));
+
         if(firstValue.getType()==Type.INT && secondValue.getType()==Type.INT ) {
             int firstInt = ((IntValue)firstValue).value;
             int secondInt = ((IntValue)secondValue).value;
@@ -637,11 +657,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     @SuppressWarnings("unchecked")
     public T visitAndOperatorExpr(MusicParser.AndOperatorExprContext ctx) {
-        Value firstValue = (Value) visit(ctx.expr(0));
-        Value secondValue = (Value) visit(ctx.expr(1));
-        if(firstValue == null || secondValue == null){
-            throw new ValueError("Incorrect type of expression: INSTRUMENT not BOOL", getLine(ctx), getCol(ctx));
-        }
+        Value firstValue = tryCasting(ctx.expr(0));
+        Value secondValue = tryCasting(ctx.expr(1));
         if(firstValue instanceof BoolValue && secondValue instanceof BoolValue) {
             BoolValue boolExpr1 = (BoolValue) firstValue;
             BoolValue boolExpr2 = (BoolValue) secondValue;
@@ -657,18 +674,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     @SuppressWarnings("unchecked")
     public T visitMullDivOperatorExpr(MusicParser.MullDivOperatorExprContext ctx) {
-        Value firstValue = (Value) visit(ctx.expr(0));
-        Value secondValue = (Value) visit(ctx.expr(1));
-        if(firstValue == null || secondValue == null){
-            //That means it's INSTRUMENT in expr which is prohibited
-            throw new ArithmeticException("Cannot interpret instrument value in add/sub operation"); //TODO
-        }
+        Value firstValue =  tryCasting(ctx.expr(0));
+        Value secondValue = tryCasting(ctx.expr(1));
+
         if(firstValue.getType()==Type.INT && secondValue.getType()==Type.INT ) {
             int firstInt = ((IntValue)firstValue).value;
             int secondInt = ((IntValue)secondValue).value;
             int resultInt;
 
             if(ctx.mullDivOp().MUL() != null) resultInt = firstInt * secondInt;
+            else if(ctx.mullDivOp().PER() != null) resultInt = firstInt % secondInt;
             else if(secondInt !=0) resultInt = firstInt / secondInt;
             else throw new ArithmeticException("Division by zero!"); //TODO
             Value result = new IntValue(resultInt);
@@ -683,9 +698,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 throw new ArithmeticException("Invalid operation"); //TODO
             if(ctx.mullDivOp().MUL() != null)
                 noteIntVal += (intVal-1)*12;
-            else
-                noteIntVal -=  (intVal-1)*12;
-
+            else if(ctx.mullDivOp().DIV() !=null ) noteIntVal -=  (intVal-1)*12;
+            else throw new ArithmeticException("Invalid operation. % cannot be used with notes"); //TODO
             noteIntVal = Math.abs(noteIntVal)%85;
             Value result = new NoteValue(findNote(noteIntVal));
             return (T) result;
@@ -764,12 +778,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     @SuppressWarnings("unchecked")
     public T visitEqOperatorExpr(MusicParser.EqOperatorExprContext ctx) {
-        Value firstValue = (Value)visit(ctx.expr(0));
-        Value secondValue = (Value)visit(ctx.expr(1));
-        //Comparing instruments done in other node, they should be recognised as a different node
-        if(firstValue == null || secondValue == null){
-            throw new ArithmeticException("Cannot interpret instrument value in eq/neq operation"); //TODO
-        }
+        Value firstValue = tryCasting(ctx.expr(0));
+        Value secondValue = tryCasting(ctx.expr(1));
+
         if(firstValue.getType()!=secondValue.getType()) {
             return  (T) new BoolValue(false);
         }
@@ -904,6 +915,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         VarInfo var = main.memory.get(id.getText());
         if (var == null)
             throw new ScopeError("Variable not defined: " + id.getText(), getLine(ctx), getCol(ctx));
+        if(type == null){
+            return var;
+        }
         if (var.type != type)
             throw new ValueError("Incorrect type of variable: " + id.getText() + "Type " + var.type + " not " + type, getLine(ctx), getCol(ctx));
         return var;
@@ -916,5 +930,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 .map(Map.Entry::getKey).orElse(null);
         if(newNote == null) throw new RuntimeException(); //TODO
         return newNote;
+    }
+
+    private Value tryCasting(MusicParser.ExprContext expr){
+        if(visit(expr) instanceof Instrument){
+            throw new ValueError("Incorrect type of expression: INSTRUMENT not allowed here", getLine(expr), getCol(expr));
+        }
+        return (Value) visit(expr);
     }
 }
