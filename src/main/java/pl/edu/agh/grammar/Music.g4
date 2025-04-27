@@ -121,9 +121,10 @@ pauseStatement
 
 controlStatement
     : 'while' '(' expr ')' '{' (statement|loopStatement)+'}' #whileLoop
-    | 'if' '(' expr ')' '{' (statement|loopStatement)+ '}' ('else' 'if' '(' expr ')' '{' (statement|loopStatement)+ '}')* ('else' '{' (statement|loopStatement)+ '}')? #if
+    | 'if' '(' ifexpre=expr ')' '{' (statement|loopStatement)+ '}' ('else' 'if' '(' expr ')' '{' (statement|loopStatement)+ '}')* ('else' '{' (statement|loopStatement)+ '}')? #if
     | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' '{' (statement|loopStatement)+ '}' #forLoop
     ;
+
 
 forInit
     : ID

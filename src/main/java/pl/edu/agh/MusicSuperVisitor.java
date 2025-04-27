@@ -313,7 +313,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             else if(ctx.assOp().SUBIS() != null) intVar.value -= intValue.value;
             else if (ctx.assOp().MULIS() != null) intVar.value *= intValue.value;
             else if (ctx.assOp().DIVIS() != null && intValue.value!=0) intVar.value /= intValue.value;
-            else throw new ArithmeticException("Division by zero"); //TODO
+            else throw new ArithmeticOperationError("Division by zero", getLine(ctx), getCol(ctx));
         }
         else if (varInfo.type == Type.NOTE && exprValue.getType()==Type.INT){
             IntValue intValue = (IntValue)exprValue;
@@ -324,7 +324,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             else if(ctx.assOp().SUBIS() != null) newNoteValue = oldNoteValue - intValue.value;
             else if(ctx.assOp().MULIS() != null && intValue.value>=1) newNoteValue = oldNoteValue + (intValue.value-1)*12;
             else if(ctx.assOp().DIVIS() != null && intValue.value>=1) newNoteValue = oldNoteValue - (intValue.value-1)*12;
-            else throw new ArithmeticException("Invalid operation with notes"); //TODO
+            else throw new ArithmeticOperationError("Invalid operation with notes", getLine(ctx), getCol(ctx));
             newNoteValue = Math.abs(newNoteValue)%85;
             noteValue.note = findNote(newNoteValue);
         }
@@ -333,12 +333,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             ChordValue chordValue = (ChordValue)varInfo.valueObj;
             if(ctx.assOp().SUMIS() != null ) chordValue.notes.add(noteValue);
             else if(ctx.assOp().SUBIS() != null){
-                if(chordValue.notes.size()<=2) throw new ArithmeticException("Invalid operation with chords"); //TODO
+                if(chordValue.notes.size()<=2) throw new ArithmeticOperationError("Invalid operation with chords", getLine(ctx), getCol(ctx));
                 chordValue.notes.remove(noteValue);
             }
-            else throw new ArithmeticException("Invalid operation with chords"); //TODO
+            else throw new ArithmeticOperationError("Invalid operation with chords", getLine(ctx), getCol(ctx));
         }
-        else throw new ArithmeticException("Invalid operation"); //TODO
+        else throw new ArithmeticOperationError("Invalid operation", getLine(ctx), getCol(ctx));
         System.out.println(varInfo);
         return visitChildren(ctx);
     }
@@ -623,7 +623,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         else if(firstValue instanceof NoteValue && secondValue instanceof NoteValue) {
             return (T) new BoolValue(predicate.test(main.notes.get(((NoteValue) firstValue).note), main.notes.get(((NoteValue) secondValue).note)));
         }
-        else throw new ValueError("Incorrect type of comparison!", getLine(ctx), getCol(ctx)); //TODO
+        else throw new ArithmeticOperationError("Incorrect type of comparison!", getLine(ctx), getCol(ctx));
     }
 
     @Override
@@ -658,12 +658,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             else noteIntVal +=  intVal;
 
             if(noteIntVal<0 || noteIntVal >84)
-                throw new ArithmeticException("Note's limit exceeded"); //TODO
+                throw new ArithmeticOperationError("Note's limit exceeded", getLine(ctx), getCol(ctx));
 
             Value result = new NoteValue(findNote(noteIntVal));
             return (T) result;
         }
-        else throw new ArithmeticException("Invalid arguments for add/subtract operation"); //TODO: create new exception
+        else throw new ArithmeticOperationError("Invalid arguments for add/subtract operation", getLine(ctx), getCol(ctx));
     }
 
     @Override
@@ -697,7 +697,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             if(ctx.mullDivOp().MUL() != null) resultInt = firstInt * secondInt;
             else if(ctx.mullDivOp().PER() != null) resultInt = firstInt % secondInt;
             else if(secondInt !=0) resultInt = firstInt / secondInt;
-            else throw new ArithmeticException("Division by zero!"); //TODO
+            else throw new ArithmeticOperationError("Division by zero!", getLine(ctx), getCol(ctx));
             Value result = new IntValue(resultInt);
             return (T) result;
         }
@@ -707,16 +707,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             int noteIntVal = main.notes.get(note);
 
             if(noteIntVal<1)
-                throw new ArithmeticException("Invalid operation"); //TODO
+                throw new ArithmeticOperationError("Invalid operation", getLine(ctx), getCol(ctx));
             if(ctx.mullDivOp().MUL() != null)
                 noteIntVal += (intVal-1)*12;
             else if(ctx.mullDivOp().DIV() !=null ) noteIntVal -=  (intVal-1)*12;
-            else throw new ArithmeticException("Invalid operation. % cannot be used with notes"); //TODO
+            else throw new ArithmeticOperationError("Invalid operation. % cannot be used with notes", getLine(ctx), getCol(ctx));
             noteIntVal = Math.abs(noteIntVal)%85;
             Value result = new NoteValue(findNote(noteIntVal));
             return (T) result;
         }
-        else throw new ArithmeticException("Invalid arguments for mull/div operation"); //TODO: create new exception
+        else throw new ArithmeticOperationError("Invalid arguments for mull/div operation", getLine(ctx), getCol(ctx));
     }
 
 
@@ -741,7 +741,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @SuppressWarnings("unchecked")
     public T visitIdExpr(MusicParser.IdExprContext ctx) {
         VarInfo varInfo = main.memory.get(ctx.ID().getText());
-        if(varInfo == null) throw new RuntimeException("No such variable defined"); //TODO
+        if(varInfo == null) throw new UndefinedError("No such variable defined", getLine(ctx), getCol(ctx));
         return (T)varInfo.valueObj;
     }
 
@@ -926,7 +926,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public VarInfo extractVariable(ParserRuleContext ctx, TerminalNode id, Type type) {
         VarInfo var = main.memory.get(id.getText());
         if (var == null)
-            throw new ScopeError("Variable not defined: " + id.getText(), getLine(ctx), getCol(ctx));
+            throw new UndefinedError("Variable not defined: " + id.getText(), getLine(ctx), getCol(ctx));
         if(type == null){
             return var;
         }
