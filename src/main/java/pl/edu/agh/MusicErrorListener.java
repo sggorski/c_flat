@@ -7,6 +7,10 @@ import pl.edu.agh.errors.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MusicErrorListener extends BaseErrorListener {
@@ -15,17 +19,18 @@ public class MusicErrorListener extends BaseErrorListener {
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
 
 
-        if(recognizer instanceof Parser) {
+        if (recognizer instanceof Parser) {
             CommonToken token = (CommonToken) offendingSymbol;
             MusicParser parser = (MusicParser) recognizer;
-
             ParserRuleContext ctx = parser.getRuleContext();
             String rulename = parser.getRuleNames()[ctx.getRuleIndex()];
 
+            String message = tryToResolveError(parser, token, rulename);
+
             System.out.println(ExpectedTokens(parser));
-            System.out.println(rulename  + " " + token.getText() + " " +  ctx.start.getText());
-            throw new SyntaxError("Unexpected symbol " + token.getText() + ", expecting: " + ExpectedTokens(parser), line, charPositionInLine);
-        }else {
+            System.out.println(rulename + " " + token.getText() + " " + ctx.start.getText());
+            throw new SyntaxError(message, line, charPositionInLine);
+        } else {
 
             MusicLexer lexer = (MusicLexer) recognizer; // Cast recognizer to lexer, because it's lexer's stage
 
@@ -37,28 +42,45 @@ public class MusicErrorListener extends BaseErrorListener {
 
             throw new SyntaxError("Unrecognized character: " + errorChar, lexer.getLine(), lexer.getCharPositionInLine());
         }
-       // throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
+        // throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
     }
 
-    private String ExpectedTokens(Parser parser) {
+    private List<String> ExpectedTokens(Parser parser) {
 
-        if(parser.getExpectedTokens() == null) {
+        ArrayList<String> expectedTokens = new ArrayList<>();
+
+        if (parser.getExpectedTokens() == null) {
             return null;
         }
 
         IntervalSet tokens = parser.getExpectedTokens();
 
-        if(tokens.size() == 1){
-            return " Expected value: " + parser.getVocabulary().getDisplayName(tokens.get(0));
-        }else {
-            StringBuilder buf = new StringBuilder();
-            buf.append("{ ");
-            for (int i = 0; i < tokens.size() - 1; i++) {
-                buf.append(parser.getVocabulary().getDisplayName(tokens.get(i)) + ", ");
-            }
-            buf.append(parser.getVocabulary().getDisplayName(tokens.get(tokens.size() - 1)));
-            buf.append(" }");
-            return buf.toString();
+        for (int i = 0; i < tokens.size() - 1; i++) {
+            expectedTokens.add(parser.getVocabulary().getDisplayName(tokens.get(i)));
         }
+        return expectedTokens;
+
     }
+
+    public String tryToResolveError(MusicParser parser, CommonToken faultyToken, String rulename) {
+        ParserRuleContext ctx = parser.getRuleContext();
+        ArrayList<String> tokens = (ArrayList<String>) ExpectedTokens(parser);
+
+        if(tokens != null ) {
+            if(tokens.size() == 1 && tokens.get(0).equals(";")){
+                return "Missing semicolon";
+            }
+        }
+
+        if(rulename.equals("expr") && ctx.getParent() instanceof MusicParser.IfContext) {
+            return "If expression cannot be empty";
+        }
+        if(rulename.equals("expr") && ctx.getParent() instanceof MusicParser.WhileLoopContext) {
+            return "While loop expression cannot be empty";
+        }
+
+        return "Unrecognized character: " + faultyToken.getText();
+    }
+
+
 }
