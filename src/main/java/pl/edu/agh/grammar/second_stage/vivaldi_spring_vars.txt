@@ -4,6 +4,16 @@ melody main() {
     int c = (600 / (2 + 2 - 2/2)) + (50 - 25*2);    // = 200
     int i = 250*2;
 
+    bool cmp1 = 5 > 10;
+    bool cmp2 = 5 <= 10;
+    bool cmp3 = 5 == 5;
+    bool cmp4 = 5 != 5;
+
+    bool cmp5 = C2 >= (D1 - 2);
+    bool cmp6 = D#3 < C#3;
+    bool cmp7 = D#3 == Eb3;
+    bool cmp8 = F2 != E#2;
+
     SET INSTRUMENT=VIOLA;
     SET PACE=i;
 
