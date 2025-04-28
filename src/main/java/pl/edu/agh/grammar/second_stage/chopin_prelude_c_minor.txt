@@ -15,6 +15,13 @@ melody main(){
 	ch3 -= A2;
 	Chord ch4 = ch3;
 
+	bool cmp = ch1 == ch2;
+	bool cmp2 = ch3 == ch4;
+
+	Chord tmp1 = [C2, E2, G2];
+	Chord tmp2 = [H#1, Fb2, G2];
+	bool cmp3 = tmp1 == tmp2;
+
 	PLAY ch1 1000;
 	PLAY ch2 1000;
 	PLAY [G-1, G0, G1, H1, Eb2, G2] 750;
