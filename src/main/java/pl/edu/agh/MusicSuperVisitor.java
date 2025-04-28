@@ -319,7 +319,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             IntValue intValue = (IntValue)exprValue;
             NoteValue noteValue = (NoteValue)varInfo.valueObj;
             int newNoteValue;
-            int oldNoteValue = main.notes.get(noteValue.note);
+            int oldNoteValue = NoteMap.notes.get(noteValue.note);
             if(ctx.assOp().SUMIS() != null) newNoteValue = oldNoteValue + intValue.value;
             else if(ctx.assOp().SUBIS() != null) newNoteValue = oldNoteValue - intValue.value;
             else if(ctx.assOp().MULIS() != null && intValue.value>=1) newNoteValue = oldNoteValue + (intValue.value-1)*12;
@@ -621,7 +621,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             return (T) new BoolValue(predicate.test(((IntValue) firstValue).value, ((IntValue) secondValue).value));
         }
         else if(firstValue instanceof NoteValue && secondValue instanceof NoteValue) {
-            return (T) new BoolValue(predicate.test(main.notes.get(((NoteValue) firstValue).note), main.notes.get(((NoteValue) secondValue).note)));
+            return (T) new BoolValue(predicate.test(NoteMap.notes.get(((NoteValue) firstValue).note), NoteMap.notes.get(((NoteValue) secondValue).note)));
         }
         else throw new ArithmeticOperationError("Incorrect type of comparison!", getLine(ctx), getCol(ctx));
     }
@@ -652,7 +652,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if(firstValue.getType()==Type.NOTE && secondValue.getType()==Type.INT ){
             Note note = ((NoteValue)firstValue).note;
             int intVal = ((IntValue)secondValue).value;
-            int noteIntVal = main.notes.get(note);
+            int noteIntVal = NoteMap.notes.get(note);
 
             if(ctx.addSubOp().SUB() != null) noteIntVal -= intVal;
             else noteIntVal +=  intVal;
@@ -704,7 +704,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if(firstValue.getType()==Type.NOTE && secondValue.getType()==Type.INT ){
             Note note = ((NoteValue)firstValue).note;
             int intVal = ((IntValue)secondValue).value;
-            int noteIntVal = main.notes.get(note);
+            int noteIntVal = NoteMap.notes.get(note);
 
             if(noteIntVal<1)
                 throw new ArithmeticOperationError("Invalid operation", getLine(ctx), getCol(ctx));
@@ -896,7 +896,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     private void playChord(List<NoteValue> notes, Integer duration) {
         List<Integer> notesInt = new ArrayList<>();
         for (NoteValue note : notes) {
-            notesInt.add(main.notes.get(note.note));
+            notesInt.add(NoteMap.notes.get(note.note));
         }
 
         try {
@@ -911,7 +911,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     private void playNote(Note note, Integer duration) {
-        Integer noteInt = main.notes.get(note);
+        Integer noteInt = NoteMap.notes.get(note);
         try {
             if (main.instrument == DRUMS) {
                 main.playNote(main.channels[9], noteInt, duration, ((IntValue)main.effects.get(Effect.VOLUME)).value);
@@ -936,7 +936,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     private Note findNote(int value){
-        Note newNote = main.notes.entrySet().stream()
+        Note newNote = NoteMap.notes.entrySet().stream()
                 .filter(pair -> pair.getValue().equals(value))
                 .findFirst()
                 .map(Map.Entry::getKey).orElse(null);

@@ -22,7 +22,7 @@ public class App
         CharStream stream;
         try {
             // stream = CharStreams.fromFileName(String.format("src/main/java/pl/edu/agh/grammar/hello_worlds/hello_world_%s.txt",args[0]));
-            stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/second_stage/turkish_march.txt");
+            stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/second_stage/vivaldi_spring_vars.txt");
         } catch(Exception e) {
             System.out.println("No such melody!");
             return;
@@ -36,6 +36,7 @@ public class App
             CommonTokenStream tokens = new CommonTokenStream(lexer);
 
             MusicParser parser = new MusicParser(tokens);
+
             parser.removeErrorListeners();
             parser.addErrorListener(new MusicErrorListener());
 
