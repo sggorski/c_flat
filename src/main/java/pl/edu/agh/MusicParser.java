@@ -2362,19 +2362,20 @@ public class MusicParser extends Parser {
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class IfContext extends ControlStatementContext {
+		public ExprContext ifexpre;
 		public List<TerminalNode> LP() { return getTokens(MusicParser.LP); }
 		public TerminalNode LP(int i) {
 			return getToken(MusicParser.LP, i);
+		}
+		public List<TerminalNode> RP() { return getTokens(MusicParser.RP); }
+		public TerminalNode RP(int i) {
+			return getToken(MusicParser.RP, i);
 		}
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
-		}
-		public List<TerminalNode> RP() { return getTokens(MusicParser.RP); }
-		public TerminalNode RP(int i) {
-			return getToken(MusicParser.RP, i);
 		}
 		public List<StatementContext> statement() {
 			return getRuleContexts(StatementContext.class);
@@ -2524,7 +2525,7 @@ public class MusicParser extends Parser {
 				setState(291);
 				match(LP);
 				setState(292);
-				expr(0);
+				((IfContext)_localctx).ifexpre = expr(0);
 				setState(293);
 				match(RP);
 				setState(294);
