@@ -2,7 +2,6 @@ package pl.edu.agh;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import pl.edu.agh.errors.ScopeError;
 import pl.edu.agh.errors.SyntaxError;

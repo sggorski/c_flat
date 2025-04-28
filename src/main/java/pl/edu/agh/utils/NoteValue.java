@@ -19,7 +19,7 @@ public class NoteValue implements Value {
     @Override
     public BoolValue equals(Value value) {
         NoteValue other = (NoteValue) value;
-        return new BoolValue(this.note.equals(other.note));
+        return new BoolValue(NoteMap.notes.get(this.note)==NoteMap.notes.get(other.note));
     }
 
     @Override
@@ -27,11 +27,11 @@ public class NoteValue implements Value {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NoteValue noteValue = (NoteValue) o;
-        return type == noteValue.type && note == noteValue.note;
+        return type == noteValue.type && NoteMap.notes.get(note) == NoteMap.notes.get(noteValue.note);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, note);
+        return Objects.hash(type, NoteMap.notes.get(note));
     }
 }

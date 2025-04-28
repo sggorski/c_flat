@@ -1,11 +1,4 @@
 melody main() {
-	Chord ch1;
-	Note n1;
-	n1 = C1;
-	ch1 = [C1,C2];
-	PLAY ch1 1000;
-	ch1+= C3;
-	PLAY ch1 1000;
-	ch1-= n1;
-	PLAY ch1 1000;
+    Chord n1 = [C1,H#2];
+	bool n2 = n1==[C3,C1];
 }
