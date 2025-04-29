@@ -1,4 +1,11 @@
 melody main() {
-    Chord n1 = [C1,H#2];
-	bool n2 = n1==[C3,C1];
+    //Chord n1 = [C1,H#2] + H#0; //won't be added cos C1==H#0
+    //Chord n2 = [C1,H#0]; // error cos C1==H#0
+    //Chord n3 = [C1, C2] + [C1, H2]; //result: [C1, C2, H2]
+    Chord n4 = [C1, C2, C3] - [C1, H2]; //result: [C2,C3]
+    //Chord n5 = [C1, C2] - [C1, H2]; //error
+    n4 += C2; //nothing changes
+    n4 += [C2,H2, H#0]; //result [C2,C3,H2, H#0]
+    n4 -= [H3,C1]; // result [C2,C3,H2] H#0 deleted cos H#0==C1
+
 }

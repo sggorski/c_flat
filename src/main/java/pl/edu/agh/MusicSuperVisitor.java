@@ -6,9 +6,8 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.errors.*;
 import pl.edu.agh.utils.*;
 import pl.edu.agh.utils.Instrument;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.function.BiPredicate;
 
 import static pl.edu.agh.utils.Instrument.*;
@@ -331,12 +330,31 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         else if(varInfo.type == Type.CHORD && exprValue.getType()==Type.NOTE){
             NoteValue noteValue = (NoteValue)exprValue;
             ChordValue chordValue = (ChordValue)varInfo.valueObj;
-            if(ctx.assOp().SUMIS() != null ) chordValue.notes.add(noteValue);
+            if(ctx.assOp().SUMIS() != null ){
+                if(!chordValue.notes.contains(noteValue)) chordValue.notes.add(noteValue);
+            }
             else if(ctx.assOp().SUBIS() != null){
                 if(chordValue.notes.size()<=2) throw new ArithmeticOperationError("Invalid operation with chords", getLine(ctx), getCol(ctx));
                 chordValue.notes.remove(noteValue);
             }
             else throw new ArithmeticOperationError("Invalid operation with chords", getLine(ctx), getCol(ctx));
+        }
+        else if(varInfo.type == Type.CHORD && exprValue.getType()==Type.CHORD){
+            ChordValue chordValue = (ChordValue)exprValue;
+            ChordValue chordModified = (ChordValue)varInfo.valueObj;
+            if(ctx.assOp().SUMIS() != null ){
+                Set<NoteValue> setNotes = new HashSet<>();
+                setNotes.addAll(chordModified.notes);
+                setNotes.addAll(chordValue.notes);
+                chordModified.notes = new ArrayList<>(setNotes);
+            }
+            else{
+                List<NoteValue> listNotes = new ArrayList<>();
+                for (NoteValue note : chordModified.notes)
+                    if (!chordValue.notes.contains(note)) listNotes.add(note);
+                if(listNotes.size()<=1) throw new ArithmeticOperationError("Invalid operation with chords: less than 2 notes left in a chord", getLine(ctx), getCol(ctx));
+                chordModified.notes = listNotes;
+            }
         }
         else throw new ArithmeticOperationError("Invalid operation", getLine(ctx), getCol(ctx));
         System.out.println(varInfo);
@@ -653,21 +671,54 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             Value result = new IntValue(resultInt);
             return (T) result;
         }
-        if(firstValue.getType()==Type.NOTE && secondValue.getType()==Type.INT ){
+        else if(firstValue.getType()==Type.NOTE && secondValue.getType()==Type.INT ){
             Note note = ((NoteValue)firstValue).note;
             int intVal = ((IntValue)secondValue).value;
             int noteIntVal = NoteMap.notes.get(note);
 
             if(ctx.addSubOp().SUB() != null) noteIntVal -= intVal;
             else noteIntVal +=  intVal;
-
-            if(noteIntVal<0 || noteIntVal >84)
-                throw new ArithmeticOperationError("Note's limit exceeded", getLine(ctx), getCol(ctx));
-
+            noteIntVal = Math.abs(noteIntVal)%85;
             Value result = new NoteValue(findNote(noteIntVal));
             return (T) result;
         }
+        else if(firstValue.getType()==Type.CHORD && secondValue.getType()==Type.NOTE ){
+            NoteValue noteValue = (NoteValue)secondValue;
+            ChordValue chordValue = (ChordValue)firstValue;
+            ChordValue result;
+            if(ctx.addSubOp().ADD() != null ){
+                result = new ChordValue(chordValue.notes);
+                if(!chordValue.notes.contains(noteValue)) result.notes.add(noteValue);
+            }
+            else{
+                if(chordValue.notes.size()<=2 && chordValue.notes.contains(noteValue)) throw new ArithmeticOperationError("Invalid operation with chords", getLine(ctx), getCol(ctx));
+                result = new ChordValue(chordValue.notes);
+                result.notes.remove(noteValue);
+            }
+            return (T) result;
+        }
+        else if(firstValue.getType()==Type.CHORD && secondValue.getType()==Type.CHORD ) {
+            ChordValue chordValue2 = (ChordValue)secondValue;
+            ChordValue chordValue1 = (ChordValue)firstValue;
+            ChordValue result;
+            if(ctx.addSubOp().ADD() != null ){
+                Set<NoteValue> setNotes = new HashSet<>();
+                setNotes.addAll(chordValue1.notes);
+                setNotes.addAll(chordValue2.notes);
+                result = new ChordValue(new ArrayList<>(setNotes));
+            }
+            else{
+                List<NoteValue> listNotes = new ArrayList<>();
+                for (NoteValue note : chordValue1.notes)
+                    if (!chordValue2.notes.contains(note)) listNotes.add(note);
+                if(listNotes.size()<=1) throw new ArithmeticOperationError("Invalid operation with chords: less than 2 notes left in a chord", getLine(ctx), getCol(ctx));
+                result = new ChordValue(listNotes);
+            }
+            return (T)result;
+
+        }
         else throw new ArithmeticOperationError("Invalid arguments for add/subtract operation", getLine(ctx), getCol(ctx));
+
     }
 
     @Override
@@ -820,8 +871,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         List<NoteValue> notes = new ArrayList<>();
         for (TerminalNode node : ctx.chord().NOTE_VAL()) {
             Note note = Note.valueOf(node.getText().replace('#', 's').replace('-', 'm'));
-            notes.add(new NoteValue(note));
+            NoteValue newNote = new NoteValue(note);
+            if(!notes.contains(newNote))notes.add(newNote);
         }
+        if(notes.size()<2) throw new ValueError("Invalid operation with chords: same note repeated", getLine(ctx), getCol(ctx));
         return (T) (new ChordValue(notes));
     }
 
