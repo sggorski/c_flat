@@ -21,8 +21,8 @@ public class App
     public static void main( String[] args ) throws IOException {
         CharStream stream;
         try {
-            // stream = CharStreams.fromFileName(String.format("src/main/java/pl/edu/agh/grammar/hello_worlds/hello_world_%s.txt",args[0]));
-            stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/second_stage/chopin_prelude_c_minor.txt");
+            stream = CharStreams.fromFileName(String.format("src/main/java/pl/edu/agh/grammar/second_stage/%s.txt",args[0]));
+            //stream = CharStreams.fromFileName("src/main/java/pl/edu/agh/grammar/second_stage/chopin_prelude_c_minor.txt");
         } catch(Exception e) {
             System.out.println("No such melody!");
             return;
@@ -51,15 +51,15 @@ public class App
             visitor.visitProgram(program);
 
         } catch (ParseCancellationException e) {
-            System.out.println(e.getMessage() + " ParseCancel");
+            System.out.println(e.getMessage() /*+ " ParseCancel"*/);
         } catch (RecognitionException e) {
-            System.out.println(e.getMessage() + " Recognition");
+            System.out.println(e.getMessage() /*+ " Recognition"*/);
         } catch (SyntaxError | ValueError | ScopeError | VariableDeclarationError e) {
-            System.out.println(e.getMessage() + " Errors");
+            System.out.println(e.getMessage() /*+ " Errors"*/);
         } catch (MidiUnavailableException e) {
             throw new RuntimeException(e);
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(/*"Error: +"*/ e.getMessage());
         }
     }
 }

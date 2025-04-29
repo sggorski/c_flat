@@ -348,7 +348,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) {
         String varName = ctx.ID().getText();
         VarInfo varInfo = this.main.memory.get(varName);
+
         Value val = tryCasting(ctx.expr());
+
+
+
         if(val.getType()!=varInfo.type) {
             throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + val.getType(), getLine(ctx), getCol(ctx));
         }
@@ -945,6 +949,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     private Value tryCasting(MusicParser.ExprContext expr){
+        if(visit(expr) == null){
+            throw new UndefinedError("Undefined variable: " + " " + expr.getText(), getLine(expr), getCol(expr));
+        }
         if(visit(expr) instanceof Instrument){
             throw new ValueError("Incorrect type of expression: INSTRUMENT not allowed here", getLine(expr), getCol(expr));
         }

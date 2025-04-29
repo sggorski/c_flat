@@ -404,19 +404,19 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
 
         switch (ctx.type().getText()) {
             case "int":
-                VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), new IntValue(0));
+                VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), null);
                 this.main.memory.put(varName, intInfo);
                 break;
             case "bool":
-                VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), new BoolValue(false));
+                VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), null);
                 this.main.memory.put(varName, boolInfo);
                 break;
             case "Note":
-                VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), new NoteValue(null));
+                VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), null);
                 this.main.memory.put(varName, noteInfo);
                 break;
             case "Chord":
-                VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), new ChordValue(null));
+                VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), null);
                 this.main.memory.put(varName, chordInfo);
                 break;
             default:
@@ -458,11 +458,11 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
                 this.main.memory.put(varName, boolInfo);
                 break;
             case "Note":
-                VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), new NoteValue(null));
+                VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), null);
                 this.main.memory.put(varName, noteInfo);
                 break;
             case "Chord":
-                VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), new ChordValue(null));
+                VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), null);
                 this.main.memory.put(varName, chordInfo);
                 break;
             default:

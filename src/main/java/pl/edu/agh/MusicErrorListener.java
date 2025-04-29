@@ -68,7 +68,7 @@ public class MusicErrorListener extends BaseErrorListener {
         String tokenTypeName = getLexemName(faultyToken);
         String tokens = ExpectedTokens(parser);
 
-        System.out.println(ctx.start.getText() + " " + ctx.getText() + " " + faultyToken.getText() + " " + rulename + " " + tokenTypeName);
+        //System.out.println(ctx.start.getText() + " " + ctx.getText() + " " + faultyToken.getText() + " " + rulename + " " + tokenTypeName);
         if(tokens.equals("';'")) {
             return "missing ;";
         }
@@ -103,7 +103,7 @@ public class MusicErrorListener extends BaseErrorListener {
         }
 
 
-        return null;
+        return "Unrecognized character: " + faultyToken.getText();
     }
 
     private String getLexemName(CommonToken token) {
