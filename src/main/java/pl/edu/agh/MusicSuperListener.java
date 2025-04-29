@@ -394,7 +394,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         String varName = ctx.ID().getText();
 
         if(this.main.memory.containsKey(varName))
-            throw new VariableDeclarationError("Redeclaration of a variable: " + varName, getLine(ctx), getCol(ctx));
+            throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + this.main.memory.get(varName).line, getLine(ctx), getCol(ctx));
         if(Arrays.asList(((VocabularyImpl)this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
             throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
         if(isAnInstrument(varName))
@@ -440,7 +440,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         String varName = ctx.ID().getText();
 
         if(this.main.memory.containsKey(varName))
-            throw new VariableDeclarationError("Redeclaration of a variable: " + varName, getLine(ctx), getCol(ctx));
+            throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + this.main.memory.get(varName).line, getLine(ctx), getCol(ctx));
         if(Arrays.asList(((VocabularyImpl)this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
             throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
         if(isAnInstrument(varName))

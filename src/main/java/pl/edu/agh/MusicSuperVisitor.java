@@ -745,7 +745,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @SuppressWarnings("unchecked")
     public T visitIdExpr(MusicParser.IdExprContext ctx) {
         VarInfo varInfo = main.memory.get(ctx.ID().getText());
-        if(varInfo == null) throw new UndefinedError("No such variable defined", getLine(ctx), getCol(ctx));
+        if(varInfo == null) throw new UndefinedError("No such variable defined: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
         return (T)varInfo.valueObj;
     }
 
@@ -798,7 +798,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         Value secondValue = tryCasting(ctx.expr(1));
 
         if(firstValue.getType()!=secondValue.getType()) {
-            return  (T) new BoolValue(false);
+            throw new IncomparableError("Types are not the same: " + firstValue + " != " + secondValue , getLine(ctx), getCol(ctx));
         }
         BoolValue result = firstValue.equals(secondValue);
         if(ctx.eqOp().EQ() != null) return (T) result;
