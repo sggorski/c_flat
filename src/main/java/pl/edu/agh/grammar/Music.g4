@@ -41,7 +41,11 @@ statement
     | playStatement
     | pauseStatement
     | controlStatement
+    | exprStatement
     ;
+
+exprStatement
+    : expr SEMICOLON;
 
 loopStatement
     : breakStatement
@@ -108,11 +112,11 @@ playStatement
 playValues
     : NOTE_VAL (INT_VAL | ID)                                # playNote
     | chord (INT_VAL | ID)                                   # playChord
-    | functionCall                                           # playFunc
+    | functionCall  ('OUT' ID)?                              # playFunc
     | ID (INT_VAL | ID)?                                     # playIDVariants
     | (multiPlayValues)+                                     # playMulti
     ;
-    
+
 multiPlayValues:
     (NOTE_VAL | chord | ID)+ (INT_VAL | ID);
 
@@ -215,7 +219,7 @@ trackDeclaration
     : TRACK ID ';';
 
 intVal
-    : '-'? INT_VAL;
+    : ('-'|'+')? INT_VAL;
 
 IMPORT: 'import';
 
