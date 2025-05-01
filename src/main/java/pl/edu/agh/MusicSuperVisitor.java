@@ -15,17 +15,25 @@ import static pl.edu.agh.utils.Instrument.*;
 
 @SuppressWarnings("CheckReturnValue")
 public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVisitor<T> {
-    MainMelody main;
-    MusicParser.MainDeclContext mainCtx = null;
+    HashMap<String,Melody> melodyMemory;
+    MusicParser.MainDeclContext mainCtx = new MusicParser.MainDeclContext(null,0); //just to be working for now
     MusicParser.FunctionDeclContext funcCtx = null;
+    Melody main; //to be deleted
 
-    public MusicSuperVisitor(MainMelody main) {
-        this.main = main;
+    public MusicSuperVisitor(HashMap<String,Melody> melodyMemory) {
+        this.melodyMemory = melodyMemory;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public T visitProgram(MusicParser.ProgramContext ctx) throws RuntimeException {
-        return visitChildren(ctx);
+        if(!melodyMemory.containsKey("main"))
+            throw new RuntimeException("No main function declaration found!"); //TODO
+        main = melodyMemory.get("main");
+        for(MusicParser.MainStatementContext statement: melodyMemory.get("main").mainBody){
+            visit(statement);
+        }
+        return (T)(new BoolValue(true)); //everything went okey
     }
 
     @Override
@@ -35,7 +43,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitFunctionDecl(MusicParser.FunctionDeclContext ctx) {
-        funcCtx = ctx;
         return visitChildren(ctx);
     }
 

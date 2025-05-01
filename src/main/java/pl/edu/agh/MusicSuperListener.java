@@ -5,11 +5,12 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.VocabularyImpl;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import pl.edu.agh.errors.SyntaxError;
 import pl.edu.agh.errors.VariableDeclarationError;
 import pl.edu.agh.utils.*;
 
-import java.sql.SQLOutput;
 import java.util.Arrays;
+import java.util.HashMap;
 
 @SuppressWarnings("CheckReturnValue")
 
@@ -18,13 +19,13 @@ import java.util.Arrays;
  */
 
 public class MusicSuperListener extends MusicBaseListener implements MusicListener {
-    MainMelody main;
+    HashMap<String,Melody> melodyMemory;
     MusicLexer lexer;
-    MusicParser.MainDeclContext mainCtx = null;
-    MusicParser.FunctionDeclContext funcCtx = null;
+    String currentMelody;
 
-    public MusicSuperListener(MainMelody main, MusicLexer musicLexer) {
-        this.main = main;
+
+    public MusicSuperListener(HashMap<String,Melody> melodyMemory, MusicLexer musicLexer) {
+        this.melodyMemory = melodyMemory;
         this.lexer = musicLexer;
     }
 
@@ -62,7 +63,36 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterFunctionDecl(MusicParser.FunctionDeclContext ctx) { }
+    @Override public void enterFunctionDecl(MusicParser.FunctionDeclContext ctx) {
+        Melody newMelody = new Melody();
+        String name = ctx.ID().getText();
+        newMelody.name = name;
+        newMelody.body = ctx.statement();
+        if(ctx.parameters() != null) {
+            for(MusicParser.ParameterContext param: ctx.parameters().parameter()){
+                String type = param.type().getText();
+                switch (type){
+                    case "int":
+                        newMelody.parameters.put(param.ID().getText(),new VarInfo(param.ID().getText(),Type.INT,getLine(param),null));
+                        break;
+                    case "bool":
+                        newMelody.parameters.put(param.ID().getText(),new VarInfo(param.ID().getText(),Type.BOOL,getLine(param),null));
+                        break;
+                    case "Note":
+                        newMelody.parameters.put(param.ID().getText(),new VarInfo(param.ID().getText(),Type.NOTE,getLine(param),null));
+                        break;
+                    case "Chord":
+                        newMelody.parameters.put(param.ID().getText(),new VarInfo(param.ID().getText(),Type.CHORD,getLine(param),null));
+                        break;
+                    default:
+                        throw new SyntaxError("Invalid type of parameter in function declaration, variable: " + param.ID().getText(),getLine(param),getCol(param));
+                }
+            }
+        }
+        melodyMemory.put(name,newMelody);
+        currentMelody = name;
+
+    }
     /**
      * {@inheritDoc}
      *
@@ -74,7 +104,13 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterMainDecl(MusicParser.MainDeclContext ctx) { }
+    @Override public void enterMainDecl(MusicParser.MainDeclContext ctx) {
+        Melody newMelody = new Melody();
+        newMelody.name = "main";
+        newMelody.mainBody = ctx.mainStatement();
+        melodyMemory.put("main",newMelody);
+        currentMelody = "main";
+    }
     /**
      * {@inheritDoc}
      *
@@ -392,9 +428,9 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     @Override
     public void enterVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) {
         String varName = ctx.ID().getText();
-
-        if(this.main.memory.containsKey(varName))
-            throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + this.main.memory.get(varName).line, getLine(ctx), getCol(ctx));
+        Melody melody = melodyMemory.get(currentMelody);
+        if(melody.memory.containsKey(varName))
+            throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + melody.memory.get(varName).line, getLine(ctx), getCol(ctx));
         if(Arrays.asList(((VocabularyImpl)this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
             throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
         if(isAnInstrument(varName))
@@ -405,19 +441,19 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         switch (ctx.type().getText()) {
             case "int":
                 VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), null);
-                this.main.memory.put(varName, intInfo);
+                melody.memory.put(varName, intInfo);
                 break;
             case "bool":
                 VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), null);
-                this.main.memory.put(varName, boolInfo);
+                melody.memory.put(varName, boolInfo);
                 break;
             case "Note":
                 VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), null);
-                this.main.memory.put(varName, noteInfo);
+                melody.memory.put(varName, noteInfo);
                 break;
             case "Chord":
                 VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), null);
-                this.main.memory.put(varName, chordInfo);
+                melody.memory.put(varName, chordInfo);
                 break;
             default:
                 break;
@@ -438,9 +474,9 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     @Override
     public void enterVarDeclWithoutArg(MusicParser.VarDeclWithoutArgContext ctx) {
         String varName = ctx.ID().getText();
-
-        if(this.main.memory.containsKey(varName))
-            throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + this.main.memory.get(varName).line, getLine(ctx), getCol(ctx));
+        Melody melody = melodyMemory.get(currentMelody);
+        if(melody.memory.containsKey(varName))
+            throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + melody.memory.get(varName).line, getLine(ctx), getCol(ctx));
         if(Arrays.asList(((VocabularyImpl)this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
             throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
         if(isAnInstrument(varName))
@@ -451,19 +487,19 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         switch (ctx.type().getText()) {
             case "int":
                 VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), new IntValue(0));
-                this.main.memory.put(varName, intInfo);
+                melody.memory.put(varName, intInfo);
                 break;
             case "bool":
                 VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), new BoolValue(false));
-                this.main.memory.put(varName, boolInfo);
+                melody.memory.put(varName, boolInfo);
                 break;
             case "Note":
                 VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), null);
-                this.main.memory.put(varName, noteInfo);
+                melody.memory.put(varName, noteInfo);
                 break;
             case "Chord":
                 VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), null);
-                this.main.memory.put(varName, chordInfo);
+                melody.memory.put(varName, chordInfo);
                 break;
             default:
                 break;
@@ -849,23 +885,10 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
 
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
     @Override public void enterBoolExpr(MusicParser.BoolExprContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
+
     @Override public void exitBoolExpr(MusicParser.BoolExprContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
+
     @Override public void enterParanthesesExpr(MusicParser.ParanthesesExprContext ctx) { }
     /**
      * {@inheritDoc}

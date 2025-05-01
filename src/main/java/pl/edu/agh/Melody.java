@@ -1,6 +1,5 @@
 package pl.edu.agh;
 
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.utils.*;
 import javax.sound.midi.MidiChannel;
@@ -13,22 +12,31 @@ import java.util.Random;
 
 import static pl.edu.agh.utils.Instrument.DRUMS;
 
-public class MainMelody {
+public class Melody {
+
     public Instrument instrument=Instrument.PIANO;
 
-    //public HashMap<Note,Integer> notes = new HashMap<>();
     public HashMap<Effect, Value> effects = new HashMap<>();
     public HashMap<Effect, Integer> effectControllers = new HashMap<>();
+    public String name;
     public HashMap<String, VarInfo> memory = new HashMap<>();
+    public HashMap<String, VarInfo> parameters = new HashMap<>();
+    public List<MusicParser.StatementContext> body;
+    public List<MusicParser.MainStatementContext> mainBody;
 
     Synthesizer synth;
     MidiChannel[] channels;
 
 
-    public MainMelody() throws MidiUnavailableException {
+    public Melody()  {
         //start up
-        this.synth = MidiSystem.getSynthesizer();
-        this.synth.open();
+        try {
+            this.synth = MidiSystem.getSynthesizer();
+            this.synth.open();
+        } catch (MidiUnavailableException e) {
+            throw new RuntimeException(e);
+        }
+
         this.channels = this.synth.getChannels();
         this.channels[0].programChange(0);
 
@@ -144,5 +152,13 @@ public class MainMelody {
         } catch(NumberFormatException e){
             return false;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Melody{" +
+                "name='" + name + '\'' +
+                ", parameters=" + parameters +
+                '}';
     }
 }

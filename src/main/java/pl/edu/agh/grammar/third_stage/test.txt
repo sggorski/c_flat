@@ -1,0 +1,624 @@
+melody finc1(){
+
+    PLAY C2 100;
+}
+melody main(){
+    SET PACE=500;
+    SET INSTRUMENT=OBOE;
+    SET SUSTAIN=0;
+    SET JAZZ=false;
+    SET DISTORTION=0;
+    SET VOLUME=40;
+
+    // część początkowa a-moll
+    // metrum dwie czwarte, w tym kodzie czas trwania ćwierćnuty = 400, SET VOLUME=40;
+    PLAY H2 A2 G#2 A2 100;
+    PLAY C3 200;
+    PAUSE 200;
+    PLAY D3 C3 H2 C3 100;
+    PLAY E3 200;
+    PAUSE 200;
+    PLAY F3 E3 D#3 E3 100;
+    PLAY H3 A3 G#3 A3 H3 A3 G#3 A3 100;
+    PLAY C4 200;
+    PAUSE 200;
+    PLAY A3 C4 200;
+
+    PLAY G3 A3 15;
+    PLAY H3 170;
+    PLAY [F#3, A3] [E3, G3] [F#3, A3] 200;
+
+    PLAY G3 A3 15;
+    PLAY H3 170;
+    PLAY [F#3, A3] [E3, G3] [F#3, A3] 200;
+
+    PLAY G3 A3 15;
+    PLAY H3 170;
+    PLAY [F#3, A3] [E3, G3] [D#3, F#3] 200;
+    PLAY E3 200;
+    PAUSE 200;
+
+    //powtórka
+
+    PLAY H2 A2 G#2 A2 100;
+    PLAY C3 200;
+    PAUSE 200;
+    PLAY D3 C3 H2 C3 100;
+    PLAY E3 200;
+    PAUSE 200;
+    PLAY F3 E3 D#3 E3 100;
+    PLAY H3 A3 G#3 A3 H3 A3 G#3 A3 100;
+    PLAY C4 200;
+    PAUSE 200;
+    PLAY A3 C4 200;
+
+    PLAY G3 A3 15;
+    PLAY H3 170;
+    PLAY [F#3, A3] [E3, G3] [F#3, A3] 200;
+
+    PLAY G3 A3 15;
+    PLAY H3 170;
+    PLAY [F#3, A3] [E3, G3] [F#3, A3] 200;
+
+    PLAY G3 A3 15;
+    PLAY H3 170;
+    PLAY [F#3, A3] [E3, G3] [D#3, F#3] 200;
+    PLAY E3 200;
+    PAUSE 200;
+
+    SET VOLUME=60;
+
+    PLAY [C3, E3] [D3, F3] [E3, G3] [E3, G3] 200;
+    PLAY A3 G3 F3 E3 100;
+    PLAY [H2, D3] 200;
+    PLAY G2 200;
+
+    SET VOLUME=45;
+
+    PLAY [C3, E3] [D3, F3] [E3, G3] [E3, G3] 200;
+    PLAY A3 G3 F3 E3 100;
+    PLAY [H2, D3] 200;
+    PAUSE 200;
+
+    SET VOLUME=60;
+
+    PLAY [A2, C3] [H2, D3] [C3, E3] [C3, E3] 200;
+    PLAY F3 E3 D3 C3 100;
+    PLAY [G#2, H2] 200;
+    PLAY E2 200;
+
+    SET VOLUME=45;
+
+    PLAY [A2, C3] [H2, D3] [C3, E3] [C3, E3] 200;
+    PLAY F3 E3 D3 C3 100;
+    PLAY [G#2, H2] 200;
+    PAUSE 200;
+
+    //keep going
+
+    SET VOLUME=40;
+
+    PLAY H2 A2 G#2 A2 100;
+    PLAY C3 200;
+    PAUSE 200;
+    PLAY D3 C3 H2 C3 100;
+    PLAY E3 200;
+    PAUSE 200;
+    PLAY F3 E3 D#3 E3 100;
+    PLAY H3 A3 G#3 A3 H3 A3 G#3 A3 100;
+    PLAY C4 200;
+    PAUSE 200;
+    PLAY A3 H3 C4 H3 A3 G#3 A3 200;
+    PLAY E3 F3 D3 200;
+    PLAY C3 400;
+
+    PLAY C3 H2 C3 H2 C3 H2 A2 H2 50;
+
+    PLAY A2 400;
+
+    //PAUSE 1000;
+
+    //znowu przydalaby się petla
+
+    SET VOLUME=60;
+
+    PLAY [C3, E3] [D3, F3] [E3, G3] [E3, G3] 200;
+    PLAY A3 G3 F3 E3 100;
+    PLAY [H2, D3] 200;
+    PLAY G2 200;
+
+    SET VOLUME=45;
+
+    PLAY [C3, E3] [D3, F3] [E3, G3] [E3, G3] 200;
+    PLAY A3 G3 F3 E3 100;
+    PLAY [H2, D3] 200;
+    PAUSE 200;
+
+    SET VOLUME=60;
+
+    PLAY [A2, C3] [H2, D3] [C3, E3] [C3, E3] 200;
+    PLAY F3 E3 D3 C3 100;
+    PLAY [G#2, H2] 200;
+    PLAY E2 200;
+
+    SET VOLUME=45;
+
+    PLAY [A2, C3] [H2, D3] [C3, E3] [C3, E3] 200;
+    PLAY F3 E3 D3 C3 100;
+    PLAY [G#2, H2] 200;
+    PAUSE 200;
+
+    //keep going
+
+    SET VOLUME=40;
+
+    PLAY H2 A2 G#2 A2 100;
+    PLAY C3 200;
+    PAUSE 200;
+    PLAY D3 C3 H2 C3 100;
+    PLAY E3 200;
+    PAUSE 200;
+    PLAY F3 E3 D#3 E3 100;
+    PLAY H3 A3 G#3 A3 H3 A3 G#3 A3 100;
+    PLAY C4 200;
+    PAUSE 200;
+    PLAY A3 H3 C4 H3 A3 G#3 A3 200;
+    PLAY E3 F3 D3 200;
+    PLAY C3 400;
+
+    PLAY C3 H2 C3 H2 C3 H2 A2 H2 50;
+
+    PLAY A2 400;
+
+    //A-DURRRRRRRR
+
+    SET VOLUME=105;
+
+    PLAY [A2, A3] [H2, H3] 200;
+    PLAY [C#3, C#4] 400;
+
+    PLAY [A2, A3] [H2, H3] [C#3, C#4] [H2, H3] [A2, A3] [G#2, G#3] 200;
+    PLAY [F#2, F#3] [G#2, G#3] [A2, A3] [H2, H3] [G#2, G#3] [E2, E3] [A2, A3] [H2, H3] 200;
+    PLAY [C#3, C#4] 400;
+
+    PLAY [A2, A3] [H2, H3] [C#3, C#4] [H2, H3] [A2, A3] [G#2, G#3] 200;
+    PLAY [F#2, F#3] [H2, H3] [G#2, G#3] [E2, E3] 200;
+
+    PLAY [A2, A3] 400;
+
+    //powtórka
+
+    PLAY [A2, A3] [H2, H3] 200;
+    PLAY [C#3, C#4] 400;
+
+    PLAY [A2, A3] [H2, H3] [C#3, C#4] [H2, H3] [A2, A3] [G#2, G#3] 200;
+    PLAY [F#2, F#3] [G#2, G#3] [A2, A3] [H2, H3] [G#2, G#3] [E2, E3] [A2, A3] [H2, H3] 200;
+    PLAY [C#3, C#4] 400;
+
+    PLAY [A2, A3] [H2, H3] [C#3, C#4] [H2, H3] [A2, A3] [G#2, G#3] 200;
+    PLAY [F#2, F#3] [H2, H3] [G#2, G#3] [E2, E3] 200;
+
+    PLAY [A2, A3] 400;
+
+    //fis-moll
+
+    SET VOLUME=40;
+
+    PLAY C#4 D4 C#4 H3 A3 H3 A3 G#3 F#3 A3 G#3 F#3 F3 F#3 G#3 F3 C#3 D#3 F3 C#3 100;
+    PLAY F#3 F3 F#3 G#3 A3 G#3 A3 H3 C#4 C4 C#4 C4 C#4 D4 C#4 H3 100;
+
+    PLAY A3 H3 A3 G#3 F#3 A3 G#3 F#3 E3 F#3 G#3 E3 100;
+    PLAY C#3 D#3 E3 C#3 100;
+    PLAY D#3 E3 F#3 D#3 100;
+    PLAY C3 C#3 D#3 C3 100;
+    PLAY C#3 400;
+
+    //powtorka
+
+    PLAY C#4 D4 C#4 H3 A3 H3 A3 G#3 F#3 A3 G#3 F#3 F3 F#3 G#3 F3 C#3 D#3 F3 C#3 100;
+    PLAY F#3 F3 F#3 G#3 A3 G#3 A3 H3 C#4 C4 C#4 C4 C#4 D4 C#4 H3 100;
+
+    PLAY A3 H3 A3 G#3 F#3 A3 G#3 F#3 E3 F#3 G#3 E3 100;
+    PLAY C#3 D#3 E3 C#3 100;
+    PLAY D#3 E3 F#3 D#3 100;
+    PLAY C3 C#3 D#3 C3 100;
+    PLAY C#3 400;
+
+    //idziemy na chwile do A-Dur
+
+    SET VOLUME=60;
+
+    PLAY E3 D3 C#3 H2 100;
+    PLAY A2 H2 C#3 D3 E3 F#3 G#3 A3 100;
+    PLAY A3 G#3 F#3 E3 100;
+    PLAY E3 D3 C#3 H2 100;
+
+    PLAY A2 H2 C#3 D3 E3 F#3 G#3 A3 100;
+    PLAY A#3 H3 200;
+
+    PLAY E3 D3 C#3 H2 100;
+    PLAY A2 H2 C#3 D3 E3 F#3 G#3 A3 100;
+    PLAY A3 G#3 F#3 E3 100;
+    PLAY E3 D3 C#3 H2 100;
+
+    PLAY C#3 E3 A2 C#3 100;
+    PLAY H2 D3 G#2 H2 100;
+
+    PLAY A2 400;
+
+    //bacc to fis-moll
+
+    SET VOLUME=40;
+
+    PLAY C#4 D4 C#4 H3 A3 H3 A3 G#3 F#3 A3 G#3 F#3 F3 F#3 G#3 F3 C#3 D#3 F3 C#3 100;
+    PLAY F#3 F3 F#3 G#3 A3 G#3 A3 H3 C#4 C4 C#4 C4 C#4 C4 C#4 A#3 100;
+    PLAY D4 C#4 D4 C#4 D4 C#4 D4 C#4 100;
+    PLAY D4 C#4 H3 A3 G#3 A3 H3 G#3 100;
+    PLAY A3 H3 C#4 F#3 F3 F#3 G#3 F3 100;
+    PLAY F#3 400;
+
+    //powtórka te całej części
+
+    SET VOLUME=60;
+
+    PLAY E3 D3 C#3 H2 100;
+    PLAY A2 H2 C#3 D3 E3 F#3 G#3 A3 100;
+    PLAY A3 G#3 F#3 E3 100;
+    PLAY E3 D3 C#3 H2 100;
+
+    PLAY A2 H2 C#3 D3 E3 F#3 G#3 A3 100;
+    PLAY A#3 H3 200;
+
+    PLAY E3 D3 C#3 H2 100;
+    PLAY A2 H2 C#3 D3 E3 F#3 G#3 A3 100;
+    PLAY A3 G#3 F#3 E3 100;
+    PLAY E3 D3 C#3 H2 100;
+
+    PLAY C#3 E3 A2 C#3 100;
+    PLAY H2 D3 G#2 H2 100;
+
+    PLAY A2 400;
+
+    //bacc to fis-moll
+
+    SET VOLUME=40;
+
+    PLAY C#4 D4 C#4 H3 A3 H3 A3 G#3 F#3 A3 G#3 F#3 F3 F#3 G#3 F3 C#3 D#3 F3 C#3 100;
+    PLAY F#3 F3 F#3 G#3 A3 G#3 A3 H3 C#4 C4 C#4 C4 C#4 C4 C#4 A#3 100;
+    PLAY D4 C#4 D4 C#4 D4 C#4 D4 C#4 100;
+    PLAY D4 C#4 H3 A3 G#3 A3 H3 G#3 100;
+    PLAY A3 H3 C#4 F#3 F3 F#3 G#3 F3 100;
+    PLAY F#3 400;
+
+    //A-DUR ZNOWUUUU
+
+    SET VOLUME=105;
+
+    PLAY [A2, A3] [H2, H3] 200;
+    PLAY [C#3, C#4] 400;
+
+    PLAY [A2, A3] [H2, H3] [C#3, C#4] [H2, H3] [A2, A3] [G#2, G#3] 200;
+    PLAY [F#2, F#3] [G#2, G#3] [A2, A3] [H2, H3] [G#2, G#3] [E2, E3] [A2, A3] [H2, H3] 200;
+    PLAY [C#3, C#4] 400;
+
+    PLAY [A2, A3] [H2, H3] [C#3, C#4] [H2, H3] [A2, A3] [G#2, G#3] 200;
+    PLAY [F#2, F#3] [H2, H3] [G#2, G#3] [E2, E3] 200;
+
+    PLAY [A2, A3] 400;
+
+    //powtórka
+
+    PLAY [A2, A3] [H2, H3] 200;
+    PLAY [C#3, C#4] 400;
+
+    PLAY [A2, A3] [H2, H3] [C#3, C#4] [H2, H3] [A2, A3] [G#2, G#3] 200;
+    PLAY [F#2, F#3] [G#2, G#3] [A2, A3] [H2, H3] [G#2, G#3] [E2, E3] [A2, A3] [H2, H3] 200;
+    PLAY [C#3, C#4] 400;
+
+    PLAY [A2, A3] [H2, H3] [C#3, C#4] [H2, H3] [A2, A3] [G#2, G#3] 200;
+    PLAY [F#2, F#3] [H2, H3] [G#2, G#3] [E2, E3] 200;
+
+    PLAY [A2, A3] 400;
+
+    //wracamy do motywu z początku
+
+    SET VOLUME=40;
+
+    PLAY H2 A2 G#2 A2 100;
+    PLAY C3 200;
+    PAUSE 200;
+    PLAY D3 C3 H2 C3 100;
+    PLAY E3 200;
+    PAUSE 200;
+    PLAY F3 E3 D#3 E3 100;
+    PLAY H3 A3 G#3 A3 H3 A3 G#3 A3 100;
+    PLAY C4 200;
+    PAUSE 200;
+    PLAY A3 C4 200;
+
+    PLAY G3 A3 15;
+    PLAY H3 170;
+    PLAY [F#3, A3] [E3, G3] [F#3, A3] 200;
+
+    PLAY G3 A3 15;
+    PLAY H3 170;
+    PLAY [F#3, A3] [E3, G3] [F#3, A3] 200;
+
+    PLAY G3 A3 15;
+    PLAY H3 170;
+    PLAY [F#3, A3] [E3, G3] [D#3, F#3] 200;
+    PLAY E3 200;
+    PAUSE 200;
+
+    //powtórka
+
+    PLAY H2 A2 G#2 A2 100;
+    PLAY C3 200;
+    PAUSE 200;
+    PLAY D3 C3 H2 C3 100;
+    PLAY E3 200;
+    PAUSE 200;
+    PLAY F3 E3 D#3 E3 100;
+    PLAY H3 A3 G#3 A3 H3 A3 G#3 A3 100;
+    PLAY C4 200;
+    PAUSE 200;
+    PLAY A3 C4 200;
+
+    PLAY G3 A3 15;
+    PLAY H3 170;
+    PLAY [F#3, A3] [E3, G3] [F#3, A3] 200;
+
+    PLAY G3 A3 15;
+    PLAY H3 170;
+    PLAY [F#3, A3] [E3, G3] [F#3, A3] 200;
+
+    PLAY G3 A3 15;
+    PLAY H3 170;
+    PLAY [F#3, A3] [E3, G3] [D#3, F#3] 200;
+    PLAY E3 200;
+    PAUSE 200;
+
+    SET VOLUME=60;
+
+    PLAY [C3, E3] [D3, F3] [E3, G3] [E3, G3] 200;
+    PLAY A3 G3 F3 E3 100;
+    PLAY [H2, D3] 200;
+    PLAY G2 200;
+
+    SET VOLUME=45;
+
+    PLAY [C3, E3] [D3, F3] [E3, G3] [E3, G3] 200;
+    PLAY A3 G3 F3 E3 100;
+    PLAY [H2, D3] 200;
+    PAUSE 200;
+
+    SET VOLUME=60;
+
+    PLAY [A2, C3] [H2, D3] [C3, E3] [C3, E3] 200;
+    PLAY F3 E3 D3 C3 100;
+    PLAY [G#2, H2] 200;
+    PLAY E2 200;
+
+    SET VOLUME=45;
+
+    PLAY [A2, C3] [H2, D3] [C3, E3] [C3, E3] 200;
+    PLAY F3 E3 D3 C3 100;
+    PLAY [G#2, H2] 200;
+    PAUSE 200;
+
+    //keep going
+
+    SET VOLUME=40;
+
+    PLAY H2 A2 G#2 A2 100;
+    PLAY C3 200;
+    PAUSE 200;
+    PLAY D3 C3 H2 C3 100;
+    PLAY E3 200;
+    PAUSE 200;
+    PLAY F3 E3 D#3 E3 100;
+    PLAY H3 A3 G#3 A3 H3 A3 G#3 A3 100;
+    PLAY C4 200;
+    PAUSE 200;
+    PLAY A3 H3 C4 H3 A3 G#3 A3 200;
+    PLAY E3 F3 D3 200;
+    PLAY C3 400;
+
+    PLAY C3 H2 C3 H2 C3 H2 A2 H2 50;
+
+    PLAY A2 400;
+
+    //PAUSE 1000;
+
+    //znowu przydalaby się petla
+
+    SET VOLUME=60;
+
+    PLAY [C3, E3] [D3, F3] [E3, G3] [E3, G3] 200;
+    PLAY A3 G3 F3 E3 100;
+    PLAY [H2, D3] 200;
+    PLAY G2 200;
+
+    SET VOLUME=45;
+
+    PLAY [C3, E3] [D3, F3] [E3, G3] [E3, G3] 200;
+    PLAY A3 G3 F3 E3 100;
+    PLAY [H2, D3] 200;
+    PAUSE 200;
+
+    SET VOLUME=60;
+
+    PLAY [A2, C3] [H2, D3] [C3, E3] [C3, E3] 200;
+    PLAY F3 E3 D3 C3 100;
+    PLAY [G#2, H2] 200;
+    PLAY E2 200;
+
+    SET VOLUME=45;
+
+    PLAY [A2, C3] [H2, D3] [C3, E3] [C3, E3] 200;
+    PLAY F3 E3 D3 C3 100;
+    PLAY [G#2, H2] 200;
+    PAUSE 200;
+
+    //keep going
+
+    SET VOLUME=40;
+
+    PLAY H2 A2 G#2 A2 100;
+    PLAY C3 200;
+    PAUSE 200;
+    PLAY D3 C3 H2 C3 100;
+    PLAY E3 200;
+    PAUSE 200;
+    PLAY F3 E3 D#3 E3 100;
+    PLAY H3 A3 G#3 A3 H3 A3 G#3 A3 100;
+    PLAY C4 200;
+    PAUSE 200;
+    PLAY A3 H3 C4 H3 A3 G#3 A3 200;
+    PLAY E3 F3 D3 200;
+    PLAY C3 400;
+
+    PLAY C3 H2 C3 H2 C3 H2 A2 H2 50;
+
+    PLAY A2 400;
+
+    //teraz znowu A-Dur, ALE INACZEJ
+
+    SET VOLUME=105;
+
+    PLAY A2 A3 H2 H3 C#3 C#4 100;
+    PAUSE 200;
+    PLAY A2 A3 H2 H3 C#3 C#4 H2 H3 A2 A3 G#2 G#3 100;
+    PLAY F#2 F#3 G#2 G#3 A2 A3 H2 H3 G#2 G#3 E2 E3 100;
+    PLAY A2 A3 H2 H3 C#3 C#4 100;
+    PAUSE 200;
+    PLAY A2 A3 H2 H3 C#3 C#4 H2 H3 A2 A3 G#2 G#3 100;
+    PLAY F#2 F#3 H2 H3 G#2 G#3 E2 E3 100;
+    PLAY [A2, A3] 400;
+
+    //powtórka
+
+    PLAY A2 A3 H2 H3 C#3 C#4 100;
+    PAUSE 200;
+    PLAY A2 A3 H2 H3 C#3 C#4 H2 H3 A2 A3 G#2 G#3 100;
+    PLAY F#2 F#3 G#2 G#3 A2 A3 H2 H3 G#2 G#3 E2 E3 100;
+    PLAY A2 A3 H2 H3 C#3 C#4 100;
+    PAUSE 200;
+    PLAY A2 A3 H2 H3 C#3 C#4 H2 H3 A2 A3 G#2 G#3 100;
+    PLAY F#2 F#3 H2 H3 G#2 G#3 E2 E3 100;
+    PLAY [A2, A3] 400;
+    PLAY [C#3, C#4] 300;
+    PLAY C#4 100;
+
+    //CODA!!!!!!!!!!
+
+    SET VOLUME=125;
+
+    PLAY [C#3, E3, A3, C#4] 800;
+    PLAY [C#3, E3, A3, C#4] 800;
+    PLAY D4 C#4 H3 C#4 D4 C#4 H3 C#4 100;
+    PLAY [F#3, A3, D4] 800;
+
+    PLAY D4 25;
+    PLAY [E3, A3, C#4] 175;
+    PLAY D4 25;
+    PLAY [E3, A3, C#4] 175;
+    PLAY D4 25;
+    PLAY [E3, A3, C#4] 175;
+    PLAY D4 25;
+    PLAY [E3, A3, C#4] 175;
+
+    PLAY [E3, G#3, H3] 600;
+    PLAY E4 200;
+
+    PLAY [C#3, E3, A3, C#4] 800;
+    PLAY [C#3, E3, A3, C#4] 800;
+    PLAY D4 C#4 H3 C#4 D4 C#4 H3 C#4 100;
+    PLAY [F#3, A3, D4] 800;
+
+    PLAY D4 50;
+    PLAY [E3, A3, C#4] 750;
+
+    PLAY C#4 25;
+    PLAY [E3, G#3, H3] 175;
+    PLAY C#4 25;
+    PLAY [E3, G#3, H3] 175;
+    PLAY C#4 25;
+    PLAY [E3, G#3, H3] 175;
+    PLAY C#4 25;
+    PLAY [E3, G#3, H3] 175;
+
+    //ciiicho
+
+    SET VOLUME=40;
+
+    PLAY A3 400;
+
+    PLAY E3 A2 15;
+    PLAY C#4 270;
+    PLAY C#4 100;
+
+    PLAY E3 A3 15;
+    PLAY C#4 770;
+
+    PLAY E3 A3 15;
+    PLAY C#4 770;
+
+    PLAY D4 C#4 H3 C#4 D4 C#4 H3 C#4 100;
+    PLAY D4 800;
+
+    PLAY D4 25;
+    PLAY C#4 175;
+    PLAY D4 25;
+    PLAY C#4 175;
+    PLAY D4 25;
+    PLAY C#4 175;
+    PLAY D4 25;
+    PLAY C#4 175;
+
+    PLAY H3 600;
+    PLAY E4 200;
+
+    SET VOLUME=125;
+
+    PLAY [C#3, E3, A3, C#4] 800;
+    PLAY [C#3, E3, A3, C#4] 800;
+    PLAY D4 C#4 H3 C#4 D4 C#4 H3 C#4 100;
+    PLAY [F#3, A3, D4] 800;
+
+    PLAY D4 50;
+    PLAY [E3, A3, C#4] 750;
+
+    PLAY C#4 25;
+    PLAY [E3, G#3, H3] 175;
+    PLAY C#4 25;
+    PLAY [E3, G#3, H3] 175;
+    PLAY C#4 25;
+    PLAY [E3, G#3, H3] 175;
+    PLAY C#4 25;
+    PLAY [E3, G#3, H3] 175;
+
+    //FINISH IT
+
+    SET VOLUME=127;
+
+    PLAY [A3, C#3, E3, A4] 600;
+    PLAY [C#3, C#4] 200;
+
+    PLAY [A2, A3] 600;
+    PLAY [E3, E4] 200;
+
+    PLAY [A2, A3] 600;
+    PLAY [C#3, C#4] 200;
+
+    PLAY [A2, A3] [C#3, C#4] [A2, A3] [E3, E4] 200;
+    PLAY [A2, A3] 400;
+
+    PLAY [A2, C#3, E3, A3] [A2, C#3, E3, A3] 400;
+
+    PAUSE 400;
+
+    PAUSE 1200;
+
+    //insert applause here or something
+}
