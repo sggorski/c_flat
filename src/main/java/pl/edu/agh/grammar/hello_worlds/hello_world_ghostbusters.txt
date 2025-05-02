@@ -1,9 +1,9 @@
 melody main(){
     SET PACE=450;
-    SET INSTRUMENT=PIANO;
+    SET INSTRUMENT=HARP;
     SET SUSTAIN=0;
     SET JAZZ=false;
-    SET DISTORTION=0;
+    SET DISTORTION=40;
     SET VOLUME=45;
 
     PAUSE 400;
@@ -11,11 +11,11 @@ melody main(){
     PLAY H1 200;
     PLAY H1 200;
     PLAY D2 100;
-    PLAY E2 zmienna;
+    PLAY E2 100;
     PLAY F#2 200;
     SET VOLUME=350;
-    PLAY [C#2, E2, A2] 400; //A-Dur
-    PLAY [H1, E2, G#2] 400; //E-Dur
+    PLAY A2 400;
+    PLAY G#2 400;
     SET VOLUME=45;
     PLAY H1 200;
     PLAY H1 200;
@@ -23,9 +23,9 @@ melody main(){
     PLAY E2 100;
     PLAY F#2 200;
     SET VOLUME=550;
-    PLAY [C#2, E2, A2] 200;
     PLAY A2 200;
-    PLAY [H1, E2, G#2] 400;
+    PLAY A2 200;
+    PLAY G#2 400;
 
     PAUSE 200;
     SET VOLUME=45;
@@ -43,6 +43,5 @@ melody main(){
     PLAY H1 100;
     PLAY A1 200;
     SET SUSTAIN=100;
-    PLAY [H0, H1, F#1] 3000;
-    PAUSE 500;
+    PLAY H1 3000;
 }

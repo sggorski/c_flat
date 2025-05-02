@@ -78,6 +78,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     @Override
+    public T visitReturnStatement(MusicParser.ReturnStatementContext ctx){return visitChildren(ctx);};
+
+    @Override
+    public T visitExprStatement(MusicParser.ExprStatementContext ctx){return visitChildren(ctx);};
+
+    @Override
     public T visitLoopStatement(MusicParser.LoopStatementContext ctx) {
         return visitChildren(ctx);
     }

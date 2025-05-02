@@ -42,7 +42,11 @@ statement
     | pauseStatement
     | controlStatement
     | exprStatement
+    | returnStatement
     ;
+
+returnStatement
+    : 'RETURN' (INT_VAL|BOOL_VAL|NOTE_VAL|chord|settingsValues|ID) ';' ;
 
 exprStatement
     : expr SEMICOLON;

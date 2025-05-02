@@ -1,4 +1,4 @@
-// Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
+// Generated from C:/Users/sggor/Desktop/TKK/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -97,6 +97,26 @@ public interface MusicListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitStatement(MusicParser.StatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MusicParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturnStatement(MusicParser.ReturnStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturnStatement(MusicParser.ReturnStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MusicParser#exprStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterExprStatement(MusicParser.ExprStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#exprStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitExprStatement(MusicParser.ExprStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MusicParser#loopStatement}.
 	 * @param ctx the parse tree

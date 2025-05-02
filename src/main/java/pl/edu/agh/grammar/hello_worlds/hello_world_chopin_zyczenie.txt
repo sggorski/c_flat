@@ -1,5 +1,5 @@
 melody main() {
-	SET PACE = 600;
+	SET PACE = 120;
 	SET SUSTAIN = 0;
 	SET DISTORTION = 0;
 	SET JAZZ = false;
@@ -7,8 +7,6 @@ melody main() {
 	SET VOLUME = 100;
 	SET INSTRUMENT = PIANO;
 	SET KEY = G;
-
-	PAUSE 500;
 	
 	PLAY G1 400;
 	PLAY F#1 400;
@@ -21,7 +19,7 @@ melody main() {
 	PLAY C2 400;
 	PLAY C2 400;
 	PLAY H1 400;
-	PLAY D2 400;
+	PLAY D1 400;
 	PAUSE 400;
 
 	PLAY G1 400;
@@ -58,10 +56,8 @@ melody main() {
 	PLAY G1 100;
 	PLAY F#1 100;
 	PLAY G1 100;
-	PLAY H1 600;
-	PLAY A1 500;
-
-	PAUSE 200;
+	PLAY H1 200;
+	PLAY A1 100;
 
 	PLAY G1 400;
 	PLAY F#1 400;
@@ -74,7 +70,7 @@ melody main() {
 	PLAY C2 400;
 	PLAY C2 400;
 	PLAY H1 400;
-	PLAY D2 400;
+	PLAY D1 400;
 	PAUSE 400;
 
 	PLAY G1 400;

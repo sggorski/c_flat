@@ -157,8 +157,9 @@ public class Melody {
     @Override
     public String toString() {
         return "Melody{" +
-                "name='" + name + '\'' +
-                ", parameters=" + parameters +
+                "parameters=" + parameters +
+                ", memory=" + memory +
+                ", name='" + name + '\'' +
                 '}';
     }
 }
