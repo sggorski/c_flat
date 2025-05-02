@@ -1,5 +1,14 @@
+melody gama(Note a){
+    PLAY a 1000;
+    a+=2;
+    PLAY a 1000;
+    RETURN a;
+    a+=2; //nie wykona sie
+
+}
 melody main(){
-   false OR true;
-
-
+    Note zmienna;
+    PLAY gama(C1,INSTRUMENT=GUITAR,DISTORTION=127) OUT zmienna;
+    PLAY A2 1000;
+    RETURN zmienna; //wypisuje wartosc do cmd i konczy porgram
 }

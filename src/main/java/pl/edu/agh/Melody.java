@@ -20,7 +20,7 @@ public class Melody {
     public HashMap<Effect, Integer> effectControllers = new HashMap<>();
     public String name;
     public HashMap<String, VarInfo> memory = new HashMap<>();
-    public HashMap<String, VarInfo> parameters = new HashMap<>();
+    public HashMap<Integer, VarInfo> parameters = new HashMap<>();
     public List<MusicParser.StatementContext> body;
     public List<MusicParser.MainStatementContext> mainBody;
 

@@ -68,25 +68,27 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         String name = ctx.ID().getText();
         newMelody.name = name;
         newMelody.body = ctx.statement();
+        int order = 0;
         if(ctx.parameters() != null) {
             for(MusicParser.ParameterContext param: ctx.parameters().parameter()){
                 String type = param.type().getText();
                 switch (type){
                     case "int":
-                        newMelody.parameters.put(param.ID().getText(),new VarInfo(param.ID().getText(),Type.INT,getLine(param),null));
+                        newMelody.parameters.put(order,new VarInfo(param.ID().getText(),Type.INT,getLine(param),null));
                         break;
                     case "bool":
-                        newMelody.parameters.put(param.ID().getText(),new VarInfo(param.ID().getText(),Type.BOOL,getLine(param),null));
+                        newMelody.parameters.put(order,new VarInfo(param.ID().getText(),Type.BOOL,getLine(param),null));
                         break;
                     case "Note":
-                        newMelody.parameters.put(param.ID().getText(),new VarInfo(param.ID().getText(),Type.NOTE,getLine(param),null));
+                        newMelody.parameters.put(order,new VarInfo(param.ID().getText(),Type.NOTE,getLine(param),null));
                         break;
                     case "Chord":
-                        newMelody.parameters.put(param.ID().getText(),new VarInfo(param.ID().getText(),Type.CHORD,getLine(param),null));
+                        newMelody.parameters.put(order,new VarInfo(param.ID().getText(),Type.CHORD,getLine(param),null));
                         break;
                     default:
                         throw new SyntaxError("Invalid type of parameter in function declaration, variable: " + param.ID().getText(),getLine(param),getCol(param));
                 }
+                order += 1;
             }
         }
         melodyMemory.put(name,newMelody);

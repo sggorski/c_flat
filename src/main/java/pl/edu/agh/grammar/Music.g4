@@ -46,7 +46,7 @@ statement
     ;
 
 returnStatement
-    : 'RETURN' (INT_VAL|BOOL_VAL|NOTE_VAL|chord|settingsValues|ID) ';' ;
+    : 'RETURN' expr ';' ;
 
 exprStatement
     : expr SEMICOLON;
@@ -155,7 +155,7 @@ continueStatement
     : 'continue' ';' ;
 
 functionCall
-    : ID '(' arguments* (',')? settingsList? ')'
+    : ID '(' arguments? (',')? settingsList? ')'
     ;
 
 arguments
