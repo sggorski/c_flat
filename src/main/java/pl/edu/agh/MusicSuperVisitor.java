@@ -17,7 +17,6 @@ import static pl.edu.agh.utils.Instrument.*;
 public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVisitor<T> {
     HashMap<String,Melody> melodyMemory;
     Deque<Melody> stack = new ArrayDeque<>();
-    MusicParser.MainDeclContext mainCtx = new MusicParser.MainDeclContext(null,0); //just to be working for now
 
     public MusicSuperVisitor(HashMap<String,Melody> melodyMemory) {
         this.melodyMemory = melodyMemory;
@@ -47,7 +46,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitMainDecl(MusicParser.MainDeclContext ctx) {
-        mainCtx = ctx;
         return visitChildren(ctx);
     }
 
@@ -84,19 +82,19 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if(melody.name.equals("main")){
             if(value instanceof BoolValue){
                 BoolValue boolValue = (BoolValue)value;
-                throw new RuntimeException("MAIN: " + boolValue.toString()); //TODO
+                throw new RuntimeException("MAIN: " + boolValue); //TODO
             }
             else if(value instanceof IntValue){
                 IntValue intValue = (IntValue)value;
-                throw new RuntimeException("MAIN: " + intValue.toString()); //TODO
+                throw new RuntimeException("MAIN: " + intValue); //TODO
             }
             else if(value instanceof NoteValue){
                 NoteValue noteValue = (NoteValue)value;
-                throw new RuntimeException("MAIN: " + noteValue.toString());
+                throw new RuntimeException("MAIN: " + noteValue);
             }
             else if(value instanceof ChordValue){
                 ChordValue chordValue = (ChordValue)value;
-                throw new RuntimeException("MAIN: " + chordValue.toString());
+                throw new RuntimeException("MAIN: " + chordValue);
             }
         }
         else{
@@ -122,14 +120,14 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitPace(MusicParser.PaceContext ctx) {
         Melody melody = stack.peek();
-        if(melody!=null) melody.editEffect(mainCtx, ctx, Effect.PACE, this);
+        if(melody!=null) melody.editEffect(ctx, Effect.PACE, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitSustain(MusicParser.SustainContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.SUSTAIN, this);
+        if(melody != null) melody.editEffect(ctx, Effect.SUSTAIN, this);
         return visitChildren(ctx);
     }
 
@@ -231,91 +229,91 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitDistortion(MusicParser.DistortionContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.DISTORTION, this);
+        if(melody != null) melody.editEffect(ctx, Effect.DISTORTION, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitJazz(MusicParser.JazzContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.JAZZ, this);
+        if(melody != null) melody.editEffect(ctx, Effect.JAZZ, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitBlues(MusicParser.BluesContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.BLUES, this);
+        if(melody != null) melody.editEffect(ctx, Effect.BLUES, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitVolume(MusicParser.VolumeContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.VOLUME, this);
+        if(melody != null) melody.editEffect(ctx, Effect.VOLUME, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitVibrato(MusicParser.VibratoContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.VIBRATO, this);
+        if(melody != null) melody.editEffect(ctx, Effect.VIBRATO, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitBalance(MusicParser.BalanceContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.BALANCE, this);
+        if(melody != null) melody.editEffect(ctx, Effect.BALANCE, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitSostenutoPedal(MusicParser.SostenutoPedalContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.SOSTENUTO, this);
+        if(melody != null) melody.editEffect(ctx, Effect.SOSTENUTO, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitSoftPedal(MusicParser.SoftPedalContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.SOFT, this);
+        if(melody != null) melody.editEffect(ctx, Effect.SOFT, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitResonance(MusicParser.ResonanceContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.RESONANCE, this);
+        if(melody != null) melody.editEffect(ctx, Effect.RESONANCE, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitReverb(MusicParser.ReverbContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.REVERB, this);
+        if(melody != null) melody.editEffect(ctx, Effect.REVERB, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitTremolo(MusicParser.TremoloContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.TREMOLO, this);
+        if(melody != null) melody.editEffect(ctx, Effect.TREMOLO, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitChorus(MusicParser.ChorusContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.CHORUS, this);
+        if(melody != null) melody.editEffect(ctx, Effect.CHORUS, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitPhraser(MusicParser.PhraserContext ctx) {
         Melody melody = stack.peek();
-        if(melody != null) melody.editEffect(mainCtx, ctx, Effect.PHRASER, this);
+        if(melody != null) melody.editEffect(ctx, Effect.PHRASER, this);
         return visitChildren(ctx);
     }
 
@@ -584,25 +582,23 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitPauseStatement(MusicParser.PauseStatementContext ctx) {
-        if (mainCtx != null) {
-            try {
-                int sleep = 0;
-                if (ctx.INT_VAL() != null) sleep = Integer.parseInt(ctx.INT_VAL().getText());
-                else if (ctx.ID() != null) {
-                    Melody melody = stack.peek();
-                    if(melody==null) throw new RuntimeException("Stack is empty!");
-                    VarInfo var = melody.memory.get(ctx.ID().getText());
-                    if (var == null)
-                        throw new ScopeError("Variable not defined: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
-                    if (var.type != Type.INT)
-                        throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
-                    IntValue varInt = (IntValue) var.valueObj;
-                    sleep = varInt.value;
-                }
-                Thread.sleep(sleep);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        try {
+            int sleep = 0;
+            if (ctx.INT_VAL() != null) sleep = Integer.parseInt(ctx.INT_VAL().getText());
+            else if (ctx.ID() != null) {
+                Melody melody = stack.peek();
+                if(melody==null) throw new RuntimeException("Stack is empty!");
+                VarInfo var = melody.memory.get(ctx.ID().getText());
+                if (var == null)
+                    throw new ScopeError("Variable not defined: " + ctx.ID().getText(), getLine(ctx), getCol(ctx));
+                if (var.type != Type.INT)
+                    throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
+                IntValue varInt = (IntValue) var.valueObj;
+                sleep = varInt.value;
             }
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         return visitChildren(ctx);
     }
@@ -663,7 +659,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         Melody melodyPattern = melodyMemory.get(name);
         Melody melody = deepCopyMelody(melodyPattern);
-
+        //System.out.println(stack.peek().effects);
+        if(stack.peek()!=null){
+            copyEffects(melody, stack.peek().effects);
+            melody.instrument = stack.peek().instrument;
+        }
         if(ctx.arguments()==null && !melody.parameters.isEmpty()) throw new RuntimeException("Invalid number of arguments!"); //TODO
         if(ctx.arguments()!=null){
             if(melody.parameters.size()!= ctx.arguments().expr().size())  throw new RuntimeException("Invalid number of arguments!"); //TODO
@@ -675,8 +675,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 par.valueObj = arg;
             }
         }
-        System.out.println(melodyPattern);
-        System.out.println(melody);
         for(Map.Entry<Integer,VarInfo> param: melody.parameters.entrySet()){
             if(melody.memory.containsKey(param.getValue().name)) throw new RuntimeException("Redeclaration of an argument parameter inside function!"); //TODO
             melody.memory.put(param.getValue().name, param.getValue());
@@ -1137,10 +1135,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
     public Melody deepCopyMelody(Melody original) {
         Melody copy = new Melody();
-
-        copy.instrument = original.instrument;
         copy.body = original.body;
-
         copy.parameters = new HashMap<>();
         for (Map.Entry<Integer, VarInfo> entry : original.parameters.entrySet()) {
             Type type = entry.getValue().type;
@@ -1213,6 +1208,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         copy.name = original.name;
         return copy;
+    }
+
+    public void copyEffects(Melody melody, HashMap<Effect, Value> effects){
+        melody.effects = new HashMap<>();
+        for (Map.Entry<Effect, Value> entry : effects.entrySet()) {
+            melody.editEffectPlain(entry.getKey(), entry.getValue());
+        }
     }
 
 }
