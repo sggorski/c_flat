@@ -141,86 +141,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 throw new ValueError(ctx.ID() + " is not valid INSTRUMENT", getLine(ctx), getCol(ctx));
             String instrumentName = ctx.INSTRUMENT_VALUE().getText();
             Instrument instrument = valueOf(instrumentName);
-            melody.instrument = instrument;
-            switch (instrument) {
-                case PIANO:
-                    melody.channels[0].programChange(0);
-                    break;
-                case HARPSICHORD:
-                    melody.channels[0].programChange(6);
-                    break;
-                case XYLOPHONE:
-                    melody.channels[0].programChange(13);
-                    break;
-                case ORGAN:
-                    melody.channels[0].programChange(16);
-                    break;
-                case CHURCH_ORGAN:
-                    melody.channels[0].programChange(19);
-                    break;
-                case ACCORDION:
-                    melody.channels[0].programChange(21);
-                    break;
-                case HARMONICA:
-                    melody.channels[0].programChange(22);
-                    break;
-                case GUITAR:
-                    melody.channels[0].programChange(25);
-                    break;
-                case ELECTRIC_GUITAR:
-                    melody.channels[0].programChange(27);
-                    break;
-                case BASS:
-                    melody.channels[0].programChange(33);
-                    break;
-                case VIOLIN:
-                    melody.channels[0].programChange(40);
-                    break;
-                case VIOLA:
-                    melody.channels[0].programChange(41);
-                    break;
-                case CELLO:
-                    melody.channels[0].programChange(42);
-                    break;
-                case CONTRABASS:
-                    melody.channels[0].programChange(43);
-                    break;
-                case HARP:
-                    melody.channels[0].programChange(46);
-                    break;
-                case TRUMPET:
-                    melody.channels[0].programChange(56);
-                    break;
-                case TROMBONE:
-                    melody.channels[0].programChange(57);
-                    break;
-                case TUBA:
-                    melody.channels[0].programChange(58);
-                    break;
-                case SAXOPHONE:
-                    melody.channels[0].programChange(65);
-                    break;
-                case OBOE:
-                    melody.channels[0].programChange(68);
-                    break;
-                case ENGLISH_HORN:
-                    melody.channels[0].programChange(69);
-                    break;
-                case BASSOON:
-                    melody.channels[0].programChange(70);
-                    break;
-                case CLARINET:
-                    melody.channels[0].programChange(71);
-                    break;
-                case FLUTE:
-                    melody.channels[0].programChange(73);
-                    break;
-                case DRUMS:
-                    melody.channels[9].programChange(35);
-                    break;
-                default:
-                    throw new ValueError(instrument + "is not valid INSTRUMENT", getLine(ctx), getCol(ctx));
-            }
+            if(!melody.setInstrument(instrument)) throw new ValueError(instrument + "is not valid INSTRUMENT", getLine(ctx), getCol(ctx));
         }
         return visitChildren(ctx);
     }
@@ -659,10 +580,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         Melody melodyPattern = melodyMemory.get(name);
         Melody melody = deepCopyMelody(melodyPattern);
-        //System.out.println(stack.peek().effects);
         if(stack.peek()!=null){
             copyEffects(melody, stack.peek().effects);
-            melody.instrument = stack.peek().instrument;
+            melody.setInstrument(stack.peek().instrument);
         }
         if(ctx.arguments()==null && !melody.parameters.isEmpty()) throw new RuntimeException("Invalid number of arguments!"); //TODO
         if(ctx.arguments()!=null){

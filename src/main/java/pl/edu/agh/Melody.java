@@ -1,6 +1,7 @@
 package pl.edu.agh;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
+import pl.edu.agh.errors.ValueError;
 import pl.edu.agh.utils.*;
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
@@ -153,6 +154,89 @@ public class Melody {
                     this.channels[0].controlChange(this.effectControllers.get(effect), ((IntValue)this.effects.get(effect)).value);
             }
         }
+    }
+    public boolean setInstrument(Instrument instrument){
+        this.instrument = instrument;
+        switch (instrument) {
+            case PIANO:
+                this.channels[0].programChange(0);
+                break;
+            case HARPSICHORD:
+                this.channels[0].programChange(6);
+                break;
+            case XYLOPHONE:
+                this.channels[0].programChange(13);
+                break;
+            case ORGAN:
+                this.channels[0].programChange(16);
+                break;
+            case CHURCH_ORGAN:
+                this.channels[0].programChange(19);
+                break;
+            case ACCORDION:
+                this.channels[0].programChange(21);
+                break;
+            case HARMONICA:
+                this.channels[0].programChange(22);
+                break;
+            case GUITAR:
+                this.channels[0].programChange(25);
+                break;
+            case ELECTRIC_GUITAR:
+                this.channels[0].programChange(27);
+                break;
+            case BASS:
+                this.channels[0].programChange(33);
+                break;
+            case VIOLIN:
+                this.channels[0].programChange(40);
+                break;
+            case VIOLA:
+                this.channels[0].programChange(41);
+                break;
+            case CELLO:
+                this.channels[0].programChange(42);
+                break;
+            case CONTRABASS:
+                this.channels[0].programChange(43);
+                break;
+            case HARP:
+                this.channels[0].programChange(46);
+                break;
+            case TRUMPET:
+                this.channels[0].programChange(56);
+                break;
+            case TROMBONE:
+                this.channels[0].programChange(57);
+                break;
+            case TUBA:
+                this.channels[0].programChange(58);
+                break;
+            case SAXOPHONE:
+                this.channels[0].programChange(65);
+                break;
+            case OBOE:
+                this.channels[0].programChange(68);
+                break;
+            case ENGLISH_HORN:
+                this.channels[0].programChange(69);
+                break;
+            case BASSOON:
+                this.channels[0].programChange(70);
+                break;
+            case CLARINET:
+                this.channels[0].programChange(71);
+                break;
+            case FLUTE:
+                this.channels[0].programChange(73);
+                break;
+            case DRUMS:
+                this.channels[9].programChange(35);
+                break;
+            default:
+                return false;
+        }
+        return true;
     }
 
     private static boolean isNumeric(String str) {
