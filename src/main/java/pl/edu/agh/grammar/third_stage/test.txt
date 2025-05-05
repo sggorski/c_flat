@@ -1,21 +1,22 @@
-melody gama(Note a, int b){
-    PLAY a 1000;
-    a+=2;
-    PLAY a 1000;
-    PLAY gama2();
-    RETURN a;
-    a+=2; //nie wykona sie
+melody gama(Note begin, Note finish, bool reverse){
+    PLAY begin 1000;
+    if(begin==finish){
+        RETURN;
+    }
+    else{
+        if(reverse==true){
+            begin-=2;
+        }
+        else{
+            begin+=2;
+        }
+        PLAY gama(begin,finish,reverse);
+    }
 
 }
 
-melody gama2(){
-    PLAY C2 1000;
-    PLAY gama(C1,2);
-}
 
 melody main(){
-    Note var;
-    PLAY gama(C1,1+1,JAZZ=true) OUT var;
-    PLAY A2 1000;
-    RETURN var; //wypisuje wartosc do cmd i konczy porgram
+    PLAY gama(C2,D3,false);
+    PLAY gama(C3,C2,true);
 }

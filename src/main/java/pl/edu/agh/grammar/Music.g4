@@ -46,7 +46,7 @@ statement
     ;
 
 returnStatement
-    : 'RETURN' expr ';' ;
+    : 'RETURN' expr? ';' ;
 
 exprStatement
     : expr SEMICOLON;

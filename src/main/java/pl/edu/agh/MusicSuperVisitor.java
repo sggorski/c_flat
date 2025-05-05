@@ -80,6 +80,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitReturnStatement(MusicParser.ReturnStatementContext ctx){
         Melody melody = stack.peek();
         if(melody==null) throw new RuntimeException("Stack is empty!");
+        if(ctx.expr()==null){
+            stack.pop();
+            throw new ReturnValue(null);
+        }
         Value value = tryCasting(ctx.expr());
         if(melody.name.equals("main")){
             if(value instanceof BoolValue){
@@ -416,8 +420,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         try{
             visit(ctx.functionCall());
         }catch(ReturnValue returnValue){
-            if(name==null) throw new RuntimeException("Function returned value, but it wasn't assigned!");
-            else if(var.type!=returnValue.getValue().getType()) throw new RuntimeException("Function returned: " + returnValue.getValue().getType() + "which was assigned to: " + var.type);
+            if(returnValue.getValue()==null) return null;
+            else if(name==null) throw new RuntimeException("Function returned value, but it wasn't assigned!");
+            else if(var.type!=returnValue.getValue().getType()) throw new RuntimeException("Function returned: " + returnValue.getValue().getType() + "which was assigned to: " + var.type); //TODO
             else var.valueObj = returnValue.getValue();
         }
         return null;
