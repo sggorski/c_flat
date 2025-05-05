@@ -12,11 +12,33 @@ melody gama(Note begin, Note finish, bool reverse){
         }
         PLAY gama(begin,finish,reverse);
     }
+}
 
+melody gama2(){
+    PLAY C2 1000;
+    PLAY gama(C1,2);
 }
 
 
 melody main(){
+
+    int a = 9;
+    if (a == 10){
+        a = 11;
+        PLAY A2 1000;
+    }else{
+        Note var;
+        a = 12;
+        PLAY A2 1000;
+        if(a == 12){
+            PLAY C2 C2 C2 1000;
+        }
+    }
+
+
+    Note var;
+
     PLAY gama(C2,D3,false);
     PLAY gama(C3,C2,true);
+
 }

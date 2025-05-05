@@ -22,12 +22,12 @@ import java.util.HashMap;
  */
 
 public class MusicSuperListener extends MusicBaseListener implements MusicListener {
-    HashMap<String,Melody> melodyMemory;
+    HashMap<String, Melody> melodyMemory;
     MusicLexer lexer;
     String currentMelody;
     ArrayList<Scope> scopes = new ArrayList<>();
 
-    public MusicSuperListener(HashMap<String,Melody> melodyMemory, MusicLexer musicLexer) {
+    public MusicSuperListener(HashMap<String, Melody> melodyMemory, MusicLexer musicLexer) {
         this.melodyMemory = melodyMemory;
         this.lexer = musicLexer;
     }
@@ -37,13 +37,18 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterProgram(MusicParser.ProgramContext ctx) { }
+    @Override
+    public void enterProgram(MusicParser.ProgramContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitProgram(MusicParser.ProgramContext ctx) { }
+    @Override
+    public void exitProgram(MusicParser.ProgramContext ctx) {
+    }
 
     /**
      * @param ctx the parse tree
@@ -66,98 +71,125 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterFunctionDecl(MusicParser.FunctionDeclContext ctx) {
+    @Override
+    public void enterFunctionDecl(MusicParser.FunctionDeclContext ctx) {
         Melody newMelody = new Melody();
         String name = ctx.ID().getText();
         newMelody.name = name;
         newMelody.body = ctx.statement();
         int order = 0;
-        if(ctx.parameters() != null) {
-            for(MusicParser.ParameterContext param: ctx.parameters().parameter()){
+        if (ctx.parameters() != null) {
+            for (MusicParser.ParameterContext param : ctx.parameters().parameter()) {
                 String type = param.type().getText();
-                switch (type){
+                switch (type) {
                     case "int":
-                        newMelody.parameters.put(order,new VarInfo(param.ID().getText(),Type.INT,getLine(param),null));
+                        newMelody.parameters.put(order, new VarInfo(param.ID().getText(), Type.INT, getLine(param), null));
                         break;
                     case "bool":
-                        newMelody.parameters.put(order,new VarInfo(param.ID().getText(),Type.BOOL,getLine(param),null));
+                        newMelody.parameters.put(order, new VarInfo(param.ID().getText(), Type.BOOL, getLine(param), null));
                         break;
                     case "Note":
-                        newMelody.parameters.put(order,new VarInfo(param.ID().getText(),Type.NOTE,getLine(param),null));
+                        newMelody.parameters.put(order, new VarInfo(param.ID().getText(), Type.NOTE, getLine(param), null));
                         break;
                     case "Chord":
-                        newMelody.parameters.put(order,new VarInfo(param.ID().getText(),Type.CHORD,getLine(param),null));
+                        newMelody.parameters.put(order, new VarInfo(param.ID().getText(), Type.CHORD, getLine(param), null));
                         break;
                     default:
-                        throw new SyntaxError("Invalid type of parameter in function declaration, variable: " + param.ID().getText(),getLine(param),getCol(param));
+                        throw new SyntaxError("Invalid type of parameter in function declaration, variable: " + param.ID().getText(), getLine(param), getCol(param));
                 }
                 order += 1;
             }
         }
-        melodyMemory.put(name,newMelody);
+        melodyMemory.put(name, newMelody);
         currentMelody = name;
 
     }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitFunctionDecl(MusicParser.FunctionDeclContext ctx) { }
+    @Override
+    public void exitFunctionDecl(MusicParser.FunctionDeclContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterMainDecl(MusicParser.MainDeclContext ctx) {
+    @Override
+    public void enterMainDecl(MusicParser.MainDeclContext ctx) {
         Melody newMelody = new Melody();
         newMelody.name = "main";
         newMelody.mainBody = ctx.mainStatement();
-        melodyMemory.put("main",newMelody);
+        melodyMemory.put("main", newMelody);
         currentMelody = "main";
     }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitMainDecl(MusicParser.MainDeclContext ctx) { }
+    @Override
+    public void exitMainDecl(MusicParser.MainDeclContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterParameters(MusicParser.ParametersContext ctx) { }
+    @Override
+    public void enterParameters(MusicParser.ParametersContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitParameters(MusicParser.ParametersContext ctx) { }
+    @Override
+    public void exitParameters(MusicParser.ParametersContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterParameter(MusicParser.ParameterContext ctx) { }
+    @Override
+    public void enterParameter(MusicParser.ParameterContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitParameter(MusicParser.ParameterContext ctx) { }
+    @Override
+    public void exitParameter(MusicParser.ParameterContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterType(MusicParser.TypeContext ctx) { }
+    @Override
+    public void enterType(MusicParser.TypeContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitType(MusicParser.TypeContext ctx) { }
+    @Override
+    public void exitType(MusicParser.TypeContext ctx) {
+    }
 
     @Override
     public void enterMainStatement(MusicParser.MainStatementContext ctx) {
@@ -174,13 +206,18 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterStatement(MusicParser.StatementContext ctx) { }
+    @Override
+    public void enterStatement(MusicParser.StatementContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitStatement(MusicParser.StatementContext ctx) { }
+    @Override
+    public void exitStatement(MusicParser.StatementContext ctx) {
+    }
 
     @Override
     public void enterReturnStatement(MusicParser.ReturnStatementContext ctx) {
@@ -223,97 +260,144 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterSettings(MusicParser.SettingsContext ctx) { }
+    @Override
+    public void enterSettings(MusicParser.SettingsContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitSettings(MusicParser.SettingsContext ctx) { }
+    @Override
+    public void exitSettings(MusicParser.SettingsContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterPace(MusicParser.PaceContext ctx) { }
+    @Override
+    public void enterPace(MusicParser.PaceContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitPace(MusicParser.PaceContext ctx) { }
+    @Override
+    public void exitPace(MusicParser.PaceContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterSustain(MusicParser.SustainContext ctx) { }
+    @Override
+    public void enterSustain(MusicParser.SustainContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitSustain(MusicParser.SustainContext ctx) { }
+    @Override
+    public void exitSustain(MusicParser.SustainContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterInstrument(MusicParser.InstrumentContext ctx) { }
+    @Override
+    public void enterInstrument(MusicParser.InstrumentContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitInstrument(MusicParser.InstrumentContext ctx) { }
+    @Override
+    public void exitInstrument(MusicParser.InstrumentContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterDistortion(MusicParser.DistortionContext ctx) { }
+    @Override
+    public void enterDistortion(MusicParser.DistortionContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitDistortion(MusicParser.DistortionContext ctx) { }
+    @Override
+    public void exitDistortion(MusicParser.DistortionContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterJazz(MusicParser.JazzContext ctx) { }
+    @Override
+    public void enterJazz(MusicParser.JazzContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitJazz(MusicParser.JazzContext ctx) { }
+    @Override
+    public void exitJazz(MusicParser.JazzContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterBlues(MusicParser.BluesContext ctx) { }
+    @Override
+    public void enterBlues(MusicParser.BluesContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitBlues(MusicParser.BluesContext ctx) { }
+    @Override
+    public void exitBlues(MusicParser.BluesContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterVolume(MusicParser.VolumeContext ctx) { }
+    @Override
+    public void enterVolume(MusicParser.VolumeContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitVolume(MusicParser.VolumeContext ctx) { }
+    @Override
+    public void exitVolume(MusicParser.VolumeContext ctx) {
+    }
 
     @Override
     public void enterVibrato(MusicParser.VibratoContext ctx) {
@@ -427,25 +511,36 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      * <p>The default implementation does nothing.</p>
      */
 
-    @Override public void enterAssignment(MusicParser.AssignmentContext ctx) { }
+    @Override
+    public void enterAssignment(MusicParser.AssignmentContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitAssignment(MusicParser.AssignmentContext ctx) { }
+    @Override
+    public void exitAssignment(MusicParser.AssignmentContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterSelfAssignment(MusicParser.SelfAssignmentContext ctx) { }
+    @Override
+    public void enterSelfAssignment(MusicParser.SelfAssignmentContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitSelfAssignment(MusicParser.SelfAssignmentContext ctx) { }
+    @Override
+    public void exitSelfAssignment(MusicParser.SelfAssignmentContext ctx) {
+    }
 
     /**
      * @param ctx the parse tree
@@ -453,15 +548,15 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     @Override
     public void enterVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) {
         String varName = ctx.ID().getText();
-        if(scopes.isEmpty()){
+        if (scopes.isEmpty()) {
             Melody melody = melodyMemory.get(currentMelody);
-            if(melody.memory.containsKey(varName))
+            if (melody.memory.containsKey(varName))
                 throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + melody.memory.get(varName).line, getLine(ctx), getCol(ctx));
-            if(Arrays.asList(((VocabularyImpl)this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
+            if (Arrays.asList(((VocabularyImpl) this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
                 throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
-            if(isAnInstrument(varName))
+            if (isAnInstrument(varName))
                 throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
-            if(isANote(varName))
+            if (isANote(varName))
                 throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
 
             switch (ctx.type().getText()) {
@@ -484,15 +579,15 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
                 default:
                     break;
             }
-        }else {
+        } else {
             Scope scope = scopes.get(scopes.size() - 1);
-            if(scope.memory.containsKey(varName))
+            if (scope.memory.containsKey(varName))
                 throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + scope.memory.get(varName).line, getLine(ctx), getCol(ctx));
-            if(Arrays.asList(((VocabularyImpl)this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
+            if (Arrays.asList(((VocabularyImpl) this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
                 throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
-            if(isAnInstrument(varName))
+            if (isAnInstrument(varName))
                 throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
-            if(isANote(varName))
+            if (isANote(varName))
                 throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
 
             switch (ctx.type().getText()) {
@@ -514,9 +609,10 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
                     break;
                 default:
                     break;
-        }
+            }
 
-    }}
+        }
+    }
 
     /**
      * @param ctx the parse tree
@@ -533,35 +629,69 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     public void enterVarDeclWithoutArg(MusicParser.VarDeclWithoutArgContext ctx) {
         String varName = ctx.ID().getText();
         Melody melody = melodyMemory.get(currentMelody);
-        if(melody.memory.containsKey(varName))
-            throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + melody.memory.get(varName).line, getLine(ctx), getCol(ctx));
-        if(Arrays.asList(((VocabularyImpl)this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
-            throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
-        if(isAnInstrument(varName))
-            throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
-        if(isANote(varName))
-            throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
+        if (scopes.isEmpty()) {
+            if (melody.memory.containsKey(varName))
+                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + melody.memory.get(varName).line, getLine(ctx), getCol(ctx));
+            if (Arrays.asList(((VocabularyImpl) this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
+            if (isAnInstrument(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
+            if (isANote(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
 
-        switch (ctx.type().getText()) {
-            case "int":
-                VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), new IntValue(0));
-                melody.memory.put(varName, intInfo);
-                break;
-            case "bool":
-                VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), new BoolValue(false));
-                melody.memory.put(varName, boolInfo);
-                break;
-            case "Note":
-                VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), null);
-                melody.memory.put(varName, noteInfo);
-                break;
-            case "Chord":
-                VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), null);
-                melody.memory.put(varName, chordInfo);
-                break;
-            default:
-                break;
+            switch (ctx.type().getText()) {
+                case "int":
+                    VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), new IntValue(0));
+                    melody.memory.put(varName, intInfo);
+                    break;
+                case "bool":
+                    VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), new BoolValue(false));
+                    melody.memory.put(varName, boolInfo);
+                    break;
+                case "Note":
+                    VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), null);
+                    melody.memory.put(varName, noteInfo);
+                    break;
+                case "Chord":
+                    VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), null);
+                    melody.memory.put(varName, chordInfo);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            Scope scope = scopes.get(scopes.size() - 1);
+            if (scope.memory.containsKey(varName))
+                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + scope.memory.get(varName).line, getLine(ctx), getCol(ctx));
+            if (Arrays.asList(((VocabularyImpl) this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
+            if (isAnInstrument(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
+            if (isANote(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
+
+            switch (ctx.type().getText()) {
+                case "int":
+                    VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), new IntValue(0));
+                    scope.memory.put(varName, intInfo);
+                    break;
+                case "bool":
+                    VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), new BoolValue(false));
+                    scope.memory.put(varName, boolInfo);
+                    break;
+                case "Note":
+                    VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), null);
+                    scope.memory.put(varName, noteInfo);
+                    break;
+                case "Chord":
+                    VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), null);
+                    scope.memory.put(varName, chordInfo);
+                    break;
+                default:
+                    break;
+            }
         }
+
     }
 
     /**
@@ -588,41 +718,56 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      * <p>The default implementation does nothing.</p>
      */
 
-    @Override public void enterPlayNote(MusicParser.PlayNoteContext ctx) {
+    @Override
+    public void enterPlayNote(MusicParser.PlayNoteContext ctx) {
 
     }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitPlayNote(MusicParser.PlayNoteContext ctx) {
+    @Override
+    public void exitPlayNote(MusicParser.PlayNoteContext ctx) {
 
     }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterPlayChord(MusicParser.PlayChordContext ctx) { }
+    @Override
+    public void enterPlayChord(MusicParser.PlayChordContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitPlayChord(MusicParser.PlayChordContext ctx) { }
+    @Override
+    public void exitPlayChord(MusicParser.PlayChordContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterPlayFunc(MusicParser.PlayFuncContext ctx) { }
+    @Override
+    public void enterPlayFunc(MusicParser.PlayFuncContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitPlayFunc(MusicParser.PlayFuncContext ctx) { }
+    @Override
+    public void exitPlayFunc(MusicParser.PlayFuncContext ctx) {
+    }
 
     @Override
     public void enterPlayIDVariants(MusicParser.PlayIDVariantsContext ctx) {
@@ -666,13 +811,18 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterPauseStatement(MusicParser.PauseStatementContext ctx) { }
+    @Override
+    public void enterPauseStatement(MusicParser.PauseStatementContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitPauseStatement(MusicParser.PauseStatementContext ctx) { }
+    @Override
+    public void exitPauseStatement(MusicParser.PauseStatementContext ctx) {
+    }
 
     /**
      * @param ctx the parse tree
@@ -713,7 +863,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
     @Override
     public void exitIf(MusicParser.IfContext ctx) {
-       removeScope(ctx);
+        removeScope(ctx);
     }
 
     @Override
@@ -758,25 +908,36 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      * <p>The default implementation does nothing.</p>
      */
 
-    @Override public void enterForInit(MusicParser.ForInitContext ctx) { }
+    @Override
+    public void enterForInit(MusicParser.ForInitContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitForInit(MusicParser.ForInitContext ctx) { }
+    @Override
+    public void exitForInit(MusicParser.ForInitContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterForUpdate(MusicParser.ForUpdateContext ctx) { }
+    @Override
+    public void enterForUpdate(MusicParser.ForUpdateContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitForUpdate(MusicParser.ForUpdateContext ctx) { }
+    @Override
+    public void exitForUpdate(MusicParser.ForUpdateContext ctx) {
+    }
 
     /**
      * @param ctx the parse tree
@@ -799,73 +960,108 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterBreakStatement(MusicParser.BreakStatementContext ctx) { }
+    @Override
+    public void enterBreakStatement(MusicParser.BreakStatementContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitBreakStatement(MusicParser.BreakStatementContext ctx) { }
+    @Override
+    public void exitBreakStatement(MusicParser.BreakStatementContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterContinueStatement(MusicParser.ContinueStatementContext ctx) { }
+    @Override
+    public void enterContinueStatement(MusicParser.ContinueStatementContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitContinueStatement(MusicParser.ContinueStatementContext ctx) { }
+    @Override
+    public void exitContinueStatement(MusicParser.ContinueStatementContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterFunctionCall(MusicParser.FunctionCallContext ctx) { }
+    @Override
+    public void enterFunctionCall(MusicParser.FunctionCallContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitFunctionCall(MusicParser.FunctionCallContext ctx) { }
+    @Override
+    public void exitFunctionCall(MusicParser.FunctionCallContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterArguments(MusicParser.ArgumentsContext ctx) { }
+    @Override
+    public void enterArguments(MusicParser.ArgumentsContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitArguments(MusicParser.ArgumentsContext ctx) { }
+    @Override
+    public void exitArguments(MusicParser.ArgumentsContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterSettingsList(MusicParser.SettingsListContext ctx) { }
+    @Override
+    public void enterSettingsList(MusicParser.SettingsListContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitSettingsList(MusicParser.SettingsListContext ctx) { }
+    @Override
+    public void exitSettingsList(MusicParser.SettingsListContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterNoteExpr(MusicParser.NoteExprContext ctx) { }
+    @Override
+    public void enterNoteExpr(MusicParser.NoteExprContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitNoteExpr(MusicParser.NoteExprContext ctx) { }
+    @Override
+    public void exitNoteExpr(MusicParser.NoteExprContext ctx) {
+    }
 
     /**
      * @param ctx the parse tree
@@ -973,29 +1169,44 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
 
     }
 
-    @Override public void enterBoolExpr(MusicParser.BoolExprContext ctx) {}
+    @Override
+    public void enterBoolExpr(MusicParser.BoolExprContext ctx) {
+    }
 
-    @Override public void exitBoolExpr(MusicParser.BoolExprContext ctx) {}
+    @Override
+    public void exitBoolExpr(MusicParser.BoolExprContext ctx) {
+    }
 
-    @Override public void enterParanthesesExpr(MusicParser.ParanthesesExprContext ctx) { }
+    @Override
+    public void enterParanthesesExpr(MusicParser.ParanthesesExprContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitParanthesesExpr(MusicParser.ParanthesesExprContext ctx) { }
+    @Override
+    public void exitParanthesesExpr(MusicParser.ParanthesesExprContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterIdExpr(MusicParser.IdExprContext ctx) { }
+    @Override
+    public void enterIdExpr(MusicParser.IdExprContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitIdExpr(MusicParser.IdExprContext ctx) { }
+    @Override
+    public void exitIdExpr(MusicParser.IdExprContext ctx) {
+    }
 
     /**
      * @param ctx the parse tree
@@ -1098,13 +1309,18 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterIntExpr(MusicParser.IntExprContext ctx) { }
+    @Override
+    public void enterIntExpr(MusicParser.IntExprContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitIntExpr(MusicParser.IntExprContext ctx) { }
+    @Override
+    public void exitIntExpr(MusicParser.IntExprContext ctx) {
+    }
 
     /**
      * @param ctx the parse tree
@@ -1143,37 +1359,54 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterChordExpr(MusicParser.ChordExprContext ctx) { }
+    @Override
+    public void enterChordExpr(MusicParser.ChordExprContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitChordExpr(MusicParser.ChordExprContext ctx) { }
+    @Override
+    public void exitChordExpr(MusicParser.ChordExprContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterAssOp(MusicParser.AssOpContext ctx) { }
+    @Override
+    public void enterAssOp(MusicParser.AssOpContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitAssOp(MusicParser.AssOpContext ctx) { }
+    @Override
+    public void exitAssOp(MusicParser.AssOpContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterChord(MusicParser.ChordContext ctx) { }
+    @Override
+    public void enterChord(MusicParser.ChordContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitChord(MusicParser.ChordContext ctx) { }
+    @Override
+    public void exitChord(MusicParser.ChordContext ctx) {
+    }
 
     @Override
     public void enterTrackAdd(MusicParser.TrackAddContext ctx) {
@@ -1200,13 +1433,18 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterTrackStatement(MusicParser.TrackStatementContext ctx) { }
+    @Override
+    public void enterTrackStatement(MusicParser.TrackStatementContext ctx) {
+    }
+
     /**
      * {@inheritDoc}
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void exitTrackStatement(MusicParser.TrackStatementContext ctx) { }
+    @Override
+    public void exitTrackStatement(MusicParser.TrackStatementContext ctx) {
+    }
 
     @Override
     public void enterTrackDeclaration(MusicParser.TrackDeclarationContext ctx) {
@@ -1233,29 +1471,37 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      *
      * <p>The default implementation does nothing.</p>
      */
-    @Override public void enterEveryRule(ParserRuleContext ctx) { }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override public void exitEveryRule(ParserRuleContext ctx) { }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override public void visitTerminal(TerminalNode node) { }
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override public void visitErrorNode(ErrorNode node){
-        throw new RuntimeException("An error has occurred");
+    @Override
+    public void enterEveryRule(ParserRuleContext ctx) {
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void exitEveryRule(ParserRuleContext ctx) {
+    }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void visitTerminal(TerminalNode node) {
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The default implementation does nothing.</p>
+     */
+    @Override
+    public void visitErrorNode(ErrorNode node) {
+        throw new RuntimeException("An error has occurred");
+    }
 
 
     private int getLine(ParserRuleContext ctx) {
@@ -1284,13 +1530,13 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         return false;
     }
 
-    public void createScope(){
+    public void createScope() {
         Scope scope;
-        if(scopes.isEmpty()){
+        if (scopes.isEmpty()) {
             Melody currMelody = melodyMemory.get(currentMelody);
             scope = Scope.deepCopyScope(currMelody);
             scope.melodyParent = currMelody;
-        }else {
+        } else {
             Scope currScope = scopes.get(scopes.size() - 1);
             scope = Scope.deepCopyScope(currScope);
             scope.parent = currScope;
@@ -1298,13 +1544,13 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         scopes.add(scope);
     }
 
-    public void removeScope(ParserRuleContext ctx){
-        if (scopes.isEmpty()){
+    public void removeScope(ParserRuleContext ctx) {
+        if (scopes.isEmpty()) {
             throw new ScopeError("Out of scope!", getLine(ctx), getCol(ctx));
         }
         Scope scope = scopes.get(scopes.size() - 1);
         scopes.remove(scope);
-        if (scope.parent != null){
+        if (scope.parent != null) {
             scope.parent.scopes.add(scope);
         } else if (scope.melodyParent != null) {
             scope.melodyParent.scopes.add(scope);
