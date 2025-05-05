@@ -1,4 +1,4 @@
-// Generated from C:/Users/sggor/Desktop/TKK/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
+// Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -293,12 +293,12 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWhileLoop(MusicParser.WhileLoopContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code if}
+	 * Visit a parse tree produced by the {@code ifStatement}
 	 * labeled alternative in {@link MusicParser#controlStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitIf(MusicParser.IfContext ctx);
+	T visitIfStatement(MusicParser.IfStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code forLoop}
 	 * labeled alternative in {@link MusicParser#controlStatement}.
@@ -306,6 +306,24 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitForLoop(MusicParser.ForLoopContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MusicParser#if}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIf(MusicParser.IfContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MusicParser#elseif}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseif(MusicParser.ElseifContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MusicParser#else}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElse(MusicParser.ElseContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MusicParser#forInit}.
 	 * @param ctx the parse tree

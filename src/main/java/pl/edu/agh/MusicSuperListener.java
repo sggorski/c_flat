@@ -5,10 +5,13 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.VocabularyImpl;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import pl.edu.agh.errors.ScopeError;
 import pl.edu.agh.errors.SyntaxError;
 import pl.edu.agh.errors.VariableDeclarationError;
 import pl.edu.agh.utils.*;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -22,7 +25,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     HashMap<String,Melody> melodyMemory;
     MusicLexer lexer;
     String currentMelody;
-
+    ArrayList<Scope> scopes = new ArrayList<>();
 
     public MusicSuperListener(HashMap<String,Melody> melodyMemory, MusicLexer musicLexer) {
         this.melodyMemory = melodyMemory;
@@ -178,6 +181,26 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      * <p>The default implementation does nothing.</p>
      */
     @Override public void exitStatement(MusicParser.StatementContext ctx) { }
+
+    @Override
+    public void enterReturnStatement(MusicParser.ReturnStatementContext ctx) {
+
+    }
+
+    @Override
+    public void exitReturnStatement(MusicParser.ReturnStatementContext ctx) {
+
+    }
+
+    @Override
+    public void enterExprStatement(MusicParser.ExprStatementContext ctx) {
+
+    }
+
+    @Override
+    public void exitExprStatement(MusicParser.ExprStatementContext ctx) {
+
+    }
 
     /**
      * @param ctx the parse tree
@@ -430,37 +453,70 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     @Override
     public void enterVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) {
         String varName = ctx.ID().getText();
-        Melody melody = melodyMemory.get(currentMelody);
-        if(melody.memory.containsKey(varName))
-            throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + melody.memory.get(varName).line, getLine(ctx), getCol(ctx));
-        if(Arrays.asList(((VocabularyImpl)this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
-            throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
-        if(isAnInstrument(varName))
-            throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
-        if(isANote(varName))
-            throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
+        if(scopes.isEmpty()){
+            Melody melody = melodyMemory.get(currentMelody);
+            if(melody.memory.containsKey(varName))
+                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + melody.memory.get(varName).line, getLine(ctx), getCol(ctx));
+            if(Arrays.asList(((VocabularyImpl)this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
+            if(isAnInstrument(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
+            if(isANote(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
 
-        switch (ctx.type().getText()) {
-            case "int":
-                VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), null);
-                melody.memory.put(varName, intInfo);
-                break;
-            case "bool":
-                VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), null);
-                melody.memory.put(varName, boolInfo);
-                break;
-            case "Note":
-                VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), null);
-                melody.memory.put(varName, noteInfo);
-                break;
-            case "Chord":
-                VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), null);
-                melody.memory.put(varName, chordInfo);
-                break;
-            default:
-                break;
+            switch (ctx.type().getText()) {
+                case "int":
+                    VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), null);
+                    melody.memory.put(varName, intInfo);
+                    break;
+                case "bool":
+                    VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), null);
+                    melody.memory.put(varName, boolInfo);
+                    break;
+                case "Note":
+                    VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), null);
+                    melody.memory.put(varName, noteInfo);
+                    break;
+                case "Chord":
+                    VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), null);
+                    melody.memory.put(varName, chordInfo);
+                    break;
+                default:
+                    break;
+            }
+        }else {
+            Scope scope = scopes.get(scopes.size() - 1);
+            if(scope.memory.containsKey(varName))
+                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + scope.memory.get(varName).line, getLine(ctx), getCol(ctx));
+            if(Arrays.asList(((VocabularyImpl)this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
+            if(isAnInstrument(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
+            if(isANote(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
+
+            switch (ctx.type().getText()) {
+                case "int":
+                    VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), null);
+                    scope.memory.put(varName, intInfo);
+                    break;
+                case "bool":
+                    VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), null);
+                    scope.memory.put(varName, boolInfo);
+                    break;
+                case "Note":
+                    VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), null);
+                    scope.memory.put(varName, noteInfo);
+                    break;
+                case "Chord":
+                    VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), null);
+                    scope.memory.put(varName, chordInfo);
+                    break;
+                default:
+                    break;
         }
-    }
+
+    }}
 
     /**
      * @param ctx the parse tree
@@ -634,11 +690,13 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
 
     }
 
-    /**
-     * @param ctx the parse tree
-     */
     @Override
-    public void enterIf(MusicParser.IfContext ctx) {
+    public void enterIfStatement(MusicParser.IfStatementContext ctx) {
+
+    }
+
+    @Override
+    public void exitIfStatement(MusicParser.IfStatementContext ctx) {
 
     }
 
@@ -646,8 +704,36 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      * @param ctx the parse tree
      */
     @Override
-    public void exitIf(MusicParser.IfContext ctx) {
+    public void enterIf(MusicParser.IfContext ctx) {
+        createScope();
+    }
 
+    /**
+     * @param ctx the parse tree
+     */
+    @Override
+    public void exitIf(MusicParser.IfContext ctx) {
+       removeScope(ctx);
+    }
+
+    @Override
+    public void enterElseif(MusicParser.ElseifContext ctx) {
+        createScope();
+    }
+
+    @Override
+    public void exitElseif(MusicParser.ElseifContext ctx) {
+        removeScope(ctx);
+    }
+
+    @Override
+    public void enterElse(MusicParser.ElseContext ctx) {
+        createScope();
+    }
+
+    @Override
+    public void exitElse(MusicParser.ElseContext ctx) {
+        removeScope(ctx);
     }
 
     /**
@@ -1196,6 +1282,33 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
             }
         }
         return false;
+    }
+
+    public void createScope(){
+        Scope scope;
+        if(scopes.isEmpty()){
+            Melody currMelody = melodyMemory.get(currentMelody);
+            scope = Scope.deepCopyScope(currMelody);
+            scope.melodyParent = currMelody;
+        }else {
+            Scope currScope = scopes.get(scopes.size() - 1);
+            scope = Scope.deepCopyScope(currScope);
+            scope.parent = currScope;
+        }
+        scopes.add(scope);
+    }
+
+    public void removeScope(ParserRuleContext ctx){
+        if (scopes.isEmpty()){
+            throw new ScopeError("Out of scope!", getLine(ctx), getCol(ctx));
+        }
+        Scope scope = scopes.get(scopes.size() - 1);
+        scopes.remove(scope);
+        if (scope.parent != null){
+            scope.parent.scopes.add(scope);
+        } else if (scope.melodyParent != null) {
+            scope.melodyParent.scopes.add(scope);
+        }
     }
 
 }

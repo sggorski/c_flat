@@ -1,4 +1,4 @@
-// Generated from C:/Users/sggor/Desktop/TKK/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
+// Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -533,13 +533,13 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIf(MusicParser.IfContext ctx) { }
+	@Override public void enterIfStatement(MusicParser.IfStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIf(MusicParser.IfContext ctx) { }
+	@Override public void exitIfStatement(MusicParser.IfStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -552,6 +552,42 @@ public class MusicBaseListener implements MusicListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitForLoop(MusicParser.ForLoopContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIf(MusicParser.IfContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIf(MusicParser.IfContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterElseif(MusicParser.ElseifContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitElseif(MusicParser.ElseifContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterElse(MusicParser.ElseContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitElse(MusicParser.ElseContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

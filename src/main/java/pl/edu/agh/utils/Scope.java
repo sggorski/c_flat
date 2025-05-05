@@ -1,8 +1,10 @@
-package pl.edu.agh;
+package pl.edu.agh.utils;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
-import pl.edu.agh.errors.ValueError;
-import pl.edu.agh.utils.*;
+import pl.edu.agh.Melody;
+import pl.edu.agh.MusicParser;
+import pl.edu.agh.MusicSuperVisitor;
+
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -11,28 +13,26 @@ import java.util.*;
 
 import static pl.edu.agh.utils.Instrument.DRUMS;
 
-public class Melody {
+public class Scope {
 
 
     public Instrument instrument=Instrument.PIANO;
 
     public HashMap<Effect, Value> effects = new HashMap<>();
     public HashMap<Effect, Integer> effectControllers = new HashMap<>();
-    public String name;
     public HashMap<String, VarInfo> memory = new HashMap<>();
-    public HashMap<Integer, VarInfo> parameters = new HashMap<>();
-    public List<MusicParser.StatementContext> body;
-    public List<MusicParser.MainStatementContext> mainBody;
     public int scopeLevel = 0;
     public ArrayList<Scope> scopes = new ArrayList<>();
     public ArrayList<Scope> scopesForCopy = new ArrayList<>();
+    public Scope parent = null;
+    public Melody melodyParent = null;
 
 
     Synthesizer synth;
     MidiChannel[] channels;
 
 
-    public Melody()  {
+    public Scope()  {
         //start up
         try {
             this.synth = MidiSystem.getSynthesizer();
@@ -116,7 +116,7 @@ public class Melody {
                 this.effects.put(effect, new BoolValue(Boolean.parseBoolean(String.valueOf(ctx.children.get(2)))));
             else if (ctx.children.get(2) != null) {
                 BoolValue varBool = (BoolValue) msv.extractVariable(ctx, (TerminalNode) ctx.children.get(2), Type.BOOL).valueObj;
-                    this.effects.put(effect, varBool);
+                this.effects.put(effect, varBool);
             }
         } else {
             if (ctx.children.get(2) != null && isNumeric(String.valueOf(ctx.children.get(2)))) {
@@ -131,8 +131,8 @@ public class Melody {
                     this.channels[9].controlChange(this.effectControllers.get(effect), varInt.value);
                 else
                     this.channels[0].controlChange(this.effectControllers.get(effect), varInt.value);
-                }
             }
+        }
     }
     public void editEffectPlain(Effect effect, Value value){
         if (effect == Effect.PACE || effect == Effect.VOLUME){
@@ -260,52 +260,8 @@ public class Melody {
         }
     }
 
-    @Override
-    public String toString() {
-        return "Melody{" +
-                "parameters=" + parameters +
-                ", memory=" + memory +
-                ", name='" + name + '\'' +
-                '}';
-    }
-
-    public static Melody deepCopyMelody(Melody original) {
-        Melody copy = new Melody();
-        copy.body = original.body;
-        copy.parameters = new HashMap<>();
-        for (Map.Entry<Integer, VarInfo> entry : original.parameters.entrySet()) {
-            Type type = entry.getValue().type;
-            switch (type) {
-                case INT:
-                    copy.parameters.put(entry.getKey(), new VarInfo(
-                            entry.getValue().name,
-                            entry.getValue().type,
-                            entry.getValue().line,
-                            entry.getValue().valueObj!=null ? new IntValue(((IntValue)entry.getValue().valueObj).value) : null));
-                    break;
-                case BOOL:
-                    copy.parameters.put(entry.getKey(), new VarInfo(
-                            entry.getValue().name,
-                            entry.getValue().type,
-                            entry.getValue().line,
-                            entry.getValue().valueObj!=null ? new BoolValue(((BoolValue)entry.getValue().valueObj).value) : null));
-                    break;
-                case NOTE:
-                    copy.parameters.put(entry.getKey(), new VarInfo(
-                            entry.getValue().name,
-                            entry.getValue().type,
-                            entry.getValue().line,
-                            entry.getValue().valueObj!=null ? new NoteValue(((NoteValue)entry.getValue().valueObj).note) : null));
-                    break;
-                case CHORD:
-                    copy.parameters.put(entry.getKey(), new VarInfo(
-                            entry.getValue().name,
-                            entry.getValue().type,
-                            entry.getValue().line,
-                            entry.getValue().valueObj!=null ? new ChordValue(((ChordValue)entry.getValue().valueObj).notes) : null));
-                    break;
-            }
-        }
+    public static Scope deepCopyScope(Melody original) {
+        Scope copy = new Scope();
 
         copy.memory = new HashMap<>();
         for (Map.Entry<String, VarInfo> entry : original.memory.entrySet()) {
@@ -341,10 +297,49 @@ public class Melody {
                     break;
             }
         }
-
-        copy.name = original.name;
         return copy;
     }
+
+    public static Scope deepCopyScope(Scope original) {
+        Scope copy = new Scope();
+
+        copy.memory = new HashMap<>();
+        for (Map.Entry<String, VarInfo> entry : original.memory.entrySet()) {
+            Type type = entry.getValue().type;
+            switch (type) {
+                case INT:
+                    copy.memory.put(entry.getKey(), new VarInfo(
+                            entry.getValue().name,
+                            entry.getValue().type,
+                            entry.getValue().line,
+                            entry.getValue().valueObj!=null ? new IntValue(((IntValue)entry.getValue().valueObj).value) : null));
+                    break;
+                case BOOL:
+                    copy.memory.put(entry.getKey(), new VarInfo(
+                            entry.getValue().name,
+                            entry.getValue().type,
+                            entry.getValue().line,
+                            entry.getValue().valueObj!=null ? new BoolValue(((BoolValue)entry.getValue().valueObj).value) : null));
+                    break;
+                case NOTE:
+                    copy.memory.put(entry.getKey(), new VarInfo(
+                            entry.getValue().name,
+                            entry.getValue().type,
+                            entry.getValue().line,
+                            entry.getValue().valueObj!=null ? new NoteValue(((NoteValue)entry.getValue().valueObj).note) : null));
+                    break;
+                case CHORD:
+                    copy.memory.put(entry.getKey(), new VarInfo(
+                            entry.getValue().name,
+                            entry.getValue().type,
+                            entry.getValue().line,
+                            entry.getValue().valueObj!=null ? new ChordValue(((ChordValue)entry.getValue().valueObj).notes) : null));
+                    break;
+            }
+        }
+        return copy;
+    }
+
     public void copyEffects(HashMap<Effect, Value> effects){
         this.effects = new HashMap<>();
         for (Map.Entry<Effect, Value> entry : effects.entrySet()) {

@@ -1,6 +1,8 @@
 package pl.edu.agh;
 
+
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.errors.*;
@@ -530,9 +532,49 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
+    @Override
+    public T visitIfStatement(MusicParser.IfStatementContext ctx) {
+        for (ParseTree child: ctx.children){
+            if(child instanceof MusicParser.IfContext || child instanceof MusicParser.ElseifContext){
+                if ((Boolean) visit(child)) break;   // if visiting else if or if returns true it means we found the control
+                                                    // statement we want to visit - we can skip later else if's and else
+            }
+            if (child instanceof MusicParser.ElseContext) {
+                visit(child);
+            }
+        }
+        return null;
+    }
+
 
     @Override
     public T visitIf(MusicParser.IfContext ctx) {
+        Value exprVal = tryCasting(ctx.expr());
+        if (exprVal instanceof BoolValue) {
+            if(((BoolValue) exprVal).value){
+                visitChildren(ctx);
+                return (T) new Boolean(true);
+            }else {
+                return (T) new Boolean(false);
+            }
+        }else throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getClass().getName(), getLine(ctx), getCol(ctx));
+    }
+
+    @Override
+    public T visitElseif(MusicParser.ElseifContext ctx) {
+        Value exprVal = tryCasting(ctx.expr());
+        if (exprVal instanceof BoolValue) {
+            if(((BoolValue) exprVal).value){
+                visitChildren(ctx);
+                return (T) new Boolean(true);
+            }else {
+                return (T) new Boolean(false);
+            }
+        }else throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getClass().getName(), getLine(ctx), getCol(ctx));
+    }
+
+    @Override
+    public T visitElse(MusicParser.ElseContext ctx) {
         return visitChildren(ctx);
     }
 
@@ -579,9 +621,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if(!melodyMemory.containsKey(name))throw new RuntimeException("Function not declared!"); //TODO
 
         Melody melodyPattern = melodyMemory.get(name);
-        Melody melody = deepCopyMelody(melodyPattern);
+        Melody melody = Melody.deepCopyMelody(melodyPattern);
         if(stack.peek()!=null){
-            copyEffects(melody, stack.peek().effects);
+            melody.copyEffects(stack.peek().effects);
             melody.setInstrument(stack.peek().instrument);
         }
         if(ctx.arguments()==null && !melody.parameters.isEmpty()) throw new RuntimeException("Invalid number of arguments!"); //TODO
@@ -1053,88 +1095,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
         return (Value) visit(expr);
     }
-    public Melody deepCopyMelody(Melody original) {
-        Melody copy = new Melody();
-        copy.body = original.body;
-        copy.parameters = new HashMap<>();
-        for (Map.Entry<Integer, VarInfo> entry : original.parameters.entrySet()) {
-            Type type = entry.getValue().type;
-            switch (type) {
-                case INT:
-                    copy.parameters.put(entry.getKey(), new VarInfo(
-                            entry.getValue().name,
-                            entry.getValue().type,
-                            entry.getValue().line,
-                            entry.getValue().valueObj!=null ? new IntValue(((IntValue)entry.getValue().valueObj).value) : null));
-                    break;
-                case BOOL:
-                    copy.parameters.put(entry.getKey(), new VarInfo(
-                            entry.getValue().name,
-                            entry.getValue().type,
-                            entry.getValue().line,
-                            entry.getValue().valueObj!=null ? new BoolValue(((BoolValue)entry.getValue().valueObj).value) : null));
-                    break;
-                case NOTE:
-                    copy.parameters.put(entry.getKey(), new VarInfo(
-                            entry.getValue().name,
-                            entry.getValue().type,
-                            entry.getValue().line,
-                            entry.getValue().valueObj!=null ? new NoteValue(((NoteValue)entry.getValue().valueObj).note) : null));
-                    break;
-                case CHORD:
-                    copy.parameters.put(entry.getKey(), new VarInfo(
-                            entry.getValue().name,
-                            entry.getValue().type,
-                            entry.getValue().line,
-                            entry.getValue().valueObj!=null ? new ChordValue(((ChordValue)entry.getValue().valueObj).notes) : null));
-                    break;
-            }
-        }
 
-        copy.memory = new HashMap<>();
-        for (Map.Entry<String, VarInfo> entry : original.memory.entrySet()) {
-            Type type = entry.getValue().type;
-            switch (type) {
-                case INT:
-                    copy.memory.put(entry.getKey(), new VarInfo(
-                            entry.getValue().name,
-                            entry.getValue().type,
-                            entry.getValue().line,
-                            entry.getValue().valueObj!=null ? new IntValue(((IntValue)entry.getValue().valueObj).value) : null));
-                    break;
-                case BOOL:
-                    copy.memory.put(entry.getKey(), new VarInfo(
-                            entry.getValue().name,
-                            entry.getValue().type,
-                            entry.getValue().line,
-                            entry.getValue().valueObj!=null ? new BoolValue(((BoolValue)entry.getValue().valueObj).value) : null));
-                    break;
-                case NOTE:
-                    copy.memory.put(entry.getKey(), new VarInfo(
-                            entry.getValue().name,
-                            entry.getValue().type,
-                            entry.getValue().line,
-                            entry.getValue().valueObj!=null ? new NoteValue(((NoteValue)entry.getValue().valueObj).note) : null));
-                    break;
-                case CHORD:
-                    copy.memory.put(entry.getKey(), new VarInfo(
-                            entry.getValue().name,
-                            entry.getValue().type,
-                            entry.getValue().line,
-                            entry.getValue().valueObj!=null ? new ChordValue(((ChordValue)entry.getValue().valueObj).notes) : null));
-                    break;
-            }
-        }
 
-        copy.name = original.name;
-        return copy;
-    }
 
-    public void copyEffects(Melody melody, HashMap<Effect, Value> effects){
-        melody.effects = new HashMap<>();
-        for (Map.Entry<Effect, Value> entry : effects.entrySet()) {
-            melody.editEffectPlain(entry.getKey(), entry.getValue());
-        }
-    }
+
 
 }

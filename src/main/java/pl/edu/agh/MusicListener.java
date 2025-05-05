@@ -1,4 +1,4 @@
-// Generated from C:/Users/sggor/Desktop/TKK/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
+// Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -486,17 +486,17 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitWhileLoop(MusicParser.WhileLoopContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code if}
+	 * Enter a parse tree produced by the {@code ifStatement}
 	 * labeled alternative in {@link MusicParser#controlStatement}.
 	 * @param ctx the parse tree
 	 */
-	void enterIf(MusicParser.IfContext ctx);
+	void enterIfStatement(MusicParser.IfStatementContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code if}
+	 * Exit a parse tree produced by the {@code ifStatement}
 	 * labeled alternative in {@link MusicParser#controlStatement}.
 	 * @param ctx the parse tree
 	 */
-	void exitIf(MusicParser.IfContext ctx);
+	void exitIfStatement(MusicParser.IfStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code forLoop}
 	 * labeled alternative in {@link MusicParser#controlStatement}.
@@ -509,6 +509,36 @@ public interface MusicListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitForLoop(MusicParser.ForLoopContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MusicParser#if}.
+	 * @param ctx the parse tree
+	 */
+	void enterIf(MusicParser.IfContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#if}.
+	 * @param ctx the parse tree
+	 */
+	void exitIf(MusicParser.IfContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MusicParser#elseif}.
+	 * @param ctx the parse tree
+	 */
+	void enterElseif(MusicParser.ElseifContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#elseif}.
+	 * @param ctx the parse tree
+	 */
+	void exitElseif(MusicParser.ElseifContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MusicParser#else}.
+	 * @param ctx the parse tree
+	 */
+	void enterElse(MusicParser.ElseContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#else}.
+	 * @param ctx the parse tree
+	 */
+	void exitElse(MusicParser.ElseContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MusicParser#forInit}.
 	 * @param ctx the parse tree
