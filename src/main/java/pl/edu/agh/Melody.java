@@ -25,8 +25,7 @@ public class Melody {
     public List<MusicParser.MainStatementContext> mainBody;
     public int scopeLevel = 0;
     public ArrayList<Scope> scopes = new ArrayList<>();
-    public ArrayList<Scope> scopesForCopy = new ArrayList<>();
-
+    public Scope previous_scope;
 
     Synthesizer synth;
     MidiChannel[] channels;

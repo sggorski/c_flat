@@ -1545,6 +1545,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     }
 
     public void removeScope(ParserRuleContext ctx) {
+        
         if (scopes.isEmpty()) {
             throw new ScopeError("Out of scope!", getLine(ctx), getCol(ctx));
         }

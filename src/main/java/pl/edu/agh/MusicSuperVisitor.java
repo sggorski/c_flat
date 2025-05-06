@@ -665,12 +665,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitFunctionCall(MusicParser.FunctionCallContext ctx) {
+
         String name = ctx.ID().getText();
         if(name.equals("main")) throw new RuntimeException("You cannot call main function!");
         if(!melodyMemory.containsKey(name))throw new RuntimeException("Function not declared!"); //TODO
 
         Melody melodyPattern = melodyMemory.get(name);
         Melody melody = Melody.deepCopyMelody(melodyPattern);
+        melody.previous_scope = currentScope;
+        currentScope = null;
         if(stack.peek()!=null){
             melody.copyEffects(stack.peek().effects);
             melody.setInstrument(stack.peek().instrument);
@@ -700,6 +703,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             visit(statement);
         }
         stack.pop();
+        currentScope = melody.previous_scope;
         return null;
     }
 

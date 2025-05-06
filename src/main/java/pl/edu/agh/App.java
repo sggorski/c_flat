@@ -58,8 +58,9 @@ public class App
             System.out.println(e.getMessage() /*+ " Recognition"*/);
         } catch (SyntaxError | ValueError | ScopeError | VariableDeclarationError e) {
             System.out.println(e.getMessage() /*+ " Errors"*/);
-        }catch (Exception e) {
-            System.out.println(/*"Error: +"*/ e.getMessage());
         }
+//        catch (Exception e) {
+//            System.out.println(/*"Error: +"*/ e.getMessage());
+//        }
     }
 }
