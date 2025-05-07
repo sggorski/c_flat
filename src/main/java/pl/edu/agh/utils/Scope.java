@@ -260,12 +260,27 @@ public class Scope {
         }
     }
 
+    /**
+     *  Creates a shallow copy of Melody class memory
+     *
+     * @param original
+     * @return
+     */
+
     public static Scope deepCopyScope(Melody original) {
         Scope copy = new Scope();
         copy.memory = new HashMap<>();
         copy.memory.putAll(original.memory);
         return copy;
     }
+
+    /**
+     *
+     * Creates a shallow copy of Scope class memory
+     *
+     * @param original
+     * @return
+     */
 
     public static Scope deepCopyScope(Scope original) {
         Scope copy = new Scope();

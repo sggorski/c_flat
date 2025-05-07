@@ -284,6 +284,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         Melody melody = stack.peek();
         if(melody==null) throw new RuntimeException("Stack is empty!");
         //System.out.println(melody.memory.get(varInfo.name).toString());
+        //TODO println throws null pointer exception cuz it tries to get it from melody memory
         return visitChildren(ctx);
     }
 
@@ -371,6 +372,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         varInfo.valueObj = val;
 
         //System.out.println(melody.memory.get(varInfo.name).toString());
+        //TODO println throws null pointer exception cuz it tries to get it from melody memory
         return visitChildren(ctx);
     }
 
@@ -566,6 +568,17 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
+
+    /**
+     * This function creates variable status to check which statement is to be executed
+     * It iterates over every IF/ELSE/ELSEIF ctx and visits it to check if its expression is true or false
+     * The first found expr that return True is executed and the remaining statements are deleted from currentScope's list of Child Scopes
+     * (because changeScope brings us back to the parent Scope not the Scope of the IF/ELSE/ELSEIF we are entering)
+     *
+     *
+     * @param ctx the parse tree
+     * @return
+     */
     @Override
     public T visitIfStatement(MusicParser.IfStatementContext ctx) {
         Boolean status = false;
@@ -586,6 +599,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
 
+    /**
+     * This function checks whether the Expression is True or False - if it's False then we skip it and return False
+     * else we execute it (we are not worried about checking if we should execute this IF when expression is True
+     * because after executing the first IF with expr == True we delete remaining IF/ELSE/ELSEIF that weren't checked)
+     * getCurrentScope enters this IF Scope and changeScope leaves this IF's Scope after we visited everything that is in it
+     *
+     * @param ctx the parse tree
+     * @return
+     */
     @Override
     public T visitIf(MusicParser.IfContext ctx) {
         currentScope = getCurrScope(stack.peek());
@@ -1165,6 +1187,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
 
+    /**
+     *
+     * Finds the new active Scope when visiting if or any other IfStatement
+     * which translates to finding the first child Scope of the previous currentScope
+     * or first child of the Melody if there is no active Scope at the moment -> currentScope is null
+     *
+     * @param melody
+     * @return
+     */
+
     private Scope getCurrScope(Melody melody) {
         Scope firstScope;
         if (melody == null) throw new RuntimeException("Stack is empty!");
@@ -1174,16 +1206,23 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }else {
             firstScope = melody.scopes.get(0);
         }
-//        if(firstScope.parent != null){
-//            firstScope.memory = Scope.deepCopyScope(firstScope.parent).memory;
-//        }
-//        else{
-//            firstScope.memory = Scope.deepCopyScope(melody).memory;
-//        }
-
         return firstScope;
     }
 
+
+    /**
+     * Function that exits the current Scope meaning it has ended thus changing
+     * the currentScope to it's parent:
+     *
+     * if(true){ THIS IS PARENT
+     *     if(true){ THIS IS CHILD
+     *
+     *     } HERE WE EXIT THIS IF SO WE NEED TO CHANGE CURRENT SCOPE TO IT'S PARENT
+     * }
+     *
+     * After changing the scope we delete that exited Scope from the Parent's list of Scopes
+     *
+     */
     private void changeScope() {
         if(currentScope != null){
             currentScope = currentScope.parent;

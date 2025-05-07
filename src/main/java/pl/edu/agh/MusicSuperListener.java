@@ -25,6 +25,15 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     HashMap<String, Melody> melodyMemory;
     MusicLexer lexer;
     String currentMelody;
+
+    /**
+     * ArrayList of Scope objects designed to create a parent-child relationship with another Scope/Melody
+     * When visiting enterIf or any other isStatement it creates a Scope and puts it at the end of this list
+     * From now on every variable declaration is put at this Scope's memory
+     * If scopes is empty then declared variable goes into currentMelody's memory
+     * When visiting exitIf the last scope is popped from the ArrayList and is placed at the end of the next last scope ArrayList of Scopes
+     */
+
     ArrayList<Scope> scopes = new ArrayList<>();
 
     public MusicSuperListener(HashMap<String, Melody> melodyMemory, MusicLexer musicLexer) {
@@ -1530,6 +1539,13 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         return false;
     }
 
+
+    /**
+     * Creates Scope object by copying the memory of the last active Scope of the scopes ArrayList
+     * or the currentMelody memory if ArrayList of active scopes if empty (meaning we are not in any ifStatement)
+     * Additionally sets the parent of the newly created Scope
+     */
+
     public void createScope() {
         Scope scope;
         if (scopes.isEmpty()) {
@@ -1543,6 +1559,15 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         }
         scopes.add(scope);
     }
+
+    /**
+     *
+     * Removes last Scope from the list of active Scopes (ArrayList scopes)
+     * Then puts it at the end of the next last Scope in ArrayList scopes
+     * Meaning that the popped Scope is a child of this Scope
+     *
+     * @param ctx
+     */
 
     public void removeScope(ParserRuleContext ctx) {
         
