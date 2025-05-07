@@ -11,6 +11,7 @@ import pl.edu.agh.utils.Instrument;
 
 import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import static pl.edu.agh.utils.Instrument.*;
 
@@ -282,7 +283,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         //To check if everything is ok, will be deleted in a future
         Melody melody = stack.peek();
         if(melody==null) throw new RuntimeException("Stack is empty!");
-        System.out.println(melody.memory.get(varInfo.name).toString());
+        //System.out.println(melody.memory.get(varInfo.name).toString());
         return visitChildren(ctx);
     }
 
@@ -369,7 +370,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
         varInfo.valueObj = val;
 
-        System.out.println(melody.memory.get(varInfo.name).toString());
+        //System.out.println(melody.memory.get(varInfo.name).toString());
         return visitChildren(ctx);
     }
 
@@ -592,6 +593,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (exprVal instanceof BoolValue) {
             if (((BoolValue) exprVal).value) {
                 visitChildren(ctx);
+                System.out.println("Exiting if, if memory: " + currentScope.memory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
                 changeScope();
                 return (T) new Boolean(true);
             } else {
@@ -1172,12 +1174,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }else {
             firstScope = melody.scopes.get(0);
         }
-        if(firstScope.parent != null){
-            firstScope.memory = Scope.deepCopyScope(firstScope.parent).memory;
-        }
-        else{
-            firstScope.memory = Scope.deepCopyScope(melody).memory;
-        }
+//        if(firstScope.parent != null){
+//            firstScope.memory = Scope.deepCopyScope(firstScope.parent).memory;
+//        }
+//        else{
+//            firstScope.memory = Scope.deepCopyScope(melody).memory;
+//        }
 
         return firstScope;
     }

@@ -262,87 +262,15 @@ public class Scope {
 
     public static Scope deepCopyScope(Melody original) {
         Scope copy = new Scope();
-
         copy.memory = new HashMap<>();
-        for (Map.Entry<String, VarInfo> entry : original.memory.entrySet()) {
-            Type type = entry.getValue().type;
-            if (entry.getValue().valueObj != null) {
-                switch (type) {
-                    case INT:
-                        copy.memory.put(entry.getKey(), new VarInfo(
-                                entry.getValue().name,
-                                entry.getValue().type,
-                                entry.getValue().line,
-                                new IntValue(((IntValue) entry.getValue().valueObj).value)));
-                        break;
-                    case BOOL:
-                        copy.memory.put(entry.getKey(), new VarInfo(
-                                entry.getValue().name,
-                                entry.getValue().type,
-                                entry.getValue().line,
-                                new BoolValue(((BoolValue) entry.getValue().valueObj).value)));
-                        break;
-                    case NOTE:
-                        copy.memory.put(entry.getKey(), new VarInfo(
-                                entry.getValue().name,
-                                entry.getValue().type,
-                                entry.getValue().line,
-                                new NoteValue(((NoteValue) entry.getValue().valueObj).note)));
-                        break;
-                    case CHORD:
-                        copy.memory.put(entry.getKey(), new VarInfo(
-                                entry.getValue().name,
-                                entry.getValue().type,
-                                entry.getValue().line,
-                                new ChordValue(((ChordValue) entry.getValue().valueObj).notes)));
-                        break;
-                }
-
-            }
-        }
+        copy.memory.putAll(original.memory);
         return copy;
     }
 
     public static Scope deepCopyScope(Scope original) {
         Scope copy = new Scope();
-
         copy.memory = new HashMap<>();
-        for (Map.Entry<String, VarInfo> entry : original.memory.entrySet()) {
-            Type type = entry.getValue().type;
-            if (entry.getValue().valueObj != null) {
-                switch (type) {
-                    case INT:
-                        copy.memory.put(entry.getKey(), new VarInfo(
-                                entry.getValue().name,
-                                entry.getValue().type,
-                                entry.getValue().line,
-                                new IntValue(((IntValue) entry.getValue().valueObj).value)));
-                        break;
-                    case BOOL:
-                        copy.memory.put(entry.getKey(), new VarInfo(
-                                entry.getValue().name,
-                                entry.getValue().type,
-                                entry.getValue().line,
-                                new BoolValue(((BoolValue) entry.getValue().valueObj).value)));
-                        break;
-                    case NOTE:
-                        copy.memory.put(entry.getKey(), new VarInfo(
-                                entry.getValue().name,
-                                entry.getValue().type,
-                                entry.getValue().line,
-                                new NoteValue(((NoteValue) entry.getValue().valueObj).note)));
-                        break;
-                    case CHORD:
-                        copy.memory.put(entry.getKey(), new VarInfo(
-                                entry.getValue().name,
-                                entry.getValue().type,
-                                entry.getValue().line,
-                                new ChordValue(((ChordValue) entry.getValue().valueObj).notes)));
-                        break;
-                }
-
-            }
-        }
+        copy.memory.putAll(original.memory);
         return copy;
     }
 
