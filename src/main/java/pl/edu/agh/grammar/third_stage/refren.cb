@@ -1,5 +1,5 @@
 import "src/main/java/pl/edu/agh/grammar/third_stage/tmp.cb";
-
+import "src/main/java/pl/edu/agh/grammar/third_stage/main.cb";
 melody tra(int i) {
     PLAY E2 500;
 }

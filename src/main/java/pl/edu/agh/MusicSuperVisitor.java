@@ -290,8 +290,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-
     @Override
+    @SuppressWarnings("unchecked")
     public T visitSelfAssignment(MusicParser.SelfAssignmentContext ctx) {
         VarInfo varInfo = extractVariable(ctx,ctx.ID(),null);
         Value exprValue = tryCasting(ctx.expr());
@@ -303,6 +303,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             else if (ctx.assOp().MULIS() != null) intVar.value *= intValue.value;
             else if (ctx.assOp().DIVIS() != null && intValue.value!=0) intVar.value /= intValue.value;
             else throw new ArithmeticOperationError("Division by zero", this.lineMap.get(getLine(ctx)), getCol(ctx));
+            System.out.println(varInfo);
+            return (T) new IntValue(intVar.value);
         }
         else if (varInfo.type == Type.NOTE && exprValue.getType()==Type.INT){
             IntValue intValue = (IntValue)exprValue;
@@ -316,6 +318,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             else throw new ArithmeticOperationError("Invalid operation with notes", this.lineMap.get(getLine(ctx)), getCol(ctx));
             newNoteValue = Math.abs(newNoteValue)%85;
             noteValue.note = findNote(newNoteValue);
+            System.out.println(varInfo);
+            return (T) new NoteValue(noteValue.note);
         }
         else if(varInfo.type == Type.CHORD && exprValue.getType()==Type.NOTE){
             NoteValue noteValue = (NoteValue)exprValue;
@@ -328,6 +332,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 chordValue.notes.remove(noteValue);
             }
             else throw new ArithmeticOperationError("Invalid operation with chords", this.lineMap.get(getLine(ctx)), getCol(ctx));
+            System.out.println(varInfo);
+            return (T) new ChordValue(chordValue.notes);
         }
         else if(varInfo.type == Type.CHORD && exprValue.getType()==Type.CHORD){
             ChordValue chordValue = (ChordValue)exprValue;
@@ -345,10 +351,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 if(listNotes.size()<=1) throw new ArithmeticOperationError("Invalid operation with chords: less than 2 notes left in a chord", this.lineMap.get(getLine(ctx)), getCol(ctx));
                 chordModified.notes = listNotes;
             }
+            System.out.println(varInfo);
+            return (T)new ChordValue(chordModified.notes);
         }
         else throw new ArithmeticOperationError("Invalid operation", this.lineMap.get(getLine(ctx)), getCol(ctx));
-        System.out.println(varInfo);
-        return visitChildren(ctx);
     }
 
 
@@ -372,10 +378,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + val.getType(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         varInfo.valueObj = val;
-
         //System.out.println(melody.memory.get(varInfo.name).toString());
         //TODO println throws null pointer exception cuz it tries to get it from melody memory
-        return visitChildren(ctx);
+
+        return null;
     }
 
 
@@ -1006,6 +1012,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visit(ctx.intVal());
     }
 
+    @Override
+    public T visitSelfAssignmentExpr(MusicParser.SelfAssignmentExprContext ctx) {
+        return visit(ctx.selfAssignment());
+    }
+
 
     @Override
     @SuppressWarnings("unchecked")
@@ -1179,13 +1190,14 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     private Value tryCasting(MusicParser.ExprContext expr){
-        if(visit(expr) == null){
+        T value = visit(expr);
+        if(value== null){
             throw new UndefinedError("Undefined variable: " + " " + expr.getText(), this.lineMap.get(getLine(expr)), getCol(expr));
         }
-        if(visit(expr) instanceof Instrument){
+        if(value instanceof Instrument){
             throw new ValueError("Incorrect type of expression: INSTRUMENT not allowed here", this.lineMap.get(getLine(expr)), getCol(expr));
         }
-        return (Value) visit(expr);
+        return (Value) value;
     }
 
 

@@ -373,6 +373,13 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSettingsList(MusicParser.SettingsListContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code selfAssignmentExpr}
+	 * labeled alternative in {@link MusicParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSelfAssignmentExpr(MusicParser.SelfAssignmentExprContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code intExpr}
 	 * labeled alternative in {@link MusicParser#expr}.
 	 * @param ctx the parse tree

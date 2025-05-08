@@ -689,6 +689,18 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSelfAssignmentExpr(MusicParser.SelfAssignmentExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSelfAssignmentExpr(MusicParser.SelfAssignmentExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterIntExpr(MusicParser.IntExprContext ctx) { }
 	/**
 	 * {@inheritDoc}

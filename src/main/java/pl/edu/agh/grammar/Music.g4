@@ -35,7 +35,6 @@ mainStatement
 statement
     : functionDecl
     | assignment
-    | selfAssignment
     | settings
     | varDecl
     | playStatement
@@ -102,7 +101,7 @@ assignment
     ;
 
 selfAssignment
-    : ID assOp expr ';';
+    : ID assOp expr;
 
 varDecl
     : type ID '=' expr ';' #varDeclWithARg
@@ -173,7 +172,8 @@ settingsList
     ;
 
 expr
-    : LP expr RP  #paranthesesExpr
+    : selfAssignment #selfAssignmentExpr
+    | LP expr RP  #paranthesesExpr
     | NOT expr #notExpr
     | expr mullDivOp expr #mullDivOperatorExpr
     | expr addSubOp expr #addSubOperatorExpr

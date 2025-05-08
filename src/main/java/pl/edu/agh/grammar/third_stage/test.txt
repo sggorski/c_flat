@@ -1,45 +1,12 @@
-melody gama(Note begin, Note finish, bool reverse){
-    PLAY begin 1000;
-    if(begin==finish){
-        RETURN;
-    }
-    else{
-        if(reverse==true){
-            begin-=2;
-        }
-        else{
-            begin+=2;
-        }
-        PLAY gama(begin,finish,reverse);
-    }
-}
-
-melody gama2(){
-    PLAY C2 1000;
-    PLAY gama(C1,2);
-}
-
 
 melody main(){
 
-    int a = 9;
-    if (a == 9){
-        // a = 11;
-        // PLAY A2 1000;
-        PLAY gama(C2,D3,false);
-    }else{
-        Note var;
-        a = 12;
-        PLAY A2 1000;
-        if(a == 12){
-            PLAY C2 C2 C2 1000;
-        }
-    }
+    Chord b  = [C2,C1];
+    int c=-2;
+    int a =  c+=2;
+    RETURN a;
+    RETURN b+= [G1,A2];
 
 
-    Note var;
-
-    PLAY gama(C2,D3,false);
-    PLAY gama(C3,C2,true);
 
 }
