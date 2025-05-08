@@ -21,9 +21,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     HashMap<String,Melody> melodyMemory;
     Deque<Melody> stack = new ArrayDeque<>();
     Scope currentScope = null;
+    private final Map<Integer, LineOrigin> lineMap;
 
-    public MusicSuperVisitor(HashMap<String,Melody> melodyMemory) {
+    public MusicSuperVisitor(HashMap<String,Melody> melodyMemory, Map<Integer, LineOrigin> lines) {
         this.melodyMemory = melodyMemory;
+        this.lineMap = lines;
     }
 
     @Override
@@ -146,10 +148,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (melody != null) {
             // If not Instrument_Value then it is recognised as ID, if not then it should be a lexer error
             if (ctx.INSTRUMENT_VALUE() == null)
-                throw new ValueError(ctx.ID() + " is not valid INSTRUMENT", getLine(ctx), getCol(ctx));
+                throw new ValueError(ctx.ID() + " is not valid INSTRUMENT", this.lineMap.get(getLine(ctx)), getCol(ctx));
             String instrumentName = ctx.INSTRUMENT_VALUE().getText();
             Instrument instrument = valueOf(instrumentName);
-            if(!melody.setInstrument(instrument)) throw new ValueError(instrument + "is not valid INSTRUMENT", getLine(ctx), getCol(ctx));
+            if(!melody.setInstrument(instrument)) throw new ValueError(instrument + "is not valid INSTRUMENT", this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         return visitChildren(ctx);
     }
@@ -267,7 +269,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (ctx.CHORUS() != null) return (T) (melody.effects.get(Effect.CHORUS));
         if (ctx.PHRASER() != null) return (T) (melody.effects.get(Effect.PHRASER));
         if (ctx.INSTRUMENT() != null) return (T) (melody.instrument);
-        else throw new SyntaxError("Syntax error", getLine(ctx), getCol(ctx));
+        else throw new SyntaxError("Syntax error", this.lineMap.get(getLine(ctx)), getCol(ctx));
 
     }
 
@@ -276,7 +278,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         VarInfo varInfo = extractVariable(ctx, ctx.ID(),null);
         Value exprValue = tryCasting(ctx.expr());
         if(exprValue.getType()!=varInfo.type){
-            throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + exprValue.getType(), getLine(ctx), getCol(ctx));
+            throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + exprValue.getType(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         varInfo.valueObj = exprValue;
 
@@ -300,7 +302,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             else if(ctx.assOp().SUBIS() != null) intVar.value -= intValue.value;
             else if (ctx.assOp().MULIS() != null) intVar.value *= intValue.value;
             else if (ctx.assOp().DIVIS() != null && intValue.value!=0) intVar.value /= intValue.value;
-            else throw new ArithmeticOperationError("Division by zero", getLine(ctx), getCol(ctx));
+            else throw new ArithmeticOperationError("Division by zero", this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         else if (varInfo.type == Type.NOTE && exprValue.getType()==Type.INT){
             IntValue intValue = (IntValue)exprValue;
@@ -311,7 +313,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             else if(ctx.assOp().SUBIS() != null) newNoteValue = oldNoteValue - intValue.value;
             else if(ctx.assOp().MULIS() != null && intValue.value>=1) newNoteValue = oldNoteValue + (intValue.value-1)*12;
             else if(ctx.assOp().DIVIS() != null && intValue.value>=1) newNoteValue = oldNoteValue - (intValue.value-1)*12;
-            else throw new ArithmeticOperationError("Invalid operation with notes", getLine(ctx), getCol(ctx));
+            else throw new ArithmeticOperationError("Invalid operation with notes", this.lineMap.get(getLine(ctx)), getCol(ctx));
             newNoteValue = Math.abs(newNoteValue)%85;
             noteValue.note = findNote(newNoteValue);
         }
@@ -322,10 +324,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 if(!chordValue.notes.contains(noteValue)) chordValue.notes.add(noteValue);
             }
             else if(ctx.assOp().SUBIS() != null){
-                if(chordValue.notes.size()<=2) throw new ArithmeticOperationError("Invalid operation with chords", getLine(ctx), getCol(ctx));
+                if(chordValue.notes.size()<=2) throw new ArithmeticOperationError("Invalid operation with chords", this.lineMap.get(getLine(ctx)), getCol(ctx));
                 chordValue.notes.remove(noteValue);
             }
-            else throw new ArithmeticOperationError("Invalid operation with chords", getLine(ctx), getCol(ctx));
+            else throw new ArithmeticOperationError("Invalid operation with chords", this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         else if(varInfo.type == Type.CHORD && exprValue.getType()==Type.CHORD){
             ChordValue chordValue = (ChordValue)exprValue;
@@ -340,11 +342,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 List<NoteValue> listNotes = new ArrayList<>();
                 for (NoteValue note : chordModified.notes)
                     if (!chordValue.notes.contains(note)) listNotes.add(note);
-                if(listNotes.size()<=1) throw new ArithmeticOperationError("Invalid operation with chords: less than 2 notes left in a chord", getLine(ctx), getCol(ctx));
+                if(listNotes.size()<=1) throw new ArithmeticOperationError("Invalid operation with chords: less than 2 notes left in a chord", this.lineMap.get(getLine(ctx)), getCol(ctx));
                 chordModified.notes = listNotes;
             }
         }
-        else throw new ArithmeticOperationError("Invalid operation", getLine(ctx), getCol(ctx));
+        else throw new ArithmeticOperationError("Invalid operation", this.lineMap.get(getLine(ctx)), getCol(ctx));
         System.out.println(varInfo);
         return visitChildren(ctx);
     }
@@ -367,7 +369,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
 
         if (val.getType() != varInfo.type) {
-            throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + val.getType(), getLine(ctx), getCol(ctx));
+            throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + val.getType(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         varInfo.valueObj = val;
 
@@ -454,7 +456,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             }
 
             if (varInfo == null)
-                throw new ScopeError("Variable not defined: " + varName, getLine(ctx), getCol(ctx));
+                throw new ScopeError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
             int duration = 0;
             if (ctx.INT_VAL() != null) duration = Integer.parseInt(ctx.INT_VAL().getText());
             else if (ctx.ID(1) != null) {
@@ -498,9 +500,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             }else {
                 var = melody.memory.get(varName);
             }
-            if (var == null) throw new ScopeError("Variable not defined: ", getLine(ctx), getCol(ctx));
+            if (var == null) throw new ScopeError("Variable not defined: ", this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (var.type != Type.INT)
-                throw new ValueError("Incorrect type of variable: " + varName + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
+                throw new ValueError("Incorrect type of variable: " + varName + "Type " + var.type + "not int", this.lineMap.get(getLine(ctx)), getCol(ctx));
             duration = ((IntValue) var.valueObj).value;
         }
 
@@ -549,9 +551,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                     var = melody.memory.get(varName);
                 }
                 if (var == null)
-                    throw new ScopeError("Variable not defined: " + varName, getLine(ctx), getCol(ctx));
+                    throw new ScopeError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
                 if (var.type != Type.INT)
-                    throw new ValueError("Incorrect type of variable: " + varName + "Type " + var.type + "not int", getLine(ctx), getCol(ctx));
+                    throw new ValueError("Incorrect type of variable: " + varName + "Type " + var.type + "not int", this.lineMap.get(getLine(ctx)), getCol(ctx));
                 IntValue varInt = (IntValue) var.valueObj;
                 sleep = varInt.value;
             }
@@ -623,7 +625,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 return (T) new Boolean(false);
             }
         } else
-            throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getClass().getName(), getLine(ctx), getCol(ctx));
+            throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getClass().getName(), this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
     @Override
@@ -640,7 +642,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 return (T) new Boolean(false);
             }
         } else
-            throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getClass().getName(), getLine(ctx), getCol(ctx));
+            throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getClass().getName(), this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
     @Override
@@ -760,9 +762,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             return (T)(new BoolValue(boolExpr1.value || boolExpr2.value));
         }
         else if(firstValue instanceof BoolValue)
-            throw new ValueError("Incorrect type of expression: "   +secondValue.getType() + " not BOOL", getLine(ctx), getCol(ctx));
+            throw new ValueError("Incorrect type of expression: "   +secondValue.getType() + " not BOOL", this.lineMap.get(getLine(ctx)), getCol(ctx));
         else
-            throw new ValueError("Incorrect type of expression: "   +firstValue.getType() + " not BOOL", getLine(ctx), getCol(ctx));
+            throw new ValueError("Incorrect type of expression: "   +firstValue.getType() + " not BOOL", this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
 
@@ -775,7 +777,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             boolExpr.value = !boolExpr.value;
             return (T) boolExpr;
         }
-        else throw new  ValueError("Incorrect type of expression: "   +expr.getType() + " not BOOL", getLine(ctx), getCol(ctx));
+        else throw new  ValueError("Incorrect type of expression: "   +expr.getType() + " not BOOL", this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
 
@@ -797,7 +799,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         else if(firstValue instanceof NoteValue && secondValue instanceof NoteValue) {
             return (T) new BoolValue(predicate.test(NoteMap.notes.get(((NoteValue) firstValue).note), NoteMap.notes.get(((NoteValue) secondValue).note)));
         }
-        else throw new ArithmeticOperationError("Incorrect type of comparison!", getLine(ctx), getCol(ctx));
+        else throw new ArithmeticOperationError("Incorrect type of comparison!", this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
     @Override
@@ -845,7 +847,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 if(!chordValue.notes.contains(noteValue)) result.notes.add(noteValue);
             }
             else{
-                if(chordValue.notes.size()<=2 && chordValue.notes.contains(noteValue)) throw new ArithmeticOperationError("Invalid operation with chords", getLine(ctx), getCol(ctx));
+                if(chordValue.notes.size()<=2 && chordValue.notes.contains(noteValue)) throw new ArithmeticOperationError("Invalid operation with chords", this.lineMap.get(getLine(ctx)), getCol(ctx));
                 result = new ChordValue(chordValue.notes);
                 result.notes.remove(noteValue);
             }
@@ -865,13 +867,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 List<NoteValue> listNotes = new ArrayList<>();
                 for (NoteValue note : chordValue1.notes)
                     if (!chordValue2.notes.contains(note)) listNotes.add(note);
-                if(listNotes.size()<=1) throw new ArithmeticOperationError("Invalid operation with chords: less than 2 notes left in a chord", getLine(ctx), getCol(ctx));
+                if(listNotes.size()<=1) throw new ArithmeticOperationError("Invalid operation with chords: less than 2 notes left in a chord", this.lineMap.get(getLine(ctx)), getCol(ctx));
                 result = new ChordValue(listNotes);
             }
             return (T)result;
 
         }
-        else throw new ArithmeticOperationError("Invalid arguments for add/subtract operation", getLine(ctx), getCol(ctx));
+        else throw new ArithmeticOperationError("Invalid arguments for add/subtract operation", this.lineMap.get(getLine(ctx)), getCol(ctx));
 
     }
 
@@ -886,9 +888,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             return (T)(new BoolValue(boolExpr1.value && boolExpr2.value));
         }
         else if(firstValue instanceof BoolValue)
-            throw new ValueError("Incorrect type of expression: "   +secondValue.getType() + " not BOOL", getLine(ctx), getCol(ctx));
+            throw new ValueError("Incorrect type of expression: "   +secondValue.getType() + " not BOOL", this.lineMap.get(getLine(ctx)), getCol(ctx));
         else
-            throw new ValueError("Incorrect type of expression: "   +firstValue.getType() + " not BOOL", getLine(ctx), getCol(ctx));
+            throw new ValueError("Incorrect type of expression: "   +firstValue.getType() + " not BOOL", this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
 
@@ -906,7 +908,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             if(ctx.mullDivOp().MUL() != null) resultInt = firstInt * secondInt;
             else if(ctx.mullDivOp().PER() != null) resultInt = firstInt % secondInt;
             else if(secondInt !=0) resultInt = firstInt / secondInt;
-            else throw new ArithmeticOperationError("Division by zero!", getLine(ctx), getCol(ctx));
+            else throw new ArithmeticOperationError("Division by zero!", this.lineMap.get(getLine(ctx)), getCol(ctx));
             Value result = new IntValue(resultInt);
             return (T) result;
         }
@@ -916,16 +918,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             int noteIntVal = NoteMap.notes.get(note);
 
             if(noteIntVal<1)
-                throw new ArithmeticOperationError("Invalid operation", getLine(ctx), getCol(ctx));
+                throw new ArithmeticOperationError("Invalid operation", this.lineMap.get(getLine(ctx)), getCol(ctx));
             if(ctx.mullDivOp().MUL() != null)
                 noteIntVal += (intVal-1)*12;
             else if(ctx.mullDivOp().DIV() !=null ) noteIntVal -=  (intVal-1)*12;
-            else throw new ArithmeticOperationError("Invalid operation. % cannot be used with notes", getLine(ctx), getCol(ctx));
+            else throw new ArithmeticOperationError("Invalid operation. % cannot be used with notes", this.lineMap.get(getLine(ctx)), getCol(ctx));
             noteIntVal = Math.abs(noteIntVal)%85;
             Value result = new NoteValue(findNote(noteIntVal));
             return (T) result;
         }
-        else throw new ArithmeticOperationError("Invalid arguments for mull/div operation", getLine(ctx), getCol(ctx));
+        else throw new ArithmeticOperationError("Invalid arguments for mull/div operation", this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
 
@@ -936,7 +938,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             BoolValue result = new BoolValue(ctx.BOOL_VAL().getText().equals("true"));
             return (T) result;
         }
-        throw new SyntaxError("Bool value not found", getLine(ctx), getCol(ctx));
+        throw new SyntaxError("Bool value not found", this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
 
@@ -959,7 +961,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             varInfo = melody.memory.get(varName);
         }
         if (varInfo == null)
-            throw new UndefinedError("No such variable defined: " + varName, getLine(ctx), getCol(ctx));
+            throw new UndefinedError("No such variable defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
         return (T) varInfo.valueObj;
     }
 
@@ -1012,7 +1014,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         Value secondValue = tryCasting(ctx.expr(1));
 
         if(firstValue.getType()!=secondValue.getType()) {
-            throw new IncomparableError("Types are not the same: " + firstValue + " != " + secondValue , getLine(ctx), getCol(ctx));
+            throw new IncomparableError("Types are not the same: " + firstValue + " != " + secondValue , this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         BoolValue result = firstValue.equals(secondValue);
         if(ctx.eqOp().EQ() != null) return (T) result;
@@ -1037,7 +1039,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             NoteValue newNote = new NoteValue(note);
             if(!notes.contains(newNote))notes.add(newNote);
         }
-        if(notes.size()<2) throw new ValueError("Invalid operation with chords: same note repeated", getLine(ctx), getCol(ctx));
+        if(notes.size()<2) throw new ValueError("Invalid operation with chords: same note repeated", this.lineMap.get(getLine(ctx)), getCol(ctx));
         return (T) (new ChordValue(notes));
     }
 
@@ -1158,12 +1160,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             var = melody.memory.get(varName);
         }
         if (var == null)
-            throw new UndefinedError("Variable not defined: " + id.getText(), getLine(ctx), getCol(ctx));
+            throw new UndefinedError("Variable not defined: " + id.getText(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         if(type == null){
             return var;
         }
         if (var.type != type)
-            throw new ValueError("Incorrect type of variable: " + id.getText() + "Type " + var.type + " not " + type, getLine(ctx), getCol(ctx));
+            throw new ValueError("Incorrect type of variable: " + id.getText() + "Type " + var.type + " not " + type, this.lineMap.get(getLine(ctx)), getCol(ctx));
         return var;
     }
 
@@ -1178,10 +1180,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     private Value tryCasting(MusicParser.ExprContext expr){
         if(visit(expr) == null){
-            throw new UndefinedError("Undefined variable: " + " " + expr.getText(), getLine(expr), getCol(expr));
+            throw new UndefinedError("Undefined variable: " + " " + expr.getText(), this.lineMap.get(getLine(expr)), getCol(expr));
         }
         if(visit(expr) instanceof Instrument){
-            throw new ValueError("Incorrect type of expression: INSTRUMENT not allowed here", getLine(expr), getCol(expr));
+            throw new ValueError("Incorrect type of expression: INSTRUMENT not allowed here", this.lineMap.get(getLine(expr)), getCol(expr));
         }
         return (Value) visit(expr);
     }

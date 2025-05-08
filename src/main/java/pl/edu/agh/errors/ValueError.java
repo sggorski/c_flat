@@ -1,19 +1,21 @@
 package pl.edu.agh.errors;
 
+import pl.edu.agh.utils.LineOrigin;
+
 public class ValueError extends RuntimeException {
-    private final int line;
+    private final LineOrigin lineOrigin;
     private final int column;
     private final String message;
 
-    public ValueError(String message, int  line, int column) {
+    public ValueError(String message, LineOrigin origin, int column) {
         super();
-        this.message = "Value Error at line:  " + line + " character: " + column + " " +  message;
-        this.line = line;
+        this.lineOrigin = origin;
+        this.message = "Value Error at line:  " + lineOrigin.getOriginalLine() + " character: " + column + " file: " + lineOrigin.getFileName() + " " +  message;
         this.column = column;
     }
 
     public int getLine() {
-        return line;
+        return this.lineOrigin.getOriginalLine();
     }
     public int getColumn() {
         return column;

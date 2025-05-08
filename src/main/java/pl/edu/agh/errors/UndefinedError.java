@@ -1,13 +1,15 @@
 package pl.edu.agh.errors;
 
+import pl.edu.agh.utils.LineOrigin;
+
 public class UndefinedError extends RuntimeException {
-    public UndefinedError(String message, int line, int column) {
+    public UndefinedError(String message, LineOrigin origin, int column) {
         super();
-        this.message = "Undefined error at: " + line + " character: " + column + " " + message;
-        this.line = line;
+        this.lineOrigin = origin;
+        this.message = "Undefined error at: " + lineOrigin.getOriginalLine() + " character: " + column + " file: " + lineOrigin.getFileName() + " " + message;
         this.column = column ;
     }
-    private final int line;
+    private final LineOrigin lineOrigin;
     private final int column;
     private final String message;
 
@@ -17,7 +19,7 @@ public class UndefinedError extends RuntimeException {
     }
 
     public int getLine() {
-        return line;
+        return lineOrigin.getOriginalLine();
     }
 
     public int getColumn() {

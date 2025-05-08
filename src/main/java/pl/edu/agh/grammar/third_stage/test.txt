@@ -23,9 +23,10 @@ melody gama2(){
 melody main(){
 
     int a = 9;
-    if (a == 10){
-        a = 11;
-        PLAY A2 1000;
+    if (a == 9){
+        // a = 11;
+        // PLAY A2 1000;
+        PLAY gama(C2,D3,false);
     }else{
         Note var;
         a = 12;

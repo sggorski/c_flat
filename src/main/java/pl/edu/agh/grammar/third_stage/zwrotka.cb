@@ -1,0 +1,4 @@
+melody zw() {
+    PLAY G2 500;
+    PAUSE 200;
+}

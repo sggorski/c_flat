@@ -6,14 +6,17 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import pl.edu.agh.errors.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import pl.edu.agh.utils.LineOrigin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MusicErrorListener extends BaseErrorListener {
+    private final Map<Integer, LineOrigin> lineMap;
+
+    public MusicErrorListener(Map<Integer, LineOrigin> lineMap) {
+        this.lineMap = lineMap;
+    }
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
@@ -30,7 +33,7 @@ public class MusicErrorListener extends BaseErrorListener {
 
             //System.out.println(ExpectedTokens(parser));
             //System.out.println(rulename + " " + token.getText() + " " + ctx.start.getText());
-            throw new SyntaxError(message==null ? msg : message, line, charPositionInLine);
+            throw new SyntaxError(message==null ? msg : message, lineMap.get(line), charPositionInLine);
         } else {
 
             MusicLexer lexer = (MusicLexer) recognizer; // Cast recognizer to lexer, because it's lexer's stage
@@ -41,7 +44,7 @@ public class MusicErrorListener extends BaseErrorListener {
             String errorChar = new String(Character.toChars(charStream.LA(1))); //Return char that caused the error
             // Using Character class to handle extended Unicode character (e.g. emojis)
 
-            throw new SyntaxError("Unrecognized character: " + errorChar, lexer.getLine(), lexer.getCharPositionInLine());
+            throw new SyntaxError("Unrecognized character: " + errorChar, lineMap.get(lexer.getLine()), lexer.getCharPositionInLine());
         }
         // throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
     }

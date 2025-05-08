@@ -10,10 +10,7 @@ import pl.edu.agh.errors.SyntaxError;
 import pl.edu.agh.errors.VariableDeclarationError;
 import pl.edu.agh.utils.*;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 @SuppressWarnings("CheckReturnValue")
 
@@ -25,6 +22,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     HashMap<String, Melody> melodyMemory;
     MusicLexer lexer;
     String currentMelody;
+    private final Map<Integer, LineOrigin> lineMap;
 
     /**
      * ArrayList of Scope objects designed to create a parent-child relationship with another Scope/Melody
@@ -36,9 +34,10 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
 
     ArrayList<Scope> scopes = new ArrayList<>();
 
-    public MusicSuperListener(HashMap<String, Melody> melodyMemory, MusicLexer musicLexer) {
+    public MusicSuperListener(HashMap<String, Melody> melodyMemory, MusicLexer musicLexer, Map<Integer, LineOrigin> lines) {
         this.melodyMemory = melodyMemory;
         this.lexer = musicLexer;
+        this.lineMap = lines;
     }
 
     /**
@@ -104,7 +103,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
                         newMelody.parameters.put(order, new VarInfo(param.ID().getText(), Type.CHORD, getLine(param), null));
                         break;
                     default:
-                        throw new SyntaxError("Invalid type of parameter in function declaration, variable: " + param.ID().getText(), getLine(param), getCol(param));
+                        throw new SyntaxError("Invalid type of parameter in function declaration, variable: " + param.ID().getText(), this.lineMap.get(getLine(param)), getCol(param));
                 }
                 order += 1;
             }
@@ -560,13 +559,13 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         if (scopes.isEmpty()) {
             Melody melody = melodyMemory.get(currentMelody);
             if (melody.memory.containsKey(varName))
-                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + melody.memory.get(varName).line, getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + melody.memory.get(varName).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (Arrays.asList(((VocabularyImpl) this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
-                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (isAnInstrument(varName))
-                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (isANote(varName))
-                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", this.lineMap.get(getLine(ctx)), getCol(ctx));
 
             switch (ctx.type().getText()) {
                 case "int":
@@ -591,13 +590,13 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         } else {
             Scope scope = scopes.get(scopes.size() - 1);
             if (scope.memory.containsKey(varName))
-                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + scope.memory.get(varName).line, getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + scope.memory.get(varName).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (Arrays.asList(((VocabularyImpl) this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
-                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (isAnInstrument(varName))
-                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (isANote(varName))
-                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", this.lineMap.get(getLine(ctx)), getCol(ctx));
 
             switch (ctx.type().getText()) {
                 case "int":
@@ -640,13 +639,13 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         Melody melody = melodyMemory.get(currentMelody);
         if (scopes.isEmpty()) {
             if (melody.memory.containsKey(varName))
-                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + melody.memory.get(varName).line, getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + melody.memory.get(varName).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (Arrays.asList(((VocabularyImpl) this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
-                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (isAnInstrument(varName))
-                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (isANote(varName))
-                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", this.lineMap.get(getLine(ctx)), getCol(ctx));
 
             switch (ctx.type().getText()) {
                 case "int":
@@ -671,13 +670,13 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         } else {
             Scope scope = scopes.get(scopes.size() - 1);
             if (scope.memory.containsKey(varName))
-                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + scope.memory.get(varName).line, getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + scope.memory.get(varName).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (Arrays.asList(((VocabularyImpl) this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
-                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (isAnInstrument(varName))
-                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (isANote(varName))
-                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", getLine(ctx), getCol(ctx));
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", this.lineMap.get(getLine(ctx)), getCol(ctx));
 
             switch (ctx.type().getText()) {
                 case "int":
@@ -1572,7 +1571,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     public void removeScope(ParserRuleContext ctx) {
         
         if (scopes.isEmpty()) {
-            throw new ScopeError("Out of scope!", getLine(ctx), getCol(ctx));
+            throw new ScopeError("Out of scope!", this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         Scope scope = scopes.get(scopes.size() - 1);
         scopes.remove(scope);

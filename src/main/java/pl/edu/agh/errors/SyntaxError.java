@@ -1,19 +1,21 @@
 package pl.edu.agh.errors;
 
+import pl.edu.agh.utils.LineOrigin;
+
 public class SyntaxError extends RuntimeException {
-    private final int line;
+    private final LineOrigin lineOrigin;
     private final int column;
     private final String message;
 
-    public SyntaxError(String message, int line, int column) {
+    public SyntaxError(String message, LineOrigin origin, int column) {
         super();
-        this.message = "Syntax error at line: " + line + " character: " + column + " " + message;
-        this.line = line;
+        this.lineOrigin = origin;
+        this.message = "Syntax error at line: " + lineOrigin.getOriginalLine() + " character: " + column + " file: " + lineOrigin.getFileName() + " " + message;
         this.column = column;
     }
 
     public int getLine() {
-        return line;
+        return lineOrigin.getOriginalLine();
     }
     public int getColumn() {
         return column;

@@ -1,0 +1,6 @@
+import "src/main/java/pl/edu/agh/grammar/third_stage/main.cb";
+
+melody temporary_melody(Note c) {
+    PAUSE 500;
+    PLAY c 500;
+}

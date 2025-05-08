@@ -1,0 +1,10 @@
+import "src/main/java/pl/edu/agh/grammar/third_stage/refren.cb";
+import "src/main/java/pl/edu/agh/grammar/third_stage/zwrotka.cb";
+
+melody main() {
+    PLAY C2 500;
+    PLAY tra(1);
+    PLAY zw();
+    PLAY temporary_melody(C3);
+    PAUSE 1000;
+}

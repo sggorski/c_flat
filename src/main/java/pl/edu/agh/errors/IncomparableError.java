@@ -1,19 +1,23 @@
 package pl.edu.agh.errors;
 
+import pl.edu.agh.utils.LineOrigin;
+
+import javax.sound.sampled.Line;
+
 public class IncomparableError extends RuntimeException {
-    private final int line;
+    private final LineOrigin lineOrigin;
     private final int column;
     private final String message;
 
-    public IncomparableError(String message, int line, int column) {
+    public IncomparableError(String message, LineOrigin origin, int column) {
         super();
-        this.message = "Incomparable error at line: " + line + " character: " + column + " " + message;
-        this.line = line;
+        this.lineOrigin = origin;
+        this.message = "Incomparable error at line: " + lineOrigin.getOriginalLine() + " character: " + column + " file: " + lineOrigin.getFileName() + " " + message;
         this.column = column;
     }
 
     public int getLine() {
-        return line;
+        return this.lineOrigin.getOriginalLine();
     }
     public int getColumn() {
         return column;

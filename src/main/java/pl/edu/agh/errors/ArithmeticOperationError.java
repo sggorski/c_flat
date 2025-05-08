@@ -1,14 +1,16 @@
 package pl.edu.agh.errors;
 
+import pl.edu.agh.utils.LineOrigin;
+
 public class ArithmeticOperationError extends RuntimeException {
-    public ArithmeticOperationError(String message, int line, int column) {
+    public ArithmeticOperationError(String message, LineOrigin origin, int column) {
         super();
-        this.line = line;
+        this.lineOrigin = origin;
         this.column = column;
-        this.message = "Arithmetic Operation Error at line: " + line + " character: " + column + " " + message ;
+        this.message = "Arithmetic Operation Error at line: " + lineOrigin.getOriginalLine() + " character: " + column + " file: " + lineOrigin.getFileName() + " " + message;
     }
 
-    private final int line;
+    private final LineOrigin lineOrigin;
     private final int column;
     private final String message;
 
@@ -18,7 +20,7 @@ public class ArithmeticOperationError extends RuntimeException {
     }
 
     public int getLine(){
-        return line;
+        return this.lineOrigin.getOriginalLine();
     }
 
     public int getColumn(){
