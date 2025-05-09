@@ -1,0 +1,89 @@
+melody first(Note n, int i, int vol) {
+    SET INSTRUMENT=VIOLA;
+    SET VOLUME=vol;
+    // for (int i=0; i<3; i+=1) {
+    //     PLAY n 300;
+    // }
+    PLAY n n n 300;
+    n -= i;
+    int tmp = 2*vol;
+    SET VOLUME=tmp;
+    PLAY n 1400;
+    PAUSE 300;
+    RETURN i-1;
+}
+
+melody second(Note n, int i, int j, int vol) {
+    SET INSTRUMENT=VIOLIN;
+    SET VOLUME=vol;
+    int x=0;
+    // while(x<3) {
+    //     PLAY n 300;
+    //     x += 1;
+    // }
+    PLAY n n n 300;
+    Note n2 = n-i;
+    PLAY n2 300;
+    n += 1;
+    vol+=10;
+    SET VOLUME=vol;
+    PLAY n n n 300;
+    n -= 1;
+    PLAY n 300;
+    n += (8+j);
+    vol+=10;
+    SET VOLUME=vol;
+    PLAY n n n 300;
+    n -= 3;
+    PLAY n 1200;
+}
+
+melody middle() {
+    SET INSTRUMENT=PIANO;
+    PLAY G3 G3 G3 300;
+    PLAY [C2, Eb2, G2, Eb3] 300;
+    // PAUSE 900;
+    PLAY Eb2 Eb2 F2 D3 300;
+}
+
+melody finish() {
+    PLAY [D0, G0, H0, G2, D3, G3] 300;
+    PLAY [D0, G0, H0, G2, D3, G3] 300;
+    PLAY [D0, G0, H0, G2, D3, F3] 300;
+    SET VOLUME=90;
+    SET SUSTAIN=127;
+    PLAY [C0, G0, C1, G2, C3, Eb3] 600;
+    SET SUSTAIN=0;
+    PAUSE 600;
+    SET VOLUME=80;
+    SET SUSTAIN=127;
+    PLAY [Ab0, C0, Ab1, C2, F#2, C3] 600;
+    SET SUSTAIN=0;
+    PAUSE 600;
+    SET VOLUME=120;
+    SET SUSTAIN=127;
+    PLAY [D0, G0, H0, G2, H2, G3] 1200;
+    SET SUSTAIN=0;
+}
+
+melody main() {
+    int i = 4;
+    // if (i == 4) {
+        PLAY first(G2, i, 40) OUT i;
+        PLAY first(F2, i, 60) OUT i;
+    // } else {
+    //     PLAY C1 C2 C3 C4 500;
+    // }
+    PLAY second(G3, 4, 0, 40);
+    PLAY second(G3, 5, 2, 60);
+    PAUSE 300;
+    PLAY middle();
+    PLAY middle();
+    PLAY finish();
+    PAUSE 500;
+
+    SET INSTRUMENT=VIOLA;
+    PLAY [Ab0, Ab1, Ab2, Ab3] [Ab0, Ab1, Ab2, Ab3] [Ab0, Ab1, Ab2, Ab3] 300;
+    PLAY [F0, F1, F2, F3] 1200;
+    PAUSE 500;
+}
