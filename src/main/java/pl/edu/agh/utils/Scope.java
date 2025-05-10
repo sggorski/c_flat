@@ -71,6 +71,9 @@ public class Scope {
         this.effectControllers.put(Effect.TREMOLO, 92);
         this.effectControllers.put(Effect.CHORUS, 93);
         this.effectControllers.put(Effect.PHRASER, 95);
+
+        memory = new HashMap<>();
+
     }
 
     public int getJazzNote(int note) {
@@ -261,13 +264,13 @@ public class Scope {
     }
 
     /**
-     *  Creates a shallow copy of Melody class memory
+     * Creates a shallow copy of Melody class memory
      *
      * @param original
      * @return
      */
 
-    public static Scope deepCopyScope(Melody original) {
+    public static Scope shallowCopyScope(Melody original) {
         Scope copy = new Scope();
         copy.memory = new HashMap<>();
         copy.memory.putAll(original.memory);
@@ -275,14 +278,13 @@ public class Scope {
     }
 
     /**
-     *
      * Creates a shallow copy of Scope class memory
      *
      * @param original
      * @return
      */
 
-    public static Scope deepCopyScope(Scope original) {
+    public static Scope shallowCopyScope(Scope original) {
         Scope copy = new Scope();
         copy.memory = new HashMap<>();
         copy.memory.putAll(original.memory);
@@ -296,4 +298,103 @@ public class Scope {
         }
     }
 
+    public static Scope deepCopyScope(Scope original, Melody melodyParent, Scope parentScope) {
+        Scope copy = new Scope();
+        copy.memory = new HashMap<>();
+        copy.melodyParent = melodyParent;
+        copy.parent = parentScope;
+        copy.scopes = new ArrayList<>();
+
+        copyMemory(copy, original.memory);
+
+        return copy;
+    }
+
+    public static Scope deepCopyScopeStructure(Scope original, Melody melodyParent, Scope parentScope) {
+        Scope copy = deepCopyScope(original, melodyParent, parentScope);
+
+        for (Scope scope : original.scopes) {
+            copy.scopes.add(deepCopyScopeStructure(scope, null, copy));
+        }
+
+        return copy;
+    }
+
+    public static Scope deepCopyFromParent(Scope parent, Melody melodyParent) {
+        Scope scope = new Scope();
+        if (parent != null) {
+            copyMemory(scope, parent.memory);
+        } else {
+            copyMemory(scope, melodyParent.memory);
+        }
+        return scope;
+    }
+
+    public static void addMemoryFromParams(Melody melody, Scope scope) {
+        for (Map.Entry<Integer, VarInfo> entry : melody.parameters.entrySet()) {
+            String varName = entry.getValue().name;
+            if(!scope.memory.containsKey(varName)) {
+                copyMemElement(scope, varName, entry.getValue());
+            }
+        }
+        for (Scope scopeChild : scope.scopes) {
+            addMemoryFromParams(melody, scopeChild);
+        }
+    }
+
+    public static void addMemoryFromMemory(Scope copyTo, Scope parent, Melody melodyParent){
+        if (parent != null) {
+            for (Map.Entry<String, VarInfo> entry : parent.memory.entrySet()) {
+                if(!copyTo.memory.containsKey(entry.getKey())) {
+                    copyMemElement(copyTo, entry.getKey(), entry.getValue());
+                }
+            }
+        }else {
+            for (Map.Entry<String, VarInfo> entry : melodyParent.memory.entrySet()) {
+                if(!copyTo.memory.containsKey(entry.getKey())) {
+                    copyMemElement(copyTo, entry.getKey(), entry.getValue());
+                }
+            }
+        }
+    }
+
+    private static void copyMemory(Scope scope, HashMap<String, VarInfo> memory) {
+        for (Map.Entry<String, VarInfo> entry : memory.entrySet()) {
+            copyMemElement(scope, entry.getKey(), entry.getValue());
+        }
+    }
+
+    private static void copyMemElement(Scope scope, String name, VarInfo varInfo) {
+        Type type = varInfo.type;
+        switch (type) {
+            case INT:
+                scope.memory.put(name, new VarInfo(
+                        varInfo.name,
+                        varInfo.type,
+                        varInfo.line,
+                        varInfo.valueObj != null ? new IntValue(((IntValue) varInfo.valueObj).value) : null));
+                break;
+            case BOOL:
+                scope.memory.put(name, new VarInfo(
+                        varInfo.name,
+                        varInfo.type,
+                        varInfo.line,
+                        varInfo.valueObj != null ? new BoolValue(((BoolValue) varInfo.valueObj).value) : null));
+                break;
+            case NOTE:
+                scope.memory.put(name, new VarInfo(
+                        varInfo.name,
+                        varInfo.type,
+                        varInfo.line,
+                        varInfo.valueObj != null ? new NoteValue(((NoteValue) varInfo.valueObj).note) : null));
+                break;
+            case CHORD:
+                scope.memory.put(name, new VarInfo(
+                        varInfo.name,
+                        varInfo.type,
+                        varInfo.line,
+                        varInfo.valueObj != null ? new ChordValue(((ChordValue) varInfo.valueObj).notes) : null));
+                break;
+        }
+    }
 }

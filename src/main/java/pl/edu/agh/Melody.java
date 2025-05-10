@@ -1,7 +1,6 @@
 package pl.edu.agh;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
-import pl.edu.agh.errors.ValueError;
 import pl.edu.agh.utils.*;
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
@@ -341,6 +340,12 @@ public class Melody {
             }
         }
 
+        copy.scopes = new ArrayList<>();
+        for(Scope scope : original.scopes) {
+            copy.scopes.add(Scope.deepCopyScopeStructure(scope, copy, null));
+        }
+
+
         copy.name = original.name;
         return copy;
     }
@@ -350,4 +355,9 @@ public class Melody {
             this.editEffectPlain(entry.getKey(), entry.getValue());
         }
     }
+
+    public static void addParamsToScopes(Melody melody){
+
+    }
+
 }

@@ -1546,15 +1546,13 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
 
     public void createScope() {
-        Scope scope;
+        Scope scope = new Scope();
         if (scopes.isEmpty()) {
-            Melody currMelody = melodyMemory.get(currentMelody);
-            scope = Scope.deepCopyScope(currMelody);
-            scope.melodyParent = currMelody;
+            //scope = Scope.deepCopyFromParent(null, currMelody);
+            scope.melodyParent = melodyMemory.get(currentMelody);
         } else {
-            Scope currScope = scopes.get(scopes.size() - 1);
-            scope = Scope.deepCopyScope(currScope);
-            scope.parent = currScope;
+            //scope = Scope.deepCopyFromParent(currScope, null);
+            scope.parent = scopes.get(scopes.size() - 1);
         }
         scopes.add(scope);
     }
@@ -1576,8 +1574,10 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         Scope scope = scopes.get(scopes.size() - 1);
         scopes.remove(scope);
         if (scope.parent != null) {
+            //Scope.addMemoryFromMemory(scope, scope.parent, null);
             scope.parent.scopes.add(scope);
         } else if (scope.melodyParent != null) {
+            //Scope.addMemoryFromMemory(scope, null, scope.melodyParent);
             scope.melodyParent.scopes.add(scope);
         }
     }

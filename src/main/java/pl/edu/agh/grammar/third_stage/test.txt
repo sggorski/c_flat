@@ -1,12 +1,63 @@
+melody silnia(int n){
+    int b = 0;
+
+    if (n == 1){
+        RETURN 1;
+    }else{
+        int a = 0;
+        PLAY silnia(n-1) OUT a;
+        RETURN n * a;
+    }
+}
+
+melody gama3(){
+    Note a = C2;
+    PLAY a 2000;
+    if(true){
+        Note b = C2;
+        PLAY a 2000;
+    }
+    else{
+        PLAY C2 1000;
+    }
+}
+
+melody gamma2(Note n){
+    PLAY n 1000;
+    RETURN n+2;
+}
+
+melody gama(Note begin, Note finish, bool reverse){
+    PLAY begin 1000;
+    if(begin==finish){
+        RETURN;
+    }
+    else{
+        if(reverse==true){
+            begin-=2;
+        }
+        else{
+            Note e = C2;
+            begin+=2;
+            PLAY gama3();
+            PLAY e 1000;
+        }
+        PLAY gama(begin,finish,reverse);
+    }
+}
 
 melody main(){
+     int a = 1000;
+     PLAY C1 a;
+     if(true){
+        int a = 2000;
+        PLAY C1 a;
+     }
+     PLAY C1 a;
+     a *= 4;
+     PLAY C1 a;
 
-    Chord b  = [C2,C1];
-    int c=-2;
-    int a =  c+=2;
-    RETURN a;
-    RETURN b+= [G1,A2];
-
-
-
+     //PLAY silnia(8) OUT a;
+     //RETURN a;
+     //PLAY gama(C1, D3, false);
 }
