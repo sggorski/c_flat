@@ -1,4 +1,4 @@
-// Generated from C:/Users/Szymon/Desktop/c_flat/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
+// Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -117,16 +117,6 @@ public interface MusicListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExprStatement(MusicParser.ExprStatementContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MusicParser#loopStatement}.
-	 * @param ctx the parse tree
-	 */
-	void enterLoopStatement(MusicParser.LoopStatementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MusicParser#loopStatement}.
-	 * @param ctx the parse tree
-	 */
-	void exitLoopStatement(MusicParser.LoopStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MusicParser#settings}.
 	 * @param ctx the parse tree
@@ -474,17 +464,17 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitPauseStatement(MusicParser.PauseStatementContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code whileLoop}
+	 * Enter a parse tree produced by the {@code loopStatement}
 	 * labeled alternative in {@link MusicParser#controlStatement}.
 	 * @param ctx the parse tree
 	 */
-	void enterWhileLoop(MusicParser.WhileLoopContext ctx);
+	void enterLoopStatement(MusicParser.LoopStatementContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code whileLoop}
+	 * Exit a parse tree produced by the {@code loopStatement}
 	 * labeled alternative in {@link MusicParser#controlStatement}.
 	 * @param ctx the parse tree
 	 */
-	void exitWhileLoop(MusicParser.WhileLoopContext ctx);
+	void exitLoopStatement(MusicParser.LoopStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code ifStatement}
 	 * labeled alternative in {@link MusicParser#controlStatement}.
@@ -498,17 +488,39 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitIfStatement(MusicParser.IfStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code whileLoop}
+	 * labeled alternative in {@link MusicParser#loop}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhileLoop(MusicParser.WhileLoopContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code whileLoop}
+	 * labeled alternative in {@link MusicParser#loop}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhileLoop(MusicParser.WhileLoopContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code forLoop}
-	 * labeled alternative in {@link MusicParser#controlStatement}.
+	 * labeled alternative in {@link MusicParser#loop}.
 	 * @param ctx the parse tree
 	 */
 	void enterForLoop(MusicParser.ForLoopContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code forLoop}
-	 * labeled alternative in {@link MusicParser#controlStatement}.
+	 * labeled alternative in {@link MusicParser#loop}.
 	 * @param ctx the parse tree
 	 */
 	void exitForLoop(MusicParser.ForLoopContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MusicParser#loopBody}.
+	 * @param ctx the parse tree
+	 */
+	void enterLoopBody(MusicParser.LoopBodyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#loopBody}.
+	 * @param ctx the parse tree
+	 */
+	void exitLoopBody(MusicParser.LoopBodyContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MusicParser#if}.
 	 * @param ctx the parse tree

@@ -50,11 +50,6 @@ returnStatement
 exprStatement
     : expr SEMICOLON;
 
-loopStatement
-    : breakStatement
-    | continueStatement ;
-
-
 settings
     : SET settingsAssigment ';';
 
@@ -126,18 +121,21 @@ multiPlayValues:
 pauseStatement
     : PAUSE (INT_VAL|ID) ';';
 
-controlStatement
-    : 'while' '(' expr ')' '{' (statement|loopStatement)+'}' #whileLoop
-    | if (elseif)* (else)? #ifStatement
-    | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' '{' (statement|loopStatement)+ '}' #forLoop
-    ;
+controlStatement:
+    loop #loopStatement
+    | if (elseif)* (else)? #ifStatement;
 
+loop:
+    'while' '(' expr ')' '{' loopBody'}' #whileLoop
+    | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' '{' loopBody '}' #forLoop;
 
-if: 'if' '(' expr ')' '{' (statement|loopStatement)+ '}';
+loopBody: (statement|breakStatement|continueStatement)+;
 
-elseif: 'else' 'if' '(' expr ')' '{' (statement|loopStatement)+ '}';
+if: 'if' '(' expr ')' '{' loopBody '}';
 
-else: 'else' '{' (statement|loopStatement)+ '}';
+elseif: 'else' 'if' '(' expr ')' '{' loopBody '}';
+
+else: 'else' '{' loopBody '}';
 
 forInit
     : ID

@@ -47,16 +47,12 @@ melody gama(Note begin, Note finish, bool reverse){
 }
 
 melody main(){
-     int a = 1000;
-     PLAY C1 a;
-     if(true){
-        int a = 2000;
-        PLAY C1 a;
+     int a = 4;
+     Note c = C1;
+     while(a > 1){
+        PLAY gamma2(c) OUT c;
+        a -= 1;
      }
-     PLAY C1 a;
-     a *= 4;
-     PLAY C1 a;
-
      //PLAY silnia(8) OUT a;
      //RETURN a;
      //PLAY gama(C1, D3, false);

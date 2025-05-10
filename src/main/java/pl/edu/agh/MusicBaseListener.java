@@ -1,4 +1,4 @@
-// Generated from C:/Users/Szymon/Desktop/c_flat/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
+// Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -144,18 +144,6 @@ public class MusicBaseListener implements MusicListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExprStatement(MusicParser.ExprStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLoopStatement(MusicParser.LoopStatementContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLoopStatement(MusicParser.LoopStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -521,13 +509,13 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterWhileLoop(MusicParser.WhileLoopContext ctx) { }
+	@Override public void enterLoopStatement(MusicParser.LoopStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitWhileLoop(MusicParser.WhileLoopContext ctx) { }
+	@Override public void exitLoopStatement(MusicParser.LoopStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -545,6 +533,18 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterWhileLoop(MusicParser.WhileLoopContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitWhileLoop(MusicParser.WhileLoopContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterForLoop(MusicParser.ForLoopContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -552,6 +552,18 @@ public class MusicBaseListener implements MusicListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitForLoop(MusicParser.ForLoopContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLoopBody(MusicParser.LoopBodyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLoopBody(MusicParser.LoopBodyContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -21,7 +21,7 @@ public class Scope {
     public HashMap<Effect, Value> effects = new HashMap<>();
     public HashMap<Effect, Integer> effectControllers = new HashMap<>();
     public HashMap<String, VarInfo> memory = new HashMap<>();
-    public int scopeLevel = 0;
+    public ScopeType scopeType;
     public ArrayList<Scope> scopes = new ArrayList<>();
     public ArrayList<Scope> scopesForCopy = new ArrayList<>();
     public Scope parent = null;
@@ -32,8 +32,9 @@ public class Scope {
     MidiChannel[] channels;
 
 
-    public Scope() {
+    public Scope(ScopeType type) {
         //start up
+        this.scopeType = type;
         try {
             this.synth = MidiSystem.getSynthesizer();
             this.synth.open();
@@ -263,33 +264,33 @@ public class Scope {
         }
     }
 
-    /**
-     * Creates a shallow copy of Melody class memory
-     *
-     * @param original
-     * @return
-     */
+//    /**
+//     * Creates a shallow copy of Melody class memory
+//     *
+//     * @param original
+//     * @return
+//     */
 
-    public static Scope shallowCopyScope(Melody original) {
-        Scope copy = new Scope();
-        copy.memory = new HashMap<>();
-        copy.memory.putAll(original.memory);
-        return copy;
-    }
+//    public static Scope shallowCopyScope(Melody original) {
+//        Scope copy = new Scope();
+//        copy.memory = new HashMap<>();
+//        copy.memory.putAll(original.memory);
+//        return copy;
+//    }
 
-    /**
-     * Creates a shallow copy of Scope class memory
-     *
-     * @param original
-     * @return
-     */
+//    /**
+//     * Creates a shallow copy of Scope class memory
+//     *
+//     * @param original
+//     * @return
+//     */
 
-    public static Scope shallowCopyScope(Scope original) {
-        Scope copy = new Scope();
-        copy.memory = new HashMap<>();
-        copy.memory.putAll(original.memory);
-        return copy;
-    }
+//    public static Scope shallowCopyScope(Scope original) {
+//        Scope copy = new Scope();
+//        copy.memory = new HashMap<>();
+//        copy.memory.putAll(original.memory);
+//        return copy;
+//    }
 
     public void copyEffects(HashMap<Effect, Value> effects) {
         this.effects = new HashMap<>();
@@ -299,7 +300,7 @@ public class Scope {
     }
 
     public static Scope deepCopyScope(Scope original, Melody melodyParent, Scope parentScope) {
-        Scope copy = new Scope();
+        Scope copy = new Scope(original.scopeType);
         copy.memory = new HashMap<>();
         copy.melodyParent = melodyParent;
         copy.parent = parentScope;
@@ -320,15 +321,15 @@ public class Scope {
         return copy;
     }
 
-    public static Scope deepCopyFromParent(Scope parent, Melody melodyParent) {
-        Scope scope = new Scope();
-        if (parent != null) {
-            copyMemory(scope, parent.memory);
-        } else {
-            copyMemory(scope, melodyParent.memory);
-        }
-        return scope;
-    }
+//    public static Scope deepCopyFromParent(Scope parent, Melody melodyParent) {
+//        Scope scope = new Scope();
+//        if (parent != null) {
+//            copyMemory(scope, parent.memory);
+//        } else {
+//            copyMemory(scope, melodyParent.memory);
+//        }
+//        return scope;
+//    }
 
     public static void addMemoryFromParams(Melody melody, Scope scope) {
         for (Map.Entry<Integer, VarInfo> entry : melody.parameters.entrySet()) {
@@ -358,7 +359,7 @@ public class Scope {
         }
     }
 
-    private static void copyMemory(Scope scope, HashMap<String, VarInfo> memory) {
+    public static void copyMemory(Scope scope, HashMap<String, VarInfo> memory) {
         for (Map.Entry<String, VarInfo> entry : memory.entrySet()) {
             copyMemElement(scope, entry.getKey(), entry.getValue());
         }

@@ -3,6 +3,7 @@ package pl.edu.agh;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.errors.*;
@@ -117,10 +118,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-    @Override
-    public T visitLoopStatement(MusicParser.LoopStatementContext ctx) {
-        return visitChildren(ctx);
-    }
 
     @Override
     public T visitSettings(MusicParser.SettingsContext ctx) {
@@ -366,7 +363,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (melody == null) throw new RuntimeException("Stack is empty!");
 
         if (currentScope != null) {
-            varInfo = findVar(varName, ctx);
+            varInfo = declareVar(varName, ctx);
         } else {
             varInfo = melody.memory.get(varName);
         }
@@ -569,10 +566,29 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
+    @Override
+    public T visitLoopStatement(MusicParser.LoopStatementContext ctx) {
+        return visitChildren(ctx);
+    }
+
 
     @Override
     public T visitWhileLoop(MusicParser.WhileLoopContext ctx) {
-        return visitChildren(ctx);
+        Scope tempScope = new Scope(ScopeType.WHILE);
+        if(((BoolValue) visit(ctx.expr())).value){
+            currentScope = getCurrScope(stack.peek());
+            Scope.copyMemory(tempScope, currentScope.memory);
+            if (((Boolean) visit(ctx.loopBody()))){
+                Scope.copyMemory(currentScope, tempScope.memory);
+                currentScope = currentScope.parent;
+                visit(ctx);
+            }
+        }
+        else {
+            currentScope = getCurrScope(stack.peek());
+            changeScope();
+        }
+        return null;
     }
 
 
@@ -663,6 +679,32 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
+    @Override
+    public T visitLoopBody(MusicParser.LoopBodyContext ctx) {
+        for(ParseTree child : ctx.children){
+            if(child instanceof MusicParser.BreakStatementContext){
+                currentScope = getCurrScope(stack.peek());
+                Scope tempScope = currentScope;
+                if (currentScope == null) throw new RuntimeException("Stack is empty!");
+                while (tempScope != null && tempScope.scopeType != ScopeType.WHILE && tempScope.scopeType != ScopeType.FOR){
+                    tempScope = tempScope.parent;
+                }
+                if (tempScope == null) throw new RuntimeException("There is no loop statement to break");
+                else {
+                    currentScope = tempScope;
+                    changeScope();
+                }
+                return (T) new Boolean(false);
+
+            } else if (child instanceof MusicParser.ContinueStatementContext ) {
+                break;
+            }else {
+                visit(child);
+            }
+        }
+        return (T ) new Boolean(true);
+    }
+
 
     @Override
     public T visitForInit(MusicParser.ForInitContext ctx) {
@@ -684,13 +726,14 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitBreakStatement(MusicParser.BreakStatementContext ctx) {
-        return visitChildren(ctx);
+
+        return null;
     }
 
 
     @Override
     public T visitContinueStatement(MusicParser.ContinueStatementContext ctx) {
-        return visitChildren(ctx);
+        return null;
     }
 
     @Override
@@ -1258,7 +1301,24 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     private VarInfo findVar(String varName, ParserRuleContext ctx) {
         Scope current = currentScope;
         while (current != null) {
-            if (!current.memory.containsKey(varName)) {
+            if (!current.memory.containsKey(varName) || current.memory.get(varName).valueObj == null){
+                current = current.parent;
+            }
+            else return current.memory.get(varName);
+        }
+
+        if(stack.isEmpty()) throw new RuntimeException("Stack is empty!");
+
+        if(stack.peek().memory.containsKey(varName)) {
+            return stack.peek().memory.get(varName);
+        }else throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
+
+    }
+
+    private VarInfo declareVar(String varName, ParserRuleContext ctx) {
+        Scope current = currentScope;
+        while (current != null) {
+            if (!current.memory.containsKey(varName)){
                 current = current.parent;
             }
             else return current.memory.get(varName);

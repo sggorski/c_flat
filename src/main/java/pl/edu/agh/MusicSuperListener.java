@@ -18,7 +18,7 @@ import java.util.*;
  * Tu można zrobić całe sprawdzanie składni oraz czy semantyka jest poprawna
  */
 
-public class MusicSuperListener extends MusicBaseListener implements MusicListener {
+public class MusicSuperListener extends MusicBaseListener  implements MusicListener {
     HashMap<String, Melody> melodyMemory;
     MusicLexer lexer;
     String currentMelody;
@@ -244,22 +244,6 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
 
     @Override
     public void exitExprStatement(MusicParser.ExprStatementContext ctx) {
-
-    }
-
-    /**
-     * @param ctx the parse tree
-     */
-    @Override
-    public void enterLoopStatement(MusicParser.LoopStatementContext ctx) {
-
-    }
-
-    /**
-     * @param ctx the parse tree
-     */
-    @Override
-    public void exitLoopStatement(MusicParser.LoopStatementContext ctx) {
 
     }
 
@@ -832,11 +816,13 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     public void exitPauseStatement(MusicParser.PauseStatementContext ctx) {
     }
 
-    /**
-     * @param ctx the parse tree
-     */
     @Override
-    public void enterWhileLoop(MusicParser.WhileLoopContext ctx) {
+    public void enterLoopStatement(MusicParser.LoopStatementContext ctx) {
+
+    }
+
+    @Override
+    public void exitLoopStatement(MusicParser.LoopStatementContext ctx) {
 
     }
 
@@ -844,8 +830,16 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      * @param ctx the parse tree
      */
     @Override
-    public void exitWhileLoop(MusicParser.WhileLoopContext ctx) {
+    public void enterWhileLoop(MusicParser.WhileLoopContext ctx) {
+        createScope(ScopeType.WHILE);
+    }
 
+    /**
+     * @param ctx the parse tree
+     */
+    @Override
+    public void exitWhileLoop(MusicParser.WhileLoopContext ctx) {
+        removeScope(ctx);
     }
 
     @Override
@@ -863,7 +857,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
     @Override
     public void enterIf(MusicParser.IfContext ctx) {
-        createScope();
+        createScope(ScopeType.IF);
     }
 
     /**
@@ -876,7 +870,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
 
     @Override
     public void enterElseif(MusicParser.ElseifContext ctx) {
-        createScope();
+        createScope(ScopeType.ELSEIF);
     }
 
     @Override
@@ -886,7 +880,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
 
     @Override
     public void enterElse(MusicParser.ElseContext ctx) {
-        createScope();
+        createScope(ScopeType.ELSE);
     }
 
     @Override
@@ -907,6 +901,16 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
     @Override
     public void exitForLoop(MusicParser.ForLoopContext ctx) {
+
+    }
+
+    @Override
+    public void enterLoopBody(MusicParser.LoopBodyContext ctx) {
+
+    }
+
+    @Override
+    public void exitLoopBody(MusicParser.LoopBodyContext ctx) {
 
     }
 
@@ -1051,6 +1055,16 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
     @Override
     public void exitSettingsList(MusicParser.SettingsListContext ctx) {
+    }
+
+    @Override
+    public void enterSelfAssignmentExpr(MusicParser.SelfAssignmentExprContext ctx) {
+
+    }
+
+    @Override
+    public void exitSelfAssignmentExpr(MusicParser.SelfAssignmentExprContext ctx) {
+
     }
 
     /**
@@ -1545,8 +1559,8 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      * Additionally sets the parent of the newly created Scope
      */
 
-    public void createScope() {
-        Scope scope = new Scope();
+    public void createScope(ScopeType type) {
+        Scope scope = new Scope(type);
         if (scopes.isEmpty()) {
             //scope = Scope.deepCopyFromParent(null, currMelody);
             scope.melodyParent = melodyMemory.get(currentMelody);
