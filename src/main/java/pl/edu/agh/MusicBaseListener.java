@@ -605,18 +605,6 @@ public class MusicBaseListener implements MusicListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterForInit(MusicParser.ForInitContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitForInit(MusicParser.ForInitContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterForUpdate(MusicParser.ForUpdateContext ctx) { }
 	/**
 	 * {@inheritDoc}

@@ -332,12 +332,6 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitElse(MusicParser.ElseContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MusicParser#forInit}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitForInit(MusicParser.ForInitContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link MusicParser#forUpdate}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

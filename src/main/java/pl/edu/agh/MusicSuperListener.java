@@ -893,7 +893,7 @@ public class MusicSuperListener extends MusicBaseListener  implements MusicListe
      */
     @Override
     public void enterForLoop(MusicParser.ForLoopContext ctx) {
-
+        createScope(ScopeType.FOR);
     }
 
     /**
@@ -901,7 +901,7 @@ public class MusicSuperListener extends MusicBaseListener  implements MusicListe
      */
     @Override
     public void exitForLoop(MusicParser.ForLoopContext ctx) {
-
+        removeScope(ctx);
     }
 
     @Override
@@ -912,25 +912,6 @@ public class MusicSuperListener extends MusicBaseListener  implements MusicListe
     @Override
     public void exitLoopBody(MusicParser.LoopBodyContext ctx) {
 
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-
-    @Override
-    public void enterForInit(MusicParser.ForInitContext ctx) {
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.</p>
-     */
-    @Override
-    public void exitForInit(MusicParser.ForInitContext ctx) {
     }
 
     /**

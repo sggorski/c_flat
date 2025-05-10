@@ -675,8 +675,30 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
 
     @Override
-    public T visitForLoop(MusicParser.ForLoopContext ctx) {
-        return visitChildren(ctx);
+    public T visitForLoop(MusicParser.ForLoopContext ctx) { //TODO Scopes needs to be redefined in grammar as standalone rule
+        Scope tempScope = new Scope(ScopeType.FOR);
+
+        if(ctx.varDecl() != null){
+            visit(ctx.varDecl());
+        }
+
+        if(ctx.expr() == null || ((BoolValue) visit(ctx.expr())).value){
+            currentScope = getCurrScope(stack.peek());
+            Scope.copyMemory(tempScope, currentScope.memory);
+            if (((Boolean) visit(ctx.loopBody()))){
+                Scope.copyMemory(currentScope, tempScope.memory);
+                currentScope = currentScope.parent;
+                if (ctx.forUpdate() != null){
+                    visit(ctx.forUpdate());
+                }
+                visit(ctx);
+            }
+        }
+        else {
+            currentScope = getCurrScope(stack.peek());
+            changeScope();
+        }
+        return null;
     }
 
     @Override
@@ -704,13 +726,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
         return (T ) new Boolean(true);
     }
-
-
-    @Override
-    public T visitForInit(MusicParser.ForInitContext ctx) {
-        return visitChildren(ctx);
-    }
-
 
     @Override
     public T visitForUpdate(MusicParser.ForUpdateContext ctx) {

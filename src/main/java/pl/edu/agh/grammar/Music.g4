@@ -34,24 +34,24 @@ mainStatement
 
 statement
     : functionDecl
-    | assignment
-    | settings
-    | varDecl
-    | playStatement
-    | pauseStatement
+    | assignment ';'
+    | settings ';'
+    | varDecl ';'
+    | playStatement ';'
+    | pauseStatement ';'
     | controlStatement
-    | exprStatement
-    | returnStatement
+    | exprStatement ';'
+    | returnStatement ';'
     ;
 
 returnStatement
-    : 'RETURN' expr? ';' ;
+    : 'RETURN' expr?;
 
 exprStatement
-    : expr SEMICOLON;
+    : expr ;
 
 settings
-    : SET settingsAssigment ';';
+    : SET settingsAssigment;
 
 settingsAssigment
     : PACE '=' (INT_VAL|ID)#pace
@@ -92,19 +92,19 @@ settingsValues
     ;
 
 assignment
-    : ID '=' expr ';'
+    : ID '=' expr
     ;
 
 selfAssignment
     : ID assOp expr;
 
 varDecl
-    : type ID '=' expr ';' #varDeclWithARg
-    | type ID ';' #varDeclWithoutArg
+    : type ID '=' expr  #varDeclWithARg
+    | type ID  #varDeclWithoutArg
     ;
 
 playStatement
-    : PLAY playValues ';'
+    : PLAY playValues
     ;
 
 playValues
@@ -119,7 +119,7 @@ multiPlayValues:
     (NOTE_VAL | chord | ID)+ (INT_VAL | ID);
 
 pauseStatement
-    : PAUSE (INT_VAL|ID) ';';
+    : PAUSE (INT_VAL|ID);
 
 controlStatement:
     loop #loopStatement
@@ -127,7 +127,7 @@ controlStatement:
 
 loop:
     'while' '(' expr ')' '{' loopBody'}' #whileLoop
-    | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' '{' loopBody '}' #forLoop;
+    | 'for' '(' varDecl? ';' expr? ';' forUpdate? ')' '{' loopBody '}' #forLoop;
 
 loopBody: (statement|breakStatement|continueStatement)+;
 
@@ -137,19 +137,13 @@ elseif: 'else' 'if' '(' expr ')' '{' loopBody '}';
 
 else: 'else' '{' loopBody '}';
 
-forInit
-    : ID
-    | type ID '=' expr
-    | ID '=' expr
-    ;
-
 forUpdate
-    : functionCall
+    : playStatement
     | forAssignment;
 
 forAssignment
-    :  ID '=' expr
-    |  ID assOp expr;
+    :  assignment
+    |  selfAssignment;
 
 breakStatement
     : 'break' ';' ;

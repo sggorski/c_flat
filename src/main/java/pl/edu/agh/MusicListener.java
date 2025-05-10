@@ -552,16 +552,6 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitElse(MusicParser.ElseContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MusicParser#forInit}.
-	 * @param ctx the parse tree
-	 */
-	void enterForInit(MusicParser.ForInitContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MusicParser#forInit}.
-	 * @param ctx the parse tree
-	 */
-	void exitForInit(MusicParser.ForInitContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link MusicParser#forUpdate}.
 	 * @param ctx the parse tree
 	 */
