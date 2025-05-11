@@ -29,7 +29,7 @@ public class Scope {
 
 
     Synthesizer synth;
-    MidiChannel[] channels;
+    public MidiChannel[] channels;
 
 
     public Scope(ScopeType type) {
@@ -305,7 +305,9 @@ public class Scope {
         copy.melodyParent = melodyParent;
         copy.parent = parentScope;
         copy.scopes = new ArrayList<>();
-
+        //Copying settings from original scope
+        copy.copyEffects(original.effects);
+        copy.setInstrument(original.instrument);
         copyMemory(copy, original.memory);
 
         return copy;
