@@ -46,23 +46,33 @@ melody gama(Note begin, Note finish, bool reverse){
     }
 }
 
+melody test(Note c, int a){
+    PLAY c a;
+    RETURN a;
+}
+
 melody main(){
 
 
 
-      SET INSTRUMENT = TRUMPET;
-          bool b1 = false;
-          bool b2 = false;
-          bool b3 = b1 AND b2 OR true;
-          bool b5 = (b1 AND NOT(NOT b2 OR b3 AND true) OR (b1 AND false)) AND NOT (NOT b3 AND NOT b2 OR (b3 AND true));
+      //SET INSTRUMENT = TRUMPET;
+          //bool b1 = false;
+          //bool b2 = false;
+          //bool b3 = b1 AND b2 OR true;
+          //bool b5 = (b1 AND NOT(NOT b2 OR b3 AND true) OR (b1 AND false)) AND NOT (NOT b3 AND NOT b2 OR (b3 AND true));
+          //bool b6 = NOT ((true AND false) OR NOT b1 AND NOT (b2 OR b3 AND NOT false));
 
-          if (NOT ((true AND false) OR NOT b1 AND NOT (b2 OR b3 AND NOT false))) {
-              PLAY C1 1000;
-          } else if (b1) {
-              PLAY C4 C4 1000;
-          } else {
-              PLAY C3 C1 C3 333;
-          }
+      int a = 5;
+      for(; ;){
+        PLAY C1 100;
+        a += 1;
+        if(a > 10){
+            PLAY test(C1, 1000) OUT a;
+            break;
+        }
+      }
+
+
 
 
 }

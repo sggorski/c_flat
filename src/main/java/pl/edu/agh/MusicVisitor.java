@@ -294,6 +294,12 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIfStatement(MusicParser.IfStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MusicParser#scope}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitScope(MusicParser.ScopeContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code whileLoop}
 	 * labeled alternative in {@link MusicParser#loop}.
 	 * @param ctx the parse tree

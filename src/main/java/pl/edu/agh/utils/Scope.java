@@ -33,9 +33,8 @@ public class Scope {
     public MidiChannel[] channels;
 
 
-    public Scope(ScopeType type) {
+    public Scope() {
         //start up
-        this.scopeType = type;
         try {
             this.synth = MidiSystem.getSynthesizer();
             this.synth.open();
@@ -301,7 +300,8 @@ public class Scope {
     }
 
     public static Scope deepCopyScope(Scope original, Melody melodyParent, Scope parentScope) {
-        Scope copy = new Scope(original.scopeType);
+        Scope copy = new Scope();
+        copy.scopeType = original.scopeType;
         copy.memory = new HashMap<>();
         copy.melodyParent = melodyParent;
         copy.parent = parentScope;

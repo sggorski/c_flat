@@ -2,6 +2,7 @@ package pl.edu.agh;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.errors.*;
@@ -16,7 +17,7 @@ import static pl.edu.agh.utils.Instrument.*;
 
 
 @SuppressWarnings("CheckReturnValue")
-public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVisitor<T> {
+public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements MusicVisitor<T> {
     HashMap<String, Melody> melodyMemory;
     Deque<Melody> stack = new ArrayDeque<>();
     Scope currentScope = null;
@@ -126,20 +127,18 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitPace(MusicParser.PaceContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.PACE,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.PACE, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.PACE, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.PACE, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitSustain(MusicParser.SustainContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.SUSTAIN,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.SUSTAIN, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.SUSTAIN, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.SUSTAIN, this);
         return visitChildren(ctx);
     }
 
@@ -153,11 +152,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 throw new ValueError(ctx.ID() + " is not valid INSTRUMENT", this.lineMap.get(getLine(ctx)), getCol(ctx));
             String instrumentName = ctx.INSTRUMENT_VALUE().getText();
             Instrument instrument = valueOf(instrumentName);
-            if(currentScope!= null){
-                if(!currentScope.setInstrument(instrument))
+            if (currentScope != null) {
+                if (!currentScope.setInstrument(instrument))
                     throw new ValueError(instrument + "is not valid INSTRUMENT", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            }
-            else if (!melody.setInstrument(instrument))
+            } else if (!melody.setInstrument(instrument))
                 throw new ValueError(instrument + "is not valid INSTRUMENT", this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         return visitChildren(ctx);
@@ -167,130 +165,117 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitDistortion(MusicParser.DistortionContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.DISTORTION,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.DISTORTION, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.DISTORTION, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.DISTORTION, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitJazz(MusicParser.JazzContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.JAZZ,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.JAZZ, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.JAZZ, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.JAZZ, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitBlues(MusicParser.BluesContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.BLUES,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.BLUES, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.BLUES, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.BLUES, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitVolume(MusicParser.VolumeContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.VOLUME,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.VOLUME, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.VOLUME, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.VOLUME, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitVibrato(MusicParser.VibratoContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.VIBRATO,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.VIBRATO, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.VIBRATO, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.VIBRATO, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitBalance(MusicParser.BalanceContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.BALANCE,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.BALANCE, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.BALANCE, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.BALANCE, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitSostenutoPedal(MusicParser.SostenutoPedalContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.SOSTENUTO,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.SOSTENUTO, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.SOSTENUTO, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.SOSTENUTO, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitSoftPedal(MusicParser.SoftPedalContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.SOFT,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.SOFT, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.SOFT, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.SOFT, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitResonance(MusicParser.ResonanceContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.RESONANCE,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.RESONANCE, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.RESONANCE, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.RESONANCE, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitReverb(MusicParser.ReverbContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.REVERB,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.REVERB, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.REVERB, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.REVERB, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitTremolo(MusicParser.TremoloContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.TREMOLO,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.TREMOLO, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.TREMOLO, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.TREMOLO, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitChorus(MusicParser.ChorusContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.CHORUS,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.CHORUS, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.CHORUS, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.CHORUS, this);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitPhraser(MusicParser.PhraserContext ctx) {
         Melody melody = stack.peek();
-        if(currentScope!= null){
-            currentScope.editEffect(ctx,Effect.PHRASER,this);
-        }
-        else if (melody != null) melody.editEffect(ctx, Effect.PHRASER, this);
+        if (currentScope != null) {
+            currentScope.editEffect(ctx, Effect.PHRASER, this);
+        } else if (melody != null) melody.editEffect(ctx, Effect.PHRASER, this);
         return visitChildren(ctx);
     }
 
@@ -627,26 +612,19 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitWhileLoop(MusicParser.WhileLoopContext ctx) {
-        if(((BoolValue) visit(ctx.expr())).value) {
-            currentScope = getCurrScope(stack.peek());
-            Scope tempScope = Scope.deepCopyScopeStructure(currentScope, currentScope.melodyParent, currentScope.parent);
-            if(((BoolValue) visit(ctx.loopBody())).value) {
-                if(currentScope.parent != null) {
-                    currentScope.parent.scopes.set(0,tempScope);
-                }else {
-                    currentScope.melodyParent.scopes.set(0,tempScope);
-                }
-                currentScope = tempScope;
-                currentScope = currentScope.parent;
-                visit(ctx);
+        Scope callbackScope = currentScope;
+        if (((BoolValue) visit(ctx.expr())).value) {
+            try {
+                visit(ctx.scope());
+            }catch (Break b){
+                currentScope = callbackScope;
                 return null;
-            }else {
-                return null;
+            }catch (Continue ignored){
+                currentScope = callbackScope;
             }
-        }
-        else {
-            currentScope = getCurrScope(stack.peek());
-            changeScope();
+            visit(ctx);
+        } else {
+            skipScope();
         }
         return null;
     }
@@ -669,12 +647,35 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 if (!status) {
                     status = (Boolean) visit(child);
                 } else {
-                    currentScope = getCurrScope(stack.peek());
-                    changeScope();
+                    skipScope();
                 }
             } else if (child instanceof MusicParser.ElseContext && !status) {
                 visit(child);
             }
+        }
+        return null;
+    }
+
+    @Override
+    public T visitScope(MusicParser.ScopeContext ctx) {
+        Scope temp = null;
+        currentScope = getCurrScope(stack.peek());
+        if(ctx.parent instanceof MusicParser.WhileLoopContext || ctx.parent instanceof MusicParser.ForLoopContext) {
+            temp = Scope.deepCopyScopeStructure(currentScope, currentScope.melodyParent, currentScope.parent);
+        }
+        visitChildren(ctx);
+        if (temp != null){
+            currentScope = currentScope.parent;
+            if (currentScope != null){
+                currentScope.scopes.set(0, temp);
+            }else {
+                if(stack.peek() == null){
+                    throw new RuntimeException("Stack is empty!");
+                }
+                stack.peek().scopes.set(0, temp);
+            }
+        }else {
+            changeScope();
         }
         return null;
     }
@@ -691,16 +692,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitIf(MusicParser.IfContext ctx) {
-        currentScope = getCurrScope(stack.peek());
         Value exprVal = tryCasting(ctx.expr());
         if (exprVal instanceof BoolValue) {
             if (((BoolValue) exprVal).value) {
-                visitChildren(ctx);
-                System.out.println("Exiting if, if memory: " + currentScope.memory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
-                changeScope();
+                visit(ctx.scope());
                 return (T) new Boolean(true);
             } else {
-                changeScope();
+                skipScope();
                 return (T) new Boolean(false);
             }
         } else
@@ -710,15 +708,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitElseif(MusicParser.ElseifContext ctx) {
         Value exprVal = tryCasting(ctx.expr());
-        currentScope = getCurrScope(stack.peek());
         if (exprVal instanceof BoolValue) {
             if (((BoolValue) exprVal).value) {
-                visitChildren(ctx);
-                System.out.println("Exiting elseif, elseif memory: " + currentScope.memory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
-                changeScope();
+                visit(ctx.scope());
+                //System.out.println("Exiting elseif, elseif memory: " + currentScope.memory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
                 return (T) new Boolean(true);
             } else {
-                changeScope();
+                skipScope();
                 return (T) new Boolean(false);
             }
         } else
@@ -727,53 +723,40 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitElse(MusicParser.ElseContext ctx) {
-        currentScope = getCurrScope(stack.peek());
-        System.out.println("Exiting else, else memory: " + currentScope.memory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
-        visitChildren(ctx);
-        changeScope();
+        //System.out.println("Exiting else, else memory: " + currentScope.memory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
+        visit(ctx.scope());
         return null;
     }
 
 
     @Override
     public T visitForLoop(MusicParser.ForLoopContext ctx) { //TODO Scopes needs to be redefined in grammar as standalone rule
-        Scope tempScope = new Scope(ScopeType.FOR);
-
-        if(ctx.varDecl() != null){
+        if (ctx.varDecl() != null) {
             visit(ctx.varDecl());
         }
 
-        if(ctx.expr() == null || ((BoolValue) visit(ctx.expr())).value){
-            currentScope = getCurrScope(stack.peek());
-            Scope.copyMemory(tempScope, currentScope.memory);
-            if (((Boolean) visit(ctx.loopBody()))){
-                Scope.copyMemory(currentScope, tempScope.memory);
-                currentScope = currentScope.parent;
-                if (ctx.forUpdate() != null){
+        if (ctx.expr() == null || ((BoolValue) visit(ctx.expr())).value) {
+            while (ctx.expr() == null || ((BoolValue) visit(ctx.expr())).value){
+                try {
+                    visit(ctx.scope());
+                }catch (Break b){
+                    return null;
+                }catch (Continue ignored){
+
+                }
+                if(ctx.forUpdate() != null) {
                     visit(ctx.forUpdate());
                 }
-                visit(ctx);
             }
-        }
-        else {
-            currentScope = getCurrScope(stack.peek());
-            changeScope();
+        } else {
+            skipScope();
         }
         return null;
     }
 
     @Override
     public T visitLoopBody(MusicParser.LoopBodyContext ctx) {
-        for(ParseTree child : ctx.children){
-            try {
-                visit(child);
-            }catch (Break b){
-                return (T) new BoolValue(false);
-            }catch (Continue c){
-                break;
-            }
-        }
-        return (T) new BoolValue(true);
+        return visitChildren(ctx);
     }
 
     @Override
@@ -1245,14 +1228,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
 
         try {
-            if(currentScope!=null){
+            if (currentScope != null) {
                 if (currentScope.instrument == DRUMS) {
                     currentScope.playChord(currentScope.channels[9], notesInt, duration, ((IntValue) currentScope.effects.get(Effect.VOLUME)).value);
                 } else {
                     currentScope.playChord(currentScope.channels[0], notesInt, duration, ((IntValue) currentScope.effects.get(Effect.VOLUME)).value);
                 }
-            }
-            else{
+            } else {
                 if (melody.instrument == DRUMS) {
                     melody.playChord(melody.channels[9], notesInt, duration, ((IntValue) melody.effects.get(Effect.VOLUME)).value);
                 } else {
@@ -1269,13 +1251,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (melody == null) throw new RuntimeException("Stack is empty!");
         Integer noteInt = NoteMap.notes.get(note);
         try {
-            if(currentScope!=null){
+            if (currentScope != null) {
                 if (currentScope.instrument == DRUMS) {
                     currentScope.playNote(currentScope.channels[9], noteInt, duration, ((IntValue) currentScope.effects.get(Effect.VOLUME)).value);
                 } else {
                     currentScope.playNote(currentScope.channels[0], noteInt, duration, ((IntValue) currentScope.effects.get(Effect.VOLUME)).value);
                 }
-            } else{
+            } else {
                 if (melody.instrument == DRUMS) {
                     melody.playNote(melody.channels[9], noteInt, duration, ((IntValue) melody.effects.get(Effect.VOLUME)).value);
                 } else {
@@ -1386,45 +1368,56 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     private VarInfo findVar(String varName, ParserRuleContext ctx) {
         Scope current = currentScope;
         while (current != null) {
-            if (!current.memory.containsKey(varName) || current.memory.get(varName).valueObj == null){
+            if (!current.memory.containsKey(varName) || current.memory.get(varName).valueObj == null) {
                 current = current.parent;
-            }
-            else return current.memory.get(varName);
+            } else return current.memory.get(varName);
         }
 
-        if(stack.isEmpty()) throw new RuntimeException("Stack is empty!");
+        if (stack.isEmpty()) throw new RuntimeException("Stack is empty!");
 
-        if(stack.peek().memory.containsKey(varName)) {
+        if (stack.peek().memory.containsKey(varName)) {
             return stack.peek().memory.get(varName);
-        }else throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        } else
+            throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
 
     }
 
     private VarInfo declareVar(String varName, ParserRuleContext ctx) {
         Scope current = currentScope;
         while (current != null) {
-            if (!current.memory.containsKey(varName)){
+            if (!current.memory.containsKey(varName)) {
                 current = current.parent;
-            }
-            else return current.memory.get(varName);
+            } else return current.memory.get(varName);
         }
 
-        if(stack.isEmpty()) throw new RuntimeException("Stack is empty!");
+        if (stack.isEmpty()) throw new RuntimeException("Stack is empty!");
 
-        if(stack.peek().memory.containsKey(varName)) {
+        if (stack.peek().memory.containsKey(varName)) {
             return stack.peek().memory.get(varName);
-        }else throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        } else
+            throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
 
     }
 
-    public Scope findLoopScope(){
+    public Scope findLoopScope() {
         if (currentScope == null) throw new RuntimeException("Stack is empty!");
         Scope temp = currentScope;
         while (temp != null && temp.scopeType != ScopeType.FOR && temp.scopeType != ScopeType.WHILE) {
             temp = temp.parent;
         }
-        if(temp != null) return temp;
+        if (temp != null) return temp;
         else throw new RuntimeException("Statement used not in loop!");
+    }
+
+    private void setScopeType(Scope scope, ScopeType type) {
+        if (scope != null) {
+            scope.scopeType = type;
+        }
+    }
+
+    private void skipScope(){
+        currentScope = getCurrScope(stack.peek());
+        changeScope();
     }
 
 }

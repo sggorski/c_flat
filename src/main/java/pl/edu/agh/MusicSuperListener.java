@@ -18,7 +18,7 @@ import java.util.*;
  * Tu można zrobić całe sprawdzanie składni oraz czy semantyka jest poprawna
  */
 
-public class MusicSuperListener extends MusicBaseListener  implements MusicListener {
+public class MusicSuperListener extends MusicBaseListener implements MusicListener {
     HashMap<String, Melody> melodyMemory;
     MusicLexer lexer;
     String currentMelody;
@@ -831,7 +831,6 @@ public class MusicSuperListener extends MusicBaseListener  implements MusicListe
      */
     @Override
     public void enterWhileLoop(MusicParser.WhileLoopContext ctx) {
-        createScope(ScopeType.WHILE);
     }
 
     /**
@@ -839,7 +838,6 @@ public class MusicSuperListener extends MusicBaseListener  implements MusicListe
      */
     @Override
     public void exitWhileLoop(MusicParser.WhileLoopContext ctx) {
-        removeScope(ctx);
     }
 
     @Override
@@ -852,12 +850,21 @@ public class MusicSuperListener extends MusicBaseListener  implements MusicListe
 
     }
 
+    @Override
+    public void enterScope(MusicParser.ScopeContext ctx) {
+        createScope();
+    }
+
+    @Override
+    public void exitScope(MusicParser.ScopeContext ctx) {
+        removeScope(ctx);
+    }
+
     /**
      * @param ctx the parse tree
      */
     @Override
     public void enterIf(MusicParser.IfContext ctx) {
-        createScope(ScopeType.IF);
     }
 
     /**
@@ -865,27 +872,23 @@ public class MusicSuperListener extends MusicBaseListener  implements MusicListe
      */
     @Override
     public void exitIf(MusicParser.IfContext ctx) {
-        removeScope(ctx);
     }
 
     @Override
     public void enterElseif(MusicParser.ElseifContext ctx) {
-        createScope(ScopeType.ELSEIF);
+
     }
 
     @Override
     public void exitElseif(MusicParser.ElseifContext ctx) {
-        removeScope(ctx);
     }
 
     @Override
     public void enterElse(MusicParser.ElseContext ctx) {
-        createScope(ScopeType.ELSE);
     }
 
     @Override
     public void exitElse(MusicParser.ElseContext ctx) {
-        removeScope(ctx);
     }
 
     /**
@@ -893,7 +896,6 @@ public class MusicSuperListener extends MusicBaseListener  implements MusicListe
      */
     @Override
     public void enterForLoop(MusicParser.ForLoopContext ctx) {
-        createScope(ScopeType.FOR);
     }
 
     /**
@@ -901,7 +903,6 @@ public class MusicSuperListener extends MusicBaseListener  implements MusicListe
      */
     @Override
     public void exitForLoop(MusicParser.ForLoopContext ctx) {
-        removeScope(ctx);
     }
 
     @Override
@@ -1540,8 +1541,8 @@ public class MusicSuperListener extends MusicBaseListener  implements MusicListe
      * Additionally sets the parent of the newly created Scope
      */
 
-    public void createScope(ScopeType type) {
-        Scope scope = new Scope(type);
+    public void createScope() {
+        Scope scope = new Scope();
         if (scopes.isEmpty()) {
             //scope = Scope.deepCopyFromParent(null, currMelody);
             scope.melodyParent = melodyMemory.get(currentMelody);

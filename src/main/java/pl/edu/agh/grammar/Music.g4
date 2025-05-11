@@ -42,6 +42,7 @@ statement
     | controlStatement
     | exprStatement ';'
     | returnStatement ';'
+    | scope
     ;
 
 returnStatement
@@ -125,17 +126,19 @@ controlStatement:
     loop #loopStatement
     | if (elseif)* (else)? #ifStatement;
 
+scope: '{' loopBody '}';
+
 loop:
-    'while' '(' expr ')' '{' loopBody'}' #whileLoop
-    | 'for' '(' varDecl? ';' expr? ';' forUpdate? ')' '{' loopBody '}' #forLoop;
+    'while' '(' expr ')' scope #whileLoop
+    | 'for' '(' varDecl? ';' expr? ';' forUpdate? ')' scope #forLoop;
 
 loopBody: (statement|breakStatement|continueStatement)+;
 
-if: 'if' '(' expr ')' '{' (statement|breakStatement|continueStatement)+ '}';
+if: 'if' '(' expr ')' scope;
 
-elseif: 'else' 'if' '(' expr ')' '{' loopBody '}';
+elseif: 'else' 'if' '(' expr ')' scope;
 
-else: 'else' '{' loopBody '}';
+else: 'else' scope;
 
 forUpdate
     : playStatement
