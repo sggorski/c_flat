@@ -1344,9 +1344,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (melody.scopes.isEmpty()) return null;
         if (currentScope != null) {
             firstScope = currentScope.scopes.get(0);
+            //Copying settings from parent scope
+            firstScope.copyEffects(currentScope.effects);
+            firstScope.setInstrument(currentScope.instrument);
         } else {
             firstScope = melody.scopes.get(0);
-            //Copying settings from parent
+            //Copying settings from parent melody
             firstScope.setInstrument(melody.instrument);
             firstScope.copyEffects(melody.effects);
         }
