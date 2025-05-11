@@ -894,8 +894,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         Value expr = tryCasting(ctx.expr());
         if (expr instanceof BoolValue) {
             BoolValue boolExpr = (BoolValue) expr;
-            boolExpr.value = !boolExpr.value;
-            return (T) boolExpr;
+            return (T) new BoolValue(!boolExpr.value);
         } else
             throw new ValueError("Incorrect type of expression: " + expr.getType() + " not BOOL", this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
