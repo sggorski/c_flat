@@ -19,6 +19,7 @@ public class App
     public static HashMap<String,Melody> melodyMemory = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
+
         ImportHandler resolver = new ImportHandler();
         String mergedSource;
         try {

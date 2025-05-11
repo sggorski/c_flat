@@ -131,7 +131,7 @@ loop:
 
 loopBody: (statement|breakStatement|continueStatement)+;
 
-if: 'if' '(' expr ')' '{' loopBody '}';
+if: 'if' '(' expr ')' '{' (statement|breakStatement|continueStatement)+ '}';
 
 elseif: 'else' 'if' '(' expr ')' '{' loopBody '}';
 

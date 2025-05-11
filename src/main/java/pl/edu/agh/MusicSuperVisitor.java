@@ -574,14 +574,21 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitWhileLoop(MusicParser.WhileLoopContext ctx) {
-        Scope tempScope = new Scope(ScopeType.WHILE);
-        if(((BoolValue) visit(ctx.expr())).value){
+        if(((BoolValue) visit(ctx.expr())).value) {
             currentScope = getCurrScope(stack.peek());
-            Scope.copyMemory(tempScope, currentScope.memory);
-            if (((Boolean) visit(ctx.loopBody()))){
-                Scope.copyMemory(currentScope, tempScope.memory);
+            Scope tempScope = Scope.deepCopyScopeStructure(currentScope, currentScope.melodyParent, currentScope.parent);
+            if(((BoolValue) visit(ctx.loopBody())).value) {
+                if(currentScope.parent != null) {
+                    currentScope.parent.scopes.set(0,tempScope);
+                }else {
+                    currentScope.melodyParent.scopes.set(0,tempScope);
+                }
+                currentScope = tempScope;
                 currentScope = currentScope.parent;
                 visit(ctx);
+                return null;
+            }else {
+                return null;
             }
         }
         else {
@@ -704,27 +711,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitLoopBody(MusicParser.LoopBodyContext ctx) {
         for(ParseTree child : ctx.children){
-            if(child instanceof MusicParser.BreakStatementContext){
-                currentScope = getCurrScope(stack.peek());
-                Scope tempScope = currentScope;
-                if (currentScope == null) throw new RuntimeException("Stack is empty!");
-                while (tempScope != null && tempScope.scopeType != ScopeType.WHILE && tempScope.scopeType != ScopeType.FOR){
-                    tempScope = tempScope.parent;
-                }
-                if (tempScope == null) throw new RuntimeException("There is no loop statement to break");
-                else {
-                    currentScope = tempScope;
-                    changeScope();
-                }
-                return (T) new Boolean(false);
-
-            } else if (child instanceof MusicParser.ContinueStatementContext ) {
-                break;
-            }else {
+            try {
                 visit(child);
+            }catch (Break b){
+                return (T) new BoolValue(false);
+            }catch (Continue c){
+                break;
             }
         }
-        return (T ) new Boolean(true);
+        return (T) new BoolValue(true);
     }
 
     @Override
@@ -741,14 +736,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitBreakStatement(MusicParser.BreakStatementContext ctx) {
-
-        return null;
+        throw new Break("break");
     }
 
 
     @Override
     public T visitContinueStatement(MusicParser.ContinueStatementContext ctx) {
-        return null;
+        throw new Continue("continue");
     }
 
     @Override
@@ -1345,6 +1339,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             return stack.peek().memory.get(varName);
         }else throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
 
+    }
+
+    public Scope findLoopScope(){
+        if (currentScope == null) throw new RuntimeException("Stack is empty!");
+        Scope temp = currentScope;
+        while (temp != null && temp.scopeType != ScopeType.FOR && temp.scopeType != ScopeType.WHILE) {
+            temp = temp.parent;
+        }
+        if(temp != null) return temp;
+        else throw new RuntimeException("Statement used not in loop!");
     }
 
 }

@@ -26,6 +26,7 @@ public class Scope {
     public ArrayList<Scope> scopesForCopy = new ArrayList<>();
     public Scope parent = null;
     public Melody melodyParent = null;
+    public boolean toBreak = false;
 
 
     Synthesizer synth;
@@ -357,6 +358,10 @@ public class Scope {
                 }
             }
         }
+    }
+
+    public static void copyChildren(Scope copyTo, ArrayList<Scope> copyFrom){
+        copyTo.scopes = new ArrayList<>(copyFrom);
     }
 
     public static void copyMemory(Scope scope, HashMap<String, VarInfo> memory) {
