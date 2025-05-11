@@ -23,7 +23,7 @@ public class App
         ImportHandler resolver = new ImportHandler();
         String mergedSource;
         try {
-            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/third_stage/test.txt");
+            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/third_stage/beethoven_v.cb");
         } catch (ImportError e) {
             System.out.println(e.getMessage());
             return;
@@ -60,6 +60,8 @@ public class App
             System.out.println(e.getMessage() /*+ " ParseCancel"*/);
         } catch (RecognitionException e) {
             System.out.println(e.getMessage() /*+ " Recognition"*/);
+        } catch (UndefinedError e) {
+            System.out.println(e.getMessage() /*+ " Undefined Variable"*/);
         } catch (SyntaxError | ValueError | ScopeError | VariableDeclarationError e) {
             System.out.println(e.getMessage() /*+ " Errors"*/);
         }

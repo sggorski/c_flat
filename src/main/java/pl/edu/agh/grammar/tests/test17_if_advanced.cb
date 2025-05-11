@@ -1,0 +1,64 @@
+melody main() {
+    SET INSTRUMENT = TRUMPET;
+    bool b1 = false;
+    bool b2 = false;
+    bool b3 = b1 AND b2 OR true;
+    bool b5 = (b1 AND NOT(NOT b2 OR b3 AND true) OR (b1 AND false)) AND NOT (NOT b3 AND NOT b2 OR (b3 AND true));
+
+    if (((true AND false) OR NOT b1 AND NOT (b2 OR b3 AND NOT false))) {
+        PLAY C1 1000;
+    } else if (b5) {
+        PLAY C2 C2 500;
+    } else if (b1) {
+        PLAY C4 1000;
+    } else {
+        PLAY C3 C3 C3 333;
+    }
+
+    PAUSE 2000;
+    SET INSTRUMENT=SAXOPHONE;
+
+    if(true) {
+        PLAY C4 1000;
+    } else if(5 > 6) {
+        PLAY C2 1000;
+    } else if(true) {
+        PLAY C0 1000;
+    }
+
+    bool t1 = false;
+    bool t2 = false;
+    PAUSE 1000;
+    SET INSTRUMENT = PIANO;
+
+    if(t1) {
+        PLAY C4 1000;
+    } else if(t2) {
+        PLAY C2 1000;
+    } else {
+        PLAY C0 1000;
+    }
+
+    PAUSE 1000;
+    SET INSTRUMENT=CHURCH_ORGAN;
+
+    if(true) {
+        if(1 == 1) {
+            if(1 >= 15) {
+                PLAY C4 1000;
+            } else if(true) {
+                PLAY C4 C4 500;
+            }
+            PLAY C0 1000;
+        }
+        PLAY C1 1000;
+
+        if(false) {
+            PLAY C0 1000;
+        } else if(true) {
+            PLAY C2 C2 C2 333;
+        }
+    } else {
+        PLAY C4 C4 500;
+    }
+}
