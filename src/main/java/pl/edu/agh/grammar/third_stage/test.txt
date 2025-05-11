@@ -47,19 +47,22 @@ melody gama(Note begin, Note finish, bool reverse){
 }
 
 melody main(){
-    int a = 6;
-     while(true){
-        a -= 1;
-        if(a < 0){
-            continue;
-        }
-        else if(a < 3){
-            PLAY C1 1000;
-        }else{
-            PLAY C2 1000;
-        }
-     }
-     PLAY silnia(12) OUT a;
-     RETURN a;
-     //PLAY gama(C1, D3, false);
+
+
+
+      SET INSTRUMENT = TRUMPET;
+          bool b1 = false;
+          bool b2 = false;
+          bool b3 = b1 AND b2 OR true;
+          bool b5 = (b1 AND NOT(NOT b2 OR b3 AND true) OR (b1 AND false)) AND NOT (NOT b3 AND NOT b2 OR (b3 AND true));
+
+          if (NOT ((true AND false) OR NOT b1 AND NOT (b2 OR b3 AND NOT false))) {
+              PLAY C1 1000;
+          } else if (b1) {
+              PLAY C4 C4 1000;
+          } else {
+              PLAY C3 C1 C3 333;
+          }
+
+
 }

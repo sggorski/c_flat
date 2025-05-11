@@ -36,6 +36,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         for (MusicParser.MainStatementContext statement : melodyMemory.get("main").mainBody) {
             visit(statement);
         }
+        System.out.println(melodyMemory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
         return (T) (new BoolValue(true)); //everything went ok
     }
 
@@ -422,7 +423,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + val.getType(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         varInfo.valueObj = val;
-        //System.out.println(melody.memory.get(varInfo.name).toString());
+        if (currentScope != null) {
+            System.out.println(currentScope.memory.get(varInfo.name).toString());
+        } else {
+            System.out.println(melody.memory.get(varInfo.name).toString());
+        }
+
         //TODO println throws null pointer exception cuz it tries to get it from melody memory
 
         return null;
@@ -708,6 +714,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (exprVal instanceof BoolValue) {
             if (((BoolValue) exprVal).value) {
                 visitChildren(ctx);
+                System.out.println("Exiting elseif, elseif memory: " + currentScope.memory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
                 changeScope();
                 return (T) new Boolean(true);
             } else {
