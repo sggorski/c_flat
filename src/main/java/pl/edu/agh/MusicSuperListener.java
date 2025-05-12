@@ -860,6 +860,26 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         removeScope(ctx);
     }
 
+    @Override
+    public void enterParent(MusicParser.ParentContext ctx) {
+
+    }
+
+    @Override
+    public void exitParent(MusicParser.ParentContext ctx) {
+
+    }
+
+    @Override
+    public void enterParentID(MusicParser.ParentIDContext ctx) {
+
+    }
+
+    @Override
+    public void exitParentID(MusicParser.ParentIDContext ctx) {
+
+    }
+
     /**
      * @param ctx the parse tree
      */

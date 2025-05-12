@@ -55,22 +55,22 @@ settings
     : SET settingsAssigment;
 
 settingsAssigment
-    : PACE '=' (INT_VAL|ID)#pace
-    | SUSTAIN '=' (INT_VAL|ID) #sustain
-    | INSTRUMENT '=' (INSTRUMENT_VALUE|ID) #instrument
-    | DISTORTION '=' (INT_VAL|ID) #distortion
-    | JAZZ '=' (BOOL_VAL|ID) #jazz
-    | BLUES '=' (BOOL_VAL|ID) #blues
-    | VOLUME '=' (INT_VAL|ID) #volume
-    | VIBRATO '=' (INT_VAL|ID) #vibrato
-    | BALANCE '=' (INT_VAL|ID) #balance
-    | SOSTENUTO '=' (INT_VAL|ID) #sostenutoPedal
-    | SOFT '=' (INT_VAL|ID) #softPedal
-    | RESONANCE '=' (INT_VAL|ID) #resonance
-    | REVERB '=' (INT_VAL|ID) #reverb
-    | TREMOLO '=' (INT_VAL|ID) #tremolo
-    | CHORUS '=' (INT_VAL|ID) #chorus
-    | PHRASER '=' (INT_VAL|ID) #phraser
+    : PACE '=' (INT_VAL|(parent)*ID)#pace
+    | SUSTAIN '=' (INT_VAL|(parent)*ID) #sustain
+    | INSTRUMENT '=' (INSTRUMENT_VALUE|(parent)*ID) #instrument
+    | DISTORTION '=' (INT_VAL|(parent)*ID) #distortion
+    | JAZZ '=' (BOOL_VAL|(parent)*ID) #jazz
+    | BLUES '=' (BOOL_VAL|(parent)*ID) #blues
+    | VOLUME '=' (INT_VAL|(parent)*ID) #volume
+    | VIBRATO '=' (INT_VAL|(parent)*ID) #vibrato
+    | BALANCE '=' (INT_VAL|(parent)*ID) #balance
+    | SOSTENUTO '=' (INT_VAL|(parent)*ID) #sostenutoPedal
+    | SOFT '=' (INT_VAL|(parent)*ID) #softPedal
+    | RESONANCE '=' (INT_VAL|(parent)*ID) #resonance
+    | REVERB '=' (INT_VAL|(parent)*ID) #reverb
+    | TREMOLO '=' (INT_VAL|(parent)*ID) #tremolo
+    | CHORUS '=' (INT_VAL|(parent)*ID) #chorus
+    | PHRASER '=' (INT_VAL|(parent)*ID) #phraser
     ;
 
 settingsValues
@@ -93,11 +93,11 @@ settingsValues
     ;
 
 assignment
-    : ID '=' expr
+    : (parent)*ID '=' expr
     ;
 
 selfAssignment
-    : ID assOp expr;
+    : (parent)*ID assOp expr;
 
 varDecl
     : type ID '=' expr  #varDeclWithARg
@@ -109,24 +109,28 @@ playStatement
     ;
 
 playValues
-    : NOTE_VAL (INT_VAL | ID)                                # playNote
-    | chord (INT_VAL | ID)                                   # playChord
-    | functionCall  ('OUT' ID)?                              # playFunc
-    | ID (INT_VAL | ID)?                                     # playIDVariants
+    : NOTE_VAL (INT_VAL | (parent)*ID)                                # playNote
+    | chord (INT_VAL | (parent)*ID)                                   # playChord
+    | functionCall  ('OUT' (parent)*ID)?                              # playFunc
+    | parentID (INT_VAL | parentID)?                                     # playIDVariants
     | (multiPlayValues)+                                     # playMulti
     ;
 
 multiPlayValues:
-    (NOTE_VAL | chord | ID)+ (INT_VAL | ID);
+    (NOTE_VAL | chord | parentID)+ (INT_VAL | parentID);
 
 pauseStatement
-    : PAUSE (INT_VAL|ID);
+    : PAUSE (INT_VAL|(parent)*ID);
 
 controlStatement:
     loop #loopStatement
     | if (elseif)* (else)? #ifStatement;
 
 scope: '{' loopBody '}';
+
+parent: PARENT':';
+
+parentID: parent* ID;
 
 loop:
     'while' '(' expr ')' scope #whileLoop
@@ -139,6 +143,7 @@ if: 'if' '(' expr ')' scope;
 elseif: 'else' 'if' '(' expr ')' scope;
 
 else: 'else' scope;
+
 
 forUpdate
     : playStatement
@@ -182,7 +187,7 @@ expr
     | intVal #intExpr
     | BOOL_VAL #boolExpr
     | NOTE_VAL #noteExpr
-    | ID #idExpr
+    | (parent)*ID #idExpr
 
     ;
 
@@ -289,6 +294,7 @@ AND : 'AND' ;
 OR : 'OR' ;
 NOT : 'NOT' ;
 
+PARENT : 'up';
 
 LINE_COMMENT: '//' ~[\r\n]* -> skip ;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip ;

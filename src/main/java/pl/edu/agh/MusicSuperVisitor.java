@@ -2,6 +2,7 @@ package pl.edu.agh;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -17,7 +18,7 @@ import static pl.edu.agh.utils.Instrument.*;
 
 
 @SuppressWarnings("CheckReturnValue")
-public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements MusicVisitor<T> {
+public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVisitor<T> {
     HashMap<String, Melody> melodyMemory;
     Deque<Melody> stack = new ArrayDeque<>();
     Scope currentScope = null;
@@ -128,7 +129,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitPace(MusicParser.PaceContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.PACE, this);
+            currentScope.editEffect(ctx, Effect.PACE, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.PACE, this);
         return visitChildren(ctx);
     }
@@ -137,7 +138,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitSustain(MusicParser.SustainContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.SUSTAIN, this);
+            currentScope.editEffect(ctx, Effect.SUSTAIN, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.SUSTAIN, this);
         return visitChildren(ctx);
     }
@@ -166,7 +167,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitDistortion(MusicParser.DistortionContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.DISTORTION, this);
+            currentScope.editEffect(ctx, Effect.DISTORTION, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.DISTORTION, this);
         return visitChildren(ctx);
     }
@@ -175,7 +176,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitJazz(MusicParser.JazzContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.JAZZ, this);
+            currentScope.editEffect(ctx, Effect.JAZZ, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.JAZZ, this);
         return visitChildren(ctx);
     }
@@ -184,7 +185,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitBlues(MusicParser.BluesContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.BLUES, this);
+            currentScope.editEffect(ctx, Effect.BLUES, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.BLUES, this);
         return visitChildren(ctx);
     }
@@ -193,7 +194,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitVolume(MusicParser.VolumeContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.VOLUME, this);
+            currentScope.editEffect(ctx, Effect.VOLUME, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.VOLUME, this);
         return visitChildren(ctx);
     }
@@ -202,7 +203,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitVibrato(MusicParser.VibratoContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.VIBRATO, this);
+            currentScope.editEffect(ctx, Effect.VIBRATO, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.VIBRATO, this);
         return visitChildren(ctx);
     }
@@ -211,7 +212,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitBalance(MusicParser.BalanceContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.BALANCE, this);
+            currentScope.editEffect(ctx, Effect.BALANCE, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.BALANCE, this);
         return visitChildren(ctx);
     }
@@ -220,7 +221,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitSostenutoPedal(MusicParser.SostenutoPedalContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.SOSTENUTO, this);
+            currentScope.editEffect(ctx, Effect.SOSTENUTO, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.SOSTENUTO, this);
         return visitChildren(ctx);
     }
@@ -229,7 +230,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitSoftPedal(MusicParser.SoftPedalContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.SOFT, this);
+            currentScope.editEffect(ctx, Effect.SOFT, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.SOFT, this);
         return visitChildren(ctx);
     }
@@ -238,7 +239,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitResonance(MusicParser.ResonanceContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.RESONANCE, this);
+            currentScope.editEffect(ctx, Effect.RESONANCE, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.RESONANCE, this);
         return visitChildren(ctx);
     }
@@ -247,7 +248,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitReverb(MusicParser.ReverbContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.REVERB, this);
+            currentScope.editEffect(ctx, Effect.REVERB, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.REVERB, this);
         return visitChildren(ctx);
     }
@@ -256,7 +257,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitTremolo(MusicParser.TremoloContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.TREMOLO, this);
+            currentScope.editEffect(ctx, Effect.TREMOLO, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.TREMOLO, this);
         return visitChildren(ctx);
     }
@@ -265,7 +266,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitChorus(MusicParser.ChorusContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.CHORUS, this);
+            currentScope.editEffect(ctx, Effect.CHORUS, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.CHORUS, this);
         return visitChildren(ctx);
     }
@@ -274,7 +275,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     public T visitPhraser(MusicParser.PhraserContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.PHRASER, this);
+            currentScope.editEffect(ctx, Effect.PHRASER, this, ctx.parent());
         } else if (melody != null) melody.editEffect(ctx, Effect.PHRASER, this);
         return visitChildren(ctx);
     }
@@ -306,7 +307,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
 
     @Override
     public T visitAssignment(MusicParser.AssignmentContext ctx) {
-        VarInfo varInfo = extractVariable(ctx, ctx.ID(), null);
+        VarInfo varInfo = extractVariable(ctx, ctx.ID(), null, ctx.parent());
         Value exprValue = tryCasting(ctx.expr());
         if (exprValue.getType() != varInfo.type) {
             throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + exprValue.getType(), this.lineMap.get(getLine(ctx)), getCol(ctx));
@@ -324,7 +325,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     @Override
     @SuppressWarnings("unchecked")
     public T visitSelfAssignment(MusicParser.SelfAssignmentContext ctx) {
-        VarInfo varInfo = extractVariable(ctx, ctx.ID(), null);
+        VarInfo varInfo = extractVariable(ctx, ctx.ID(), null, ctx.parent());
         Value exprValue = tryCasting(ctx.expr());
         if (varInfo.type == Type.INT && exprValue.getType() == Type.INT) {
             IntValue intValue = (IntValue) exprValue;
@@ -436,7 +437,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
         int duration;
         if (ctx.INT_VAL() != null) duration = Integer.parseInt(ctx.INT_VAL().getText());
         else {
-            IntValue varInt = (IntValue) extractVariable(ctx, ctx.ID(), Type.INT).valueObj;
+            IntValue varInt = (IntValue) extractVariable(ctx, ctx.ID(), Type.INT, ctx.parent()).valueObj;
             duration = varInt.value;
         }
         Note note = Note.valueOf(ctx.NOTE_VAL().getText().replace('#', 's').replace('-', 'm'));
@@ -451,7 +452,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
         int duration = 0;
         if (ctx.INT_VAL() != null) duration = Integer.parseInt(ctx.INT_VAL().getText());
         else if (ctx.ID() != null) {
-            IntValue varInt = (IntValue) extractVariable(ctx, ctx.ID(), Type.INT).valueObj;
+            IntValue varInt = (IntValue) extractVariable(ctx, ctx.ID(), Type.INT, ctx.parent()).valueObj;
             duration = varInt.value;
         }
         playChord(chord.notes, duration);
@@ -465,7 +466,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
         VarInfo var = null;
         if (ctx.ID() != null) {
             name = ctx.ID().getText();
-            var = extractVariable(ctx, ctx.ID(), null);
+            var = extractVariable(ctx, ctx.ID(), null, ctx.parent());
         }
 
         try {
@@ -482,15 +483,15 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
 
 
     @Override
-    public T visitPlayIDVariants(MusicParser.PlayIDVariantsContext ctx) {
+    public T visitPlayIDVariants(MusicParser.PlayIDVariantsContext ctx) { //TODO trzeba zmienić tu używanie parentów bo może być wiele ID
         Melody melody = stack.peek();
         if (melody == null) throw new RuntimeException("Stack is empty!");
         //playing note or chord
-        if (ctx.INT_VAL() != null || ctx.ID(1) != null) {
+        if (ctx.INT_VAL() != null || ctx.parentID(1) != null) {
             VarInfo varInfo;
-            String varName = ctx.ID(0).getText();
+            String varName = ctx.parentID(0).ID().getText();
             if (currentScope != null) {
-                varInfo = findVar(varName, ctx);
+                varInfo = findVar(varName, ctx, ctx.parentID(0).parent());
             } else {
                 varInfo = melody.memory.get(varName);
             }
@@ -499,8 +500,8 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
                 throw new ScopeError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
             int duration = 0;
             if (ctx.INT_VAL() != null) duration = Integer.parseInt(ctx.INT_VAL().getText());
-            else if (ctx.ID(1) != null) {
-                IntValue varInt = (IntValue) extractVariable(ctx, ctx.ID(1), Type.INT).valueObj;
+            else if (ctx.parentID(1) != null) {
+                IntValue varInt = (IntValue) extractVariable(ctx, ctx.parentID(1).ID(), Type.INT, ctx.parentID(1).parent()).valueObj;
                 duration = varInt.value;
             }
             if (varInfo.type == Type.NOTE) {
@@ -524,18 +525,18 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     }
 
     @Override
-    public T visitMultiPlayValues(MusicParser.MultiPlayValuesContext ctx) {
+    public T visitMultiPlayValues(MusicParser.MultiPlayValuesContext ctx) { //TODO trzeba zmienić tu używanie parentów bo może być wiele ID
         int duration = 0;
-        int lastId = ctx.ID().size() - 1;
+        int lastId = ctx.parentID().size() - 1;
         Melody melody = stack.peek();
         if (melody == null) throw new RuntimeException("Stack is empty!");
         if (ctx.INT_VAL() != null) {
             duration = Integer.parseInt(ctx.INT_VAL().getText());
-        } else if (ctx.ID(lastId) != null) {
+        } else if (ctx.parentID(lastId) != null) {
             VarInfo var;
-            String varName = ctx.ID(lastId).getText();
+            String varName = ctx.parentID(lastId).ID().getText();
             if (currentScope != null) {
-                var = findVar(varName, ctx);
+                var = findVar(varName, ctx, ctx.parentID(lastId).parent());
             } else {
                 var = melody.memory.get(varName);
             }
@@ -555,19 +556,22 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
                 NoteValue note = (NoteValue) visit(child);
                 playNote(note.note, duration);
             } else {
+                MusicParser.ParentIDContext idContext = (MusicParser.ParentIDContext) child;
                 VarInfo varInfo;
-                String varName = ctx.ID(lastId).getText();
+                String varName = idContext.ID().getText();
                 if (currentScope != null) {
-                    varInfo = findVar(varName, ctx);
+                    varInfo = findVar(varName, ctx, idContext.parent());
                 } else {
                     varInfo = melody.memory.get(varName);
                 }
                 if (varInfo.type == Type.NOTE) {
                     NoteValue noteVal = (NoteValue) varInfo.valueObj;
                     playNote(noteVal.note, duration);
-                } else {
+                } else if(varInfo.type == Type.CHORD) {
                     ChordValue chordVal = (ChordValue) varInfo.valueObj;
                     playChord(chordVal.notes, duration);
+                } else {
+                    throw new ValueError("Expecting Note or Chord value, got: " + varInfo, this.lineMap.get(getLine(ctx)), getCol(ctx));
                 }
             }
         }
@@ -586,7 +590,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
                 VarInfo var;
                 String varName = ctx.ID().getText();
                 if (currentScope != null) {
-                    var = findVar(varName, ctx);
+                    var = findVar(varName, ctx, ctx.parent());
                 } else {
                     var = melody.memory.get(varName);
                 }
@@ -677,6 +681,16 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
         }else {
             changeScope();
         }
+        return null;
+    }
+
+    @Override
+    public T visitParent(MusicParser.ParentContext ctx) {
+        return null;
+    }
+
+    @Override
+    public T visitParentID(MusicParser.ParentIDContext ctx) {
         return null;
     }
 
@@ -1054,7 +1068,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
         VarInfo varInfo;
         String varName = ctx.ID().getText();
         if (currentScope != null) {
-            varInfo = findVar(varName, ctx);
+            varInfo = findVar(varName, ctx, ctx.parent());
         } else {
             varInfo = melody.memory.get(varName);
         }
@@ -1269,14 +1283,17 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
         }
     }
 
-    public VarInfo extractVariable(ParserRuleContext ctx, TerminalNode id, Type type) {
+    public VarInfo extractVariable(ParserRuleContext ctx, TerminalNode id, Type type, List<MusicParser.ParentContext> parents) {
         Melody melody = stack.peek();
         if (melody == null) throw new RuntimeException("Stack is empty!");
         VarInfo var;
         String varName = id.getText();
         if (currentScope != null) {
-            var = findVar(varName, ctx);
+            var = findVar(varName, ctx, parents);
         } else {
+            if (parents != null && !parents.isEmpty()) {
+                throw new RuntimeException("Exceeded possible scope level!");
+            }
             var = melody.memory.get(varName);
         }
         if (var == null)
@@ -1365,8 +1382,13 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
     }
 
 
-    private VarInfo findVar(String varName, ParserRuleContext ctx) {
+    private VarInfo findVar(String varName, ParserRuleContext ctx, List<MusicParser.ParentContext> parentContexts) {
         Scope current = currentScope;
+
+        for (int i = 0; i < parentContexts.size(); i++) {
+            current = currentScope.parent;
+        }
+
         while (current != null) {
             if (!current.memory.containsKey(varName) || current.memory.get(varName).valueObj == null) {
                 current = current.parent;
@@ -1419,5 +1441,7 @@ public class MusicSuperVisitor<T> extends AbstractParseTreeVisitor<T> implements
         currentScope = getCurrScope(stack.peek());
         changeScope();
     }
+
+
 
 }

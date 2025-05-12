@@ -498,6 +498,26 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitScope(MusicParser.ScopeContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MusicParser#parent}.
+	 * @param ctx the parse tree
+	 */
+	void enterParent(MusicParser.ParentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#parent}.
+	 * @param ctx the parse tree
+	 */
+	void exitParent(MusicParser.ParentContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MusicParser#parentID}.
+	 * @param ctx the parse tree
+	 */
+	void enterParentID(MusicParser.ParentIDContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#parentID}.
+	 * @param ctx the parse tree
+	 */
+	void exitParentID(MusicParser.ParentIDContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code whileLoop}
 	 * labeled alternative in {@link MusicParser#loop}.
 	 * @param ctx the parse tree

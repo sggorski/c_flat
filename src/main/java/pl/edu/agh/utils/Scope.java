@@ -1,5 +1,6 @@
 package pl.edu.agh.utils;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.Melody;
 import pl.edu.agh.MusicParser;
@@ -106,31 +107,32 @@ public class Scope {
         }
     }
 
-    public void editEffect(MusicParser.SettingsAssigmentContext ctx, Effect effect, MusicSuperVisitor msv) {
+    public void editEffect(MusicParser.SettingsAssigmentContext ctx, Effect effect, MusicSuperVisitor msv, List<MusicParser.ParentContext> parents) {
+        ParseTree lastChild = ctx.children.get(ctx.children.size() - 1);
         if (effect == Effect.PACE || effect == Effect.VOLUME) {
-            if (ctx.children.get(2) != null && isNumeric(String.valueOf(ctx.children.get(2))))
-                this.effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(ctx.children.get(2)))));
-            else if (ctx.children.get(2) != null) {
-                IntValue varInt = (IntValue) msv.extractVariable(ctx, (TerminalNode) ctx.children.get(2), Type.INT).valueObj;
+            if (lastChild != null && isNumeric(String.valueOf(lastChild)))
+                this.effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(lastChild))));
+            else if (lastChild != null) {
+                IntValue varInt = (IntValue) msv.extractVariable(ctx, (TerminalNode) lastChild, Type.INT, parents).valueObj;
                 this.effects.put(effect, varInt);
             }
 
         } else if (effect == Effect.JAZZ || effect == Effect.BLUES) {
-            if (ctx.children.get(2) != null && isBoolean(String.valueOf(ctx.children.get(2))))
-                this.effects.put(effect, new BoolValue(Boolean.parseBoolean(String.valueOf(ctx.children.get(2)))));
-            else if (ctx.children.get(2) != null) {
-                BoolValue varBool = (BoolValue) msv.extractVariable(ctx, (TerminalNode) ctx.children.get(2), Type.BOOL).valueObj;
+            if (lastChild != null && isBoolean(String.valueOf(lastChild)))
+                this.effects.put(effect, new BoolValue(Boolean.parseBoolean(String.valueOf(lastChild))));
+            else if (lastChild != null) {
+                BoolValue varBool = (BoolValue) msv.extractVariable(ctx, (TerminalNode) lastChild, Type.BOOL, parents).valueObj;
                 this.effects.put(effect, varBool);
             }
         } else {
-            if (ctx.children.get(2) != null && isNumeric(String.valueOf(ctx.children.get(2)))) {
-                this.effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(ctx.children.get(2)))));
+            if (lastChild != null && isNumeric(String.valueOf(lastChild))) {
+                this.effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(lastChild))));
                 if (this.instrument == DRUMS)
                     this.channels[9].controlChange(this.effectControllers.get(effect), ((IntValue) this.effects.get(effect)).value);
                 else
                     this.channels[0].controlChange(this.effectControllers.get(effect), ((IntValue) this.effects.get(effect)).value);
-            } else if (ctx.children.get(2) != null) {
-                IntValue varInt = (IntValue) msv.extractVariable(ctx, (TerminalNode) ctx.children.get(2), Type.INT).valueObj;
+            } else if (lastChild != null) {
+                IntValue varInt = (IntValue) msv.extractVariable(ctx, (TerminalNode) lastChild, Type.INT, parents).valueObj;
                 if (this.instrument == DRUMS)
                     this.channels[9].controlChange(this.effectControllers.get(effect), varInt.value);
                 else

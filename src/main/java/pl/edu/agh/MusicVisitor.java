@@ -300,6 +300,18 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitScope(MusicParser.ScopeContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MusicParser#parent}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParent(MusicParser.ParentContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MusicParser#parentID}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParentID(MusicParser.ParentIDContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code whileLoop}
 	 * labeled alternative in {@link MusicParser#loop}.
 	 * @param ctx the parse tree
