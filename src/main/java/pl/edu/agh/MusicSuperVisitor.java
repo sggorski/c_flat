@@ -23,10 +23,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     Deque<Melody> stack = new ArrayDeque<>();
     Scope currentScope = null;
     private final Map<Integer, LineOrigin> lineMap;
+    HashMap<String, Track> tracks;
+    String code;
 
-    public MusicSuperVisitor(HashMap<String, Melody> melodyMemory, Map<Integer, LineOrigin> lines) {
+    public MusicSuperVisitor(HashMap<String, Melody> melodyMemory, Map<Integer, LineOrigin> lines, String code) {
         this.melodyMemory = melodyMemory;
         this.lineMap = lines;
+        this.code = code;
     }
 
     @Override
@@ -1183,12 +1186,27 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitTrackAdd(MusicParser.TrackAddContext ctx) {
-        return visitChildren(ctx);
+        String name = ctx.trackStatement().ID().getText();
+        if(!tracks.containsKey(name)){
+            throw new UndefinedError("Undefined track variable: " + " " + name, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        }
+        String funcName = ctx.trackStatement().functionCall().ID().getText();
+        if(!melodyMemory.containsKey(funcName)) throw new RuntimeException("Function " + funcName + "does not exist!"); //TODO
+        List<Value> args = new ArrayList<>();
+        //TO BE CONTINUED
+        return null;
     }
 
     @Override
     public T visitTrackDeclare(MusicParser.TrackDeclareContext ctx) {
-        return visitChildren(ctx);
+
+        String name = ctx.trackDeclaration().ID().getText();
+        if(tracks.containsKey(name)){
+            throw new VariableDeclarationError("Redeclaration of a track variable: " + name + " previously defined in line " + tracks.get(name).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        }
+        Track newTrack = new Track(name,getLine(ctx));
+        tracks.put(name,newTrack);
+        return null;
     }
 
     @Override

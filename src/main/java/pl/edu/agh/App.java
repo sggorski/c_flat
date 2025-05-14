@@ -53,7 +53,7 @@ public class App
             ParseTreeWalker walker = new ParseTreeWalker();
             walker.walk(listener, program);
             System.out.println(melodyMemory.toString());
-            MusicSuperVisitor visitor = new MusicSuperVisitor(melodyMemory, lineMap);
+            MusicSuperVisitor visitor = new MusicSuperVisitor(melodyMemory, lineMap, mergedSource);
             visitor.visitProgram(program);
 
         } catch (ParseCancellationException e) {
