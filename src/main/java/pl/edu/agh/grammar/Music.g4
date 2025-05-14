@@ -42,6 +42,8 @@ statement
     | controlStatement
     | exprStatement ';'
     | returnStatement ';'
+    | continueStatement
+    | breakStatement
     | scope
     ;
 
@@ -136,7 +138,7 @@ loop:
     'while' '(' expr ')' scope #whileLoop
     | 'for' '(' varDecl? ';' expr? ';' forUpdate? ')' scope #forLoop;
 
-loopBody: (statement|breakStatement|continueStatement)+;
+loopBody: (statement)+;
 
 if: 'if' '(' expr ')' scope;
 

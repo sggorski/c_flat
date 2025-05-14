@@ -620,10 +620,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (((BoolValue) visit(ctx.expr())).value) {
             try {
                 visit(ctx.scope());
-            }catch (Break b){
+            }catch (BreakError b){
                 currentScope = callbackScope;
                 return null;
-            }catch (Continue ignored){
+            }catch (ContinueError ignored){
                 currentScope = callbackScope;
             }
             visit(ctx);
@@ -744,7 +744,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
 
     @Override
-    public T visitForLoop(MusicParser.ForLoopContext ctx) { //TODO Scopes needs to be redefined in grammar as standalone rule
+    public T visitForLoop(MusicParser.ForLoopContext ctx) {
         if (ctx.varDecl() != null) {
             visit(ctx.varDecl());
         }
@@ -753,9 +753,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             while (ctx.expr() == null || ((BoolValue) visit(ctx.expr())).value){
                 try {
                     visit(ctx.scope());
-                }catch (Break b){
+                }catch (BreakError b){
                     return null;
-                }catch (Continue ignored){
+                }catch (ContinueError ignored){
 
                 }
                 if(ctx.forUpdate() != null) {
@@ -787,13 +787,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitBreakStatement(MusicParser.BreakStatementContext ctx) {
-        throw new Break("break");
+        throw new BreakError("Break statement cannot be used here!", this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
 
     @Override
     public T visitContinueStatement(MusicParser.ContinueStatementContext ctx) {
-        throw new Continue("continue");
+        throw new ContinueError("Continue statement cannot be used here!", this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
     @Override
@@ -1069,8 +1069,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         String varName = ctx.ID().getText();
         if (currentScope != null) {
             varInfo = findVar(varName, ctx, ctx.parent());
-        } else {
+        } else if((ctx.parent().isEmpty())) {
             varInfo = melody.memory.get(varName);
+        }else {
+            throw new ScopeError("There is no higher scope!", this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         if (varInfo == null)
             throw new UndefinedError("No such variable defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
@@ -1292,7 +1294,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             var = findVar(varName, ctx, parents);
         } else {
             if (parents != null && !parents.isEmpty()) {
-                throw new RuntimeException("Exceeded possible scope level!");
+                throw new ScopeError("Higher scope does not exist!", this.lineMap.get(getLine(ctx)), getCol(ctx));
             }
             var = melody.memory.get(varName);
         }
@@ -1386,6 +1388,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         Scope current = currentScope;
 
         for (int i = 0; i < parentContexts.size(); i++) {
+            System.out.println("up");
             current = currentScope.parent;
         }
 
