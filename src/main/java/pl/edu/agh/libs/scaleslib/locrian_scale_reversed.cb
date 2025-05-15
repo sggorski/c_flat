@@ -1,0 +1,19 @@
+melody locrian_scale_reversed(Note tonic, int rep, int duration) {
+    Note n2 = tonic - 2;
+    Note n3 = n2 - 2;
+    Note n4 = n3 - 2;
+    Note n5 = n4 - 1;
+    Note n6 = n5 - 2;
+    Note n7 = n6 - 2;
+    for(int i=0; i<rep; i+=1) {
+        PLAY tonic n2 n3 n4 n5 n6 n7 duration;
+        tonic/=2;
+        n2/=2;
+        n3/=2;
+        n4/=2;
+        n5/=2;
+        n6/=2;
+        n7/=2;
+    }
+    PLAY tonic duration;
+}
