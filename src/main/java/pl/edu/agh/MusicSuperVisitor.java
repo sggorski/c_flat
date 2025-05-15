@@ -530,9 +530,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             try{
                 track.play();
             }
-            catch(Exception e){
-                System.out.println("HERE");
-                throw new RuntimeException("Error occurred while playing track!"); //TODO;
+            catch(InterruptedException e){
+                throw new RuntimeException(e.getMessage()); //TODO;
             }
         }
         return visitChildren(ctx);
