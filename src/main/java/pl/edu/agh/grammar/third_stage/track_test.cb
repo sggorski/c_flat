@@ -1,0 +1,28 @@
+melody finish() {
+    PLAY [D0, G0, H0, G2, D3, G3] 300;
+    PLAY [D0, G0, H0, G2, D3, G3] 300;
+    PLAY [D0, G0, H0, G2, D3, F3] 300;
+    SET SUSTAIN=127;
+    PLAY [C0, G0, C1, G2, C3, Eb3] 600;
+    SET SUSTAIN=0;
+    PAUSE 600;
+    SET SUSTAIN=127;
+    PLAY [Ab0, C0, Ab1, C2, F#2, C3] 600;
+    SET SUSTAIN=0;
+    PAUSE 600;
+    SET SUSTAIN=127;
+    PLAY [D0, G0, H0, G2, H2, G3] 1200;
+    SET SUSTAIN=0;
+}
+
+melody main(){
+    Track track1;
+    Track track2;
+    track1 ADD finish(INSTRUMENT=PIANO);
+    track1 ADD finish(INSTRUMENT=OBOE);
+    track2 ADD finish(INSTRUMENT=GUITAR);
+    track2 ADD finish(INSTRUMENT=DRUMS);
+    PLAY track1;
+    PLAY track2;
+    PLAY track1;
+}

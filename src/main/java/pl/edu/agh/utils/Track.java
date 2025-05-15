@@ -4,6 +4,9 @@ import pl.edu.agh.TrackHandler;
 
 import java.util.ArrayList;
 
+/**
+ * Class Track allows user to accumulate melodies and then play them asynchronously
+ */
 public class Track {
     public String name;
     public ArrayList<TrackComponent> melodies;
@@ -12,6 +15,7 @@ public class Track {
     public Track(String name, int line){
         this.name = name;
         this.line = line;
+        this.melodies = new ArrayList<>();
     }
 
     public void add(TrackComponent tc){

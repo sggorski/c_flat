@@ -3,18 +3,21 @@ package pl.edu.agh.utils;
 import pl.edu.agh.MusicParser;
 import pl.edu.agh.MusicSuperVisitor;
 
+/**
+ * Class TrackComponent is aggregated by class Track
+ */
 public class TrackComponent {
     public MusicSuperVisitor msv;
     public MusicParser.ProgramContext program;
     Thread thread;
 
-    public void TrackHandler(MusicSuperVisitor msv, MusicParser.ProgramContext program){
+    public TrackComponent(MusicSuperVisitor msv, MusicParser.ProgramContext program){
        this.msv = msv;
        this.program = program;
-       this.thread = new Thread(()-> msv.visit(program));
     }
 
     public void start(){
+        this.thread = new Thread(()-> msv.visit(program));
         this.thread.start();
     }
 
