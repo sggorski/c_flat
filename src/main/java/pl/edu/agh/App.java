@@ -57,16 +57,16 @@ public class App
             visitor.visitProgram(program);
 
         } catch (ParseCancellationException e) {
-            System.out.println(e.getMessage() /*+ " ParseCancel"*/);
+            System.err.println(e.getMessage() /*+ " ParseCancel"*/);
         } catch (RecognitionException e) {
-            System.out.println(e.getMessage() /*+ " Recognition"*/);
+            System.err.println(e.getMessage() /*+ " Recognition"*/);
         } catch (UndefinedError e) {
-            System.out.println(e.getMessage() /*+ " Undefined Variable"*/);
+            System.err.println(e.getMessage() /*+ " Undefined Variable"*/);
         } catch (SyntaxError | ValueError | ScopeError | VariableDeclarationError e) {
-            System.out.println(e.getMessage() /*+ " Errors"*/);
+            System.err.println(e.getMessage() /*+ " Errors"*/);
         }
-//        catch (Exception e) {
-//            System.out.println(/*"Error: +"*/ e.getMessage());
-//        }
+        catch (Exception e) {
+            System.err.println(/*"Error: +"*/ e.getMessage());
+        }
     }
 }

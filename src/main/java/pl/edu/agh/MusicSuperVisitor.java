@@ -2,8 +2,6 @@ package pl.edu.agh;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.errors.*;
@@ -26,10 +24,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     HashMap<String, Track> tracks = new HashMap<>();
     String code;
 
+
     public MusicSuperVisitor(HashMap<String, Melody> melodyMemory, Map<Integer, LineOrigin> lines, String code) {
         this.melodyMemory = melodyMemory;
         this.lineMap = lines;
         this.code = code;
+        //to finish program when error occurrs in thread
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            System.err.println("Error in track melodies: " + throwable.getMessage());
+            System.exit(1);
+        });
     }
 
     @Override
@@ -517,6 +521,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
         //playing track
         else{
+            if(!melody.name.equals("main")) throw new RuntimeException("Tracks can be played only in main function"); //TODO
             String trackName = ctx.parentID(0).ID().getText();
             if(!tracks.containsKey(trackName)){
                 throw new UndefinedError("Undefined track variable: " + " " + trackName, this.lineMap.get(getLine(ctx)), getCol(ctx));
@@ -526,6 +531,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 track.play();
             }
             catch(Exception e){
+                System.out.println("HERE");
                 throw new RuntimeException("Error occurred while playing track!"); //TODO;
             }
         }
