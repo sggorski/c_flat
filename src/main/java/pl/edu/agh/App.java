@@ -23,7 +23,7 @@ public class App
         ImportHandler resolver = new ImportHandler();
         String mergedSource;
         try {
-            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/third_stage/test.txt");
+            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/third_stage/track_test.cb");
         } catch (ImportError e) {
             System.out.println(e.getMessage());
             return;
@@ -53,7 +53,7 @@ public class App
             ParseTreeWalker walker = new ParseTreeWalker();
             walker.walk(listener, program);
             System.out.println(melodyMemory.toString());
-            MusicSuperVisitor visitor = new MusicSuperVisitor(melodyMemory, lineMap);
+            MusicSuperVisitor visitor = new MusicSuperVisitor(melodyMemory, lineMap, mergedSource);
             visitor.visitProgram(program);
 
         } catch (ParseCancellationException e) {

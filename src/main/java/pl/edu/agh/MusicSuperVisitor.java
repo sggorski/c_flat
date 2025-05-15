@@ -23,10 +23,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     Deque<Melody> stack = new ArrayDeque<>();
     Scope currentScope = null;
     private final Map<Integer, LineOrigin> lineMap;
+    HashMap<String, Track> tracks = new HashMap<>();
+    String code;
 
-    public MusicSuperVisitor(HashMap<String, Melody> melodyMemory, Map<Integer, LineOrigin> lines) {
+    public MusicSuperVisitor(HashMap<String, Melody> melodyMemory, Map<Integer, LineOrigin> lines, String code) {
         this.melodyMemory = melodyMemory;
         this.lineMap = lines;
+        this.code = code;
     }
 
     @Override
@@ -473,7 +476,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             visit(ctx.functionCall());
         } catch (ReturnValue returnValue) {
             if (returnValue.getValue() == null) return null;
-            else if (name == null) throw new RuntimeException("Function returned value, but it wasn't assigned!");
+            else if (name == null) return null;
             else if (var.type != returnValue.getValue().getType())
                 throw new RuntimeException("Function returned: " + returnValue.getValue().getType() + "which was assigned to: " + var.type); //TODO
             else var.valueObj = returnValue.getValue();
@@ -510,6 +513,20 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             } else {
                 ChordValue chordVal = (ChordValue) varInfo.valueObj;
                 playChord(chordVal.notes, duration);
+            }
+        }
+        //playing track
+        else{
+            String trackName = ctx.parentID(0).ID().getText();
+            if(!tracks.containsKey(trackName)){
+                throw new UndefinedError("Undefined track variable: " + " " + trackName, this.lineMap.get(getLine(ctx)), getCol(ctx));
+            }
+            Track track = tracks.get(trackName);
+            try{
+                track.play();
+            }
+            catch(Exception e){
+                throw new RuntimeException("Error occurred while playing track!"); //TODO;
             }
         }
         return visitChildren(ctx);
@@ -1183,12 +1200,56 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitTrackAdd(MusicParser.TrackAddContext ctx) {
-        return visitChildren(ctx);
+        String name = ctx.trackStatement().ID().getText();
+        if(!tracks.containsKey(name)){
+            throw new UndefinedError("Undefined track variable: " + " " + name, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        }
+        Track track = tracks.get(name);
+        String funcName = ctx.trackStatement().functionCall().ID().getText();
+        if(!melodyMemory.containsKey(funcName)) throw new RuntimeException("Function " + funcName + "does not exist!"); //TODO
+        Melody melody = melodyMemory.get(funcName);
+        List<Value> argsOut = new ArrayList<>();
+        MusicParser.ArgumentsContext args = ctx.trackStatement().functionCall().arguments();
+        if (args == null && !melody.parameters.isEmpty())
+            throw new RuntimeException("Invalid number of arguments!"); //TODO
+        if (args != null) {
+            if (melody.parameters.size() != args.expr().size())
+                throw new RuntimeException("Invalid number of arguments!"); //TODO
+            int size = melody.parameters.size();
+            for (int i = 0; i < size; i++) {
+                VarInfo par = melody.parameters.get(i);
+                Value arg = tryCasting(args.expr(i));
+                if (par.type != arg.getType())
+                    throw new RuntimeException("Invalid type for argument with idx: " + i); //TODO
+                argsOut.add(arg);
+            }
+        }
+        MusicParser.SettingsListContext settings = ctx.trackStatement().functionCall().settingsList();
+        Melody fakeMelody = new Melody();
+        stack.push(fakeMelody);
+        if (settings!= null) {
+            for (MusicParser.SettingsAssigmentContext set : settings.settingsAssigment())
+                visit(set);
+        }
+        stack.pop();
+        String newCode = TrackHandler.generateNewCode(this.code,funcName,argsOut,fakeMelody.effects,fakeMelody.instrument);
+        AbstractMap.SimpleEntry<MusicSuperVisitor, MusicParser.ProgramContext> msv_prog = TrackHandler.prepareVisitor(newCode,this.lineMap);
+        TrackComponent newComponent = new TrackComponent(msv_prog.getKey(),msv_prog.getValue());
+        track.add(newComponent);
+
+        return null;
     }
 
     @Override
     public T visitTrackDeclare(MusicParser.TrackDeclareContext ctx) {
-        return visitChildren(ctx);
+
+        String name = ctx.trackDeclaration().ID().getText();
+        if(tracks.containsKey(name)){
+            throw new VariableDeclarationError("Redeclaration of a track variable: " + name + " previously defined in line " + tracks.get(name).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        }
+        Track newTrack = new Track(name,getLine(ctx));
+        tracks.put(name,newTrack);
+        return null;
     }
 
     @Override
