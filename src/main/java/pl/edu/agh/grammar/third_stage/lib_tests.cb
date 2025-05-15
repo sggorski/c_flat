@@ -1,0 +1,8 @@
+import "src/main/java/pl/edu/agh/libs/scaleslib/minor_pentatonic_scale.cb";
+import "src/main/java/pl/edu/agh/libs/scaleslib/minor_pentatonic_scale_reversed.cb";
+
+melody main() {
+    PAUSE 500;
+    PLAY minor_pentatonic_scale(A2, 2, 150, INSTRUMENT=ELECTRIC_GUITAR);
+    PLAY minor_pentatonic_scale_reversed(A4, 3, 150, INSTRUMENT=ELECTRIC_GUITAR);
+}
