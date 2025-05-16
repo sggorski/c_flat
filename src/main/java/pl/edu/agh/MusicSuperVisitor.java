@@ -31,7 +31,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         this.code = code;
         //to finish program when error occurrs in thread
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            System.err.println("Error in track melodies: " + throwable.getMessage());
+            System.err.println(throwable.getMessage());
             System.exit(1);
         });
     }
@@ -40,7 +40,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @SuppressWarnings("unchecked")
     public T visitProgram(MusicParser.ProgramContext ctx) throws RuntimeException {
         if (!melodyMemory.containsKey("main"))
-            throw new RuntimeException("No main function declaration found!"); //TODO
+            throw new SyntaxError("No main melody declaration found!", this.lineMap.get(getLine(ctx)), getCol(ctx));
         stack.push(melodyMemory.get("main"));
         for (MusicParser.MainStatementContext statement : melodyMemory.get("main").mainBody) {
             visit(statement);
@@ -102,17 +102,18 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (melody.name.equals("main")) {
             if (value instanceof BoolValue) {
                 BoolValue boolValue = (BoolValue) value;
-                throw new RuntimeException("MAIN: " + boolValue); //TODO
+                System.out.println("MAIN RETURNED: " + boolValue);
             } else if (value instanceof IntValue) {
                 IntValue intValue = (IntValue) value;
-                throw new RuntimeException("MAIN: " + intValue); //TODO
+                System.out.println("MAIN RETURNED: " + intValue);
             } else if (value instanceof NoteValue) {
                 NoteValue noteValue = (NoteValue) value;
-                throw new RuntimeException("MAIN: " + noteValue);
+                System.out.println("MAIN RETURNED: " + noteValue);
             } else if (value instanceof ChordValue) {
                 ChordValue chordValue = (ChordValue) value;
-                throw new RuntimeException("MAIN: " + chordValue);
+                System.out.println("MAIN RETURNED: " + chordValue);
             }
+            System.exit(0);
         } else {
             stack.pop();
             currentScope = melody.previous_scope;
@@ -482,7 +483,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             if (returnValue.getValue() == null) return null;
             else if (name == null) return null;
             else if (var.type != returnValue.getValue().getType())
-                throw new RuntimeException("Function returned: " + returnValue.getValue().getType() + "which was assigned to: " + var.type); //TODO
+                throw new ValueError("Function returned: " + returnValue.getValue().getType() + " which was assigned to: " + var.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
             else var.valueObj = returnValue.getValue();
         }
         return null;
@@ -521,7 +522,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
         //playing track
         else{
-            if(!melody.name.equals("main")) throw new RuntimeException("Tracks can be played only in main function"); //TODO
+            if(!melody.name.equals("main"))
+                throw new SyntaxError("Track cannot be played outside of a main melody", this.lineMap.get(getLine(ctx)), getCol(ctx));
             String trackName = ctx.parentID(0).ID().getText();
             if(!tracks.containsKey(trackName)){
                 throw new UndefinedError("Undefined track variable: " + " " + trackName, this.lineMap.get(getLine(ctx)), getCol(ctx));
@@ -531,7 +533,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 track.play();
             }
             catch(InterruptedException e){
-                throw new RuntimeException(e.getMessage()); //TODO;
+                throw new RuntimeException(e.getMessage());
             }
         }
         return visitChildren(ctx);
@@ -822,8 +824,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitFunctionCall(MusicParser.FunctionCallContext ctx) {
 
         String name = ctx.ID().getText();
-        if (name.equals("main")) throw new RuntimeException("You cannot call main function!");
-        if (!melodyMemory.containsKey(name)) throw new RuntimeException("Function not declared!"); //TODO
+        if (name.equals("main")) throw new RuntimeError("You cannot call a main melody", this.lineMap.get(getLine(ctx)), getCol(ctx));
+        if (!melodyMemory.containsKey(name)) throw new RuntimeError("Melody " + name + " not declared" , this.lineMap.get(getLine(ctx)), getCol(ctx));
 
         Melody melodyPattern = melodyMemory.get(name);
         Melody melody = Melody.deepCopyMelody(melodyPattern);
@@ -833,22 +835,22 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             melody.setInstrument(stack.peek().instrument);
         }
         if (ctx.arguments() == null && !melody.parameters.isEmpty())
-            throw new RuntimeException("Invalid number of arguments!"); //TODO
+            throw new RuntimeError("Invalid number of arguments: 0"  + " instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         if (ctx.arguments() != null) {
             if (melody.parameters.size() != ctx.arguments().expr().size())
-                throw new RuntimeException("Invalid number of arguments!"); //TODO
+                throw new RuntimeError("Invalid number of arguments: " +ctx.arguments().expr().size() + " instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
             int size = melody.parameters.size();
             for (int i = 0; i < size; i++) {
                 VarInfo par = melody.parameters.get(i);
                 Value arg = tryCasting(ctx.arguments().expr(i));
                 if (par.type != arg.getType())
-                    throw new RuntimeException("Invalid type for argument with idx: " + i); //TODO
+                    throw new RuntimeError("Invalid type of argument with index: " + i + " : " +  arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
                 par.valueObj = arg;
             }
         }
         for (Map.Entry<Integer, VarInfo> param : melody.parameters.entrySet()) {
             if (melody.memory.containsKey(param.getValue().name))
-                throw new RuntimeException("Redeclaration of an argument parameter inside function!"); //TODO
+                throw new RuntimeError("Redeclaration in line: " +melody.memory.get(param.getValue().name).line +  " of a melody parameter inside melody's body: " + param.getValue().name , this.lineMap.get(getLine(ctx.arguments())), getCol(ctx.arguments()));
             melody.memory.put(param.getValue().name, param.getValue());
 
         }
@@ -860,7 +862,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         melody.previous_scope = currentScope;
         currentScope = null;
         stack.push(melody);
-        if (stack.size() > 1000) throw new StackOverflowError("StackOverFlow!"); //TODO
+        if (stack.size() > 1000)  throw new RuntimeError("StackOverFlow error" , this.lineMap.get(getLine(ctx.arguments())), getCol(ctx.arguments()));
+
         if (ctx.settingsList() != null) {
             for (MusicParser.SettingsAssigmentContext set : ctx.settingsList().settingsAssigment())
                 visit(set);
@@ -1211,21 +1214,21 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
         Track track = tracks.get(name);
         String funcName = ctx.trackStatement().functionCall().ID().getText();
-        if(!melodyMemory.containsKey(funcName)) throw new RuntimeException("Function " + funcName + "does not exist!"); //TODO
+        if(!melodyMemory.containsKey(funcName)) throw new RuntimeError("Melody " + funcName + " not declared" , this.lineMap.get(getLine(ctx)), getCol(ctx));
         Melody melody = melodyMemory.get(funcName);
         List<Value> argsOut = new ArrayList<>();
         MusicParser.ArgumentsContext args = ctx.trackStatement().functionCall().arguments();
         if (args == null && !melody.parameters.isEmpty())
-            throw new RuntimeException("Invalid number of arguments!"); //TODO
+            throw new RuntimeError("Invalid number of arguments: 0 instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         if (args != null) {
             if (melody.parameters.size() != args.expr().size())
-                throw new RuntimeException("Invalid number of arguments!"); //TODO
+                throw new RuntimeError("Invalid number of arguments: " + args.expr().size() + " instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
             int size = melody.parameters.size();
             for (int i = 0; i < size; i++) {
                 VarInfo par = melody.parameters.get(i);
                 Value arg = tryCasting(args.expr(i));
                 if (par.type != arg.getType())
-                    throw new RuntimeException("Invalid type for argument with idx: " + i); //TODO
+                    throw new RuntimeError("Invalid type of argument with index: " + i + " : " +  arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
                 argsOut.add(arg);
             }
         }
@@ -1379,7 +1382,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 .filter(pair -> pair.getValue().equals(value))
                 .findFirst()
                 .map(Map.Entry::getKey).orElse(null);
-        if (newNote == null) throw new RuntimeException(); //TODO
+        if (newNote == null) throw new RuntimeException("Note not found");
         return newNote;
     }
 

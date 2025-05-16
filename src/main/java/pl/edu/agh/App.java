@@ -23,12 +23,12 @@ public class App
         ImportHandler resolver = new ImportHandler();
         String mergedSource;
         try {
-            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/tests/test18_tracks_advanced.cb");
+            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/third_stage/test_func.cb");
         } catch (ImportError e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             return;
         } catch(Exception e) {
-            System.out.println("No such melody!");
+            System.err.println("No such melody!");
             return;
         }
 

@@ -22,6 +22,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     HashMap<String, Melody> melodyMemory;
     MusicLexer lexer;
     String currentMelody;
+    Boolean enterMelody = false;
     private final Map<Integer, LineOrigin> lineMap;
 
     /**
@@ -81,6 +82,9 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
     @Override
     public void enterFunctionDecl(MusicParser.FunctionDeclContext ctx) {
+        if (enterMelody) {
+            throw new SyntaxError("Melody: " + ctx.ID().getText() + " is declared inside other melody: " + currentMelody, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        }
         Melody newMelody = new Melody();
         String name = ctx.ID().getText();
         newMelody.name = name;
@@ -110,6 +114,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         }
         melodyMemory.put(name, newMelody);
         currentMelody = name;
+        enterMelody = true;
 
     }
 
@@ -120,6 +125,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
     @Override
     public void exitFunctionDecl(MusicParser.FunctionDeclContext ctx) {
+        enterMelody = false;
     }
 
     /**
@@ -134,6 +140,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         newMelody.mainBody = ctx.mainStatement();
         melodyMemory.put("main", newMelody);
         currentMelody = "main";
+        enterMelody = true;
     }
 
     /**
@@ -143,6 +150,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
     @Override
     public void exitMainDecl(MusicParser.MainDeclContext ctx) {
+        enterMelody = false;
     }
 
     /**

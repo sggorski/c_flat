@@ -1,0 +1,6 @@
+melody test(int c){
+    Note c = C2;
+}
+melody main(){
+    PLAY test(2);
+}

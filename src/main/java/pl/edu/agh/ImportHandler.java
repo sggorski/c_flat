@@ -22,7 +22,7 @@ public class ImportHandler {
         try {
             String combinedFile = resolveImportsHelper(filename);
             if(this.mainsCount == 0)
-                throw new ImportError("no main method among imports");
+                throw new ImportError("no main melody declaration found");
             return combinedFile;
         } catch (IOException e) {
             throw new ImportError("cannot open file: " + e.getMessage());
