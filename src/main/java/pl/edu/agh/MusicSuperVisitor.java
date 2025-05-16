@@ -844,7 +844,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 VarInfo par = melody.parameters.get(i);
                 Value arg = tryCasting(ctx.arguments().expr(i));
                 if (par.type != arg.getType())
-                    throw new RuntimeError("Invalid type of argument with index: " + i + " : " +  arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
+                    throw new RuntimeError("Invalid type of argument with index: " + (i+1) + " : " +  arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
                 par.valueObj = arg;
             }
         }
@@ -862,7 +862,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         melody.previous_scope = currentScope;
         currentScope = null;
         stack.push(melody);
-        if (stack.size() > 1000)  throw new RuntimeError("StackOverFlow error" , this.lineMap.get(getLine(ctx.arguments())), getCol(ctx.arguments()));
+        if (stack.size() > 100)  throw new StackOverflow(name);
 
         if (ctx.settingsList() != null) {
             for (MusicParser.SettingsAssigmentContext set : ctx.settingsList().settingsAssigment())
@@ -1228,7 +1228,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 VarInfo par = melody.parameters.get(i);
                 Value arg = tryCasting(args.expr(i));
                 if (par.type != arg.getType())
-                    throw new RuntimeError("Invalid type of argument with index: " + i + " : " +  arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
+                    throw new RuntimeError("Invalid type of argument with index: " + (i+1) + " : " +  arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
                 argsOut.add(arg);
             }
         }

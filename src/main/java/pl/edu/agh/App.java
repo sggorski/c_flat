@@ -23,7 +23,7 @@ public class App
         ImportHandler resolver = new ImportHandler();
         String mergedSource;
         try {
-            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/tests/test6_for.txt");
+            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/tests/test19_functions_advanced.cb");
         } catch (ImportError e) {
             System.err.println(e.getMessage());
             return;
@@ -62,7 +62,7 @@ public class App
             System.err.println(e.getMessage() /*+ " Recognition"*/);
         } catch (UndefinedError e) {
             System.err.println(e.getMessage() /*+ " Undefined Variable"*/);
-        } catch (SyntaxError | ValueError | ScopeError | VariableDeclarationError e) {
+        } catch (SyntaxError | ValueError | ScopeError | VariableDeclarationError | StackOverflow e) {
             System.err.println(e.getMessage() /*+ " Errors"*/);
         }
         catch (Exception e) {
