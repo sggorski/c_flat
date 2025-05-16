@@ -1,7 +1,7 @@
 melody main() {
 	SET BLUES = true;
 	SET JAZZ = false;
-	int i = 1;
+	int i = 0;
 	
 	while(BLUES) {
 		PLAY E1 100;
@@ -9,7 +9,24 @@ melody main() {
 		PLAY F#1 100;
 		i += 1;
 		if(i==5) {
-			SET BLUES = false;
+			break;
 		}
+	}
+
+	bool b1 = true;
+	bool b2 = false;
+	i = 0;
+	int j = 0;
+	while (i<4) {
+	    i+=1;
+	    PLAY C2 200;
+	    while(b1) {
+	        j+=1;
+	        PLAY G2 100;
+	        if(j==2) {
+	            break;
+	        }
+	    }
+	    j=0;
 	}
 }

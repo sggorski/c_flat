@@ -23,7 +23,7 @@ public class App
         ImportHandler resolver = new ImportHandler();
         String mergedSource;
         try {
-            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/third_stage/lib_tests.cb");
+            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/tests/test18_tracks_advanced.cb");
         } catch (ImportError e) {
             System.out.println(e.getMessage());
             return;
@@ -34,7 +34,7 @@ public class App
 
         Map<Integer, LineOrigin> lineMap = resolver.getLineMap();
         CharStream stream = CharStreams.fromString(mergedSource);
-        try{
+        try {
             MusicLexer lexer = new MusicLexer(stream);
             lexer.removeErrorListeners();
             lexer.addErrorListener(new MusicErrorListener(lineMap));

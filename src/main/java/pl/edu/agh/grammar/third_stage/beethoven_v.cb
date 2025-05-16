@@ -1,9 +1,8 @@
 melody first(Note n, int i, int vol) {
     SET VOLUME=vol;
-    // for (int i=0; i<3; i+=1) {
-    //     PLAY n 300;
-    // }
-    PLAY n n n 300;
+    for (int i=0; i<3; i+=1) {
+        PLAY n 300;
+    }
     n -= i;
     int tmp = 2*vol;
     SET VOLUME=tmp;
@@ -16,10 +15,10 @@ melody second(Note n, int i, int j, int vol) {
     SET INSTRUMENT=VIOLIN;
     SET VOLUME=vol;
     int x=0;
-    // while(x<3) {
-    //     PLAY n 300;
-    //     x += 1;
-    // }
+    while(x<3) {
+        PLAY n 300;
+        x += 1;
+    }
     PLAY n n n 300;
     Note n2 = n-i;
     PLAY n2 300;
@@ -67,12 +66,12 @@ melody finish() {
 
 melody main() {
     int i = 4;
-    // if (i == 4) {
+    if (i == 4) {
         PLAY first(G2, i, 40, INSTRUMENT=VIOLA) OUT i;
         PLAY first(F2, i, 60) OUT i;
-    // } else {
-    //     PLAY C1 C2 C3 C4 500;
-    // }
+    } else {
+        PLAY C1 C2 C3 C4 500;
+    }
     PLAY second(G3, 4, 0, 40);
     PLAY second(G3, 5, 2, 60);
     PAUSE 300;
