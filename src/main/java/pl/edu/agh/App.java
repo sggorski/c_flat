@@ -23,7 +23,7 @@ public class App
         ImportHandler resolver = new ImportHandler();
         String mergedSource;
         try {
-            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/third_stage/test_func.cb");
+            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/tests/test6_for.txt");
         } catch (ImportError e) {
             System.err.println(e.getMessage());
             return;

@@ -1,21 +1,34 @@
 melody main() {
-	SET INSTRUMENT = HARP;
+	SET INSTRUMENT = CLARINET;
 	SET PACE = 120;
 
-	PLAY G#2 200;
-	PAUSE 200;
-	PLAY G#2 100;
-	Note n1 = G#2;
+	PLAY G3 F#3 F3 D3 G3 F#3 F3 D3 E3 25;
+	PLAY G3 50;
 
-	for(int i=0; i<10; i+=1) {
+	Note n1 = G#3;
+
+	for(int k=0; k<4; k+=1) {
 		PLAY n1 200;
-		n1 += 2;
+		n1 *= 2;
+		k+=1;
 	}
 
 	PAUSE 500;
 
-	for(int j=0; i<2; j+=1) {
-		PLAY n1;
-		n1 /= 2;
+    int j;
+	for(int i=0; i<3; i+=1) {
+	    PLAY C2 200;
+        j=0;
+	    while(j<3) {
+	        PLAY G2 200;
+	        PLAY E2 100;
+	        j+=1;
+	        for(int k=5; k<=15; k+=5) {
+	            PLAY C3 C3 50;
+	            if(k==10) {
+	                break;
+	            }
+	        }
+	    }
 	}
 }
