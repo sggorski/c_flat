@@ -646,6 +646,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 visit(ctx.scope());
             }catch (BreakError b){
                 currentScope = callbackScope;
+                skipScope();
                 return null;
             }catch (ContinueError ignored){
                 currentScope = callbackScope;
@@ -772,19 +773,22 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (ctx.varDecl() != null) {
             visit(ctx.varDecl());
         }
-
         if (ctx.expr() == null || ((BoolValue) visit(ctx.expr())).value) {
             while (ctx.expr() == null || ((BoolValue) visit(ctx.expr())).value){
+                Scope callbackScope = currentScope;
                 try {
                     visit(ctx.scope());
                 }catch (BreakError b){
+                    currentScope = callbackScope;
+                    skipScope();
                     return null;
                 }catch (ContinueError ignored){
-
+                    currentScope = callbackScope;
                 }
                 if(ctx.forUpdate() != null) {
                     visit(ctx.forUpdate());
                 }
+
             }
         } else {
             skipScope();
