@@ -423,7 +423,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             System.out.println(melody.memory.get(varInfo.name).toString());
         }
 
-        //TODO println throws null pointer exception cuz it tries to get it from melody memory
 
         return null;
     }
@@ -1480,8 +1479,26 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     }
 
+    /**
+     *
+     * Declares var saved in memory of scope or melody
+     * if parent of declaration is For loop then we declare the value in
+     * the child scope because this declaration happens BEFORE we jump into FOR scope
+     *
+     *
+     * @param varName
+     * @param ctx
+     * @return
+     */
     private VarInfo declareVar(String varName, ParserRuleContext ctx) {
         Scope current = currentScope;
+        if(ctx instanceof MusicParser.ForLoopContext){
+            if(current == null){
+                current = stack.peek().scopes.get(0);
+            }else {
+                current = current.scopes.get(0);
+            }
+        }
         while (current != null) {
             if (!current.memory.containsKey(varName)) {
                 current = current.parent;

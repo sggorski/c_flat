@@ -24,6 +24,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     String currentMelody;
     Boolean enterMelody = false;
     private final Map<Integer, LineOrigin> lineMap;
+    Scope lastScope = null;
 
     /**
      * ArrayList of Scope objects designed to create a parent-child relationship with another Scope/Melody
@@ -548,6 +549,9 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     @Override
     public void enterVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) {
         String varName = ctx.ID().getText();
+        if(ctx.parent instanceof MusicParser.ForLoopContext){
+            return;
+        }
         if (scopes.isEmpty()) {
             Melody melody = melodyMemory.get(currentMelody);
             if (melody.memory.containsKey(varName))
@@ -627,6 +631,9 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
     @Override
     public void enterVarDeclWithoutArg(MusicParser.VarDeclWithoutArgContext ctx) {
+        if(ctx.parent instanceof MusicParser.ForLoopContext){
+            return;
+        }
         String varName = ctx.ID().getText();
         Melody melody = melodyMemory.get(currentMelody);
         if (scopes.isEmpty()) {
@@ -931,6 +938,73 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
     @Override
     public void exitForLoop(MusicParser.ForLoopContext ctx) {
+        Scope scope = lastScope;
+        if(ctx.varDecl() == null) {return;}
+        if(ctx.varDecl() instanceof MusicParser.VarDeclWithARgContext) {
+            MusicParser.VarDeclWithARgContext varDecl = (MusicParser.VarDeclWithARgContext) ctx.varDecl();
+            String varName = varDecl.ID().getText();
+            if (scope.memory.containsKey(varName))
+                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + scope.memory.get(varName).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
+            if (Arrays.asList(((VocabularyImpl) this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", this.lineMap.get(getLine(ctx)), getCol(ctx));
+            if (isAnInstrument(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", this.lineMap.get(getLine(ctx)), getCol(ctx));
+            if (isANote(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", this.lineMap.get(getLine(ctx)), getCol(ctx));
+
+            switch (varDecl.type().getText()) {
+                case "int":
+                    VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), null);
+                    scope.memory.put(varName, intInfo);
+                    break;
+                case "bool":
+                    VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), null);
+                    scope.memory.put(varName, boolInfo);
+                    break;
+                case "Note":
+                    VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), null);
+                    scope.memory.put(varName, noteInfo);
+                    break;
+                case "Chord":
+                    VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), null);
+                    scope.memory.put(varName, chordInfo);
+                    break;
+                default:
+                    break;
+            }
+        } else if (ctx.varDecl() instanceof MusicParser.VarDeclWithoutArgContext) {
+            MusicParser.VarDeclWithoutArgContext varDecl = (MusicParser.VarDeclWithoutArgContext) ctx.varDecl();
+            String varName = varDecl.ID().getText();
+            if (scope.memory.containsKey(varName))
+                throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + scope.memory.get(varName).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
+            if (Arrays.asList(((VocabularyImpl) this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a keyword", this.lineMap.get(getLine(ctx)), getCol(ctx));
+            if (isAnInstrument(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of an instrument (keyword)", this.lineMap.get(getLine(ctx)), getCol(ctx));
+            if (isANote(varName))
+                throw new VariableDeclarationError("Variable: " + varName + " is a name of a note (keyword)", this.lineMap.get(getLine(ctx)), getCol(ctx));
+
+            switch (varDecl.type().getText()) {
+                case "int":
+                    VarInfo intInfo = new VarInfo(varName, Type.INT, getLine(ctx), new IntValue(0));
+                    scope.memory.put(varName, intInfo);
+                    break;
+                case "bool":
+                    VarInfo boolInfo = new VarInfo(varName, Type.BOOL, getLine(ctx), new BoolValue(false));
+                    scope.memory.put(varName, boolInfo);
+                    break;
+                case "Note":
+                    VarInfo noteInfo = new VarInfo(varName, Type.NOTE, getLine(ctx), null);
+                    scope.memory.put(varName, noteInfo);
+                    break;
+                case "Chord":
+                    VarInfo chordInfo = new VarInfo(varName, Type.CHORD, getLine(ctx), null);
+                    scope.memory.put(varName, chordInfo);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     @Override
@@ -1597,6 +1671,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
         }
         Scope scope = scopes.get(scopes.size() - 1);
         scopes.remove(scope);
+        lastScope = scope;
         if (scope.parent != null) {
             //Scope.addMemoryFromMemory(scope, scope.parent, null);
             scope.parent.scopes.add(scope);
