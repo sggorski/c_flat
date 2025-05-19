@@ -1237,9 +1237,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
         MusicParser.SettingsListContext settings = ctx.trackStatement().functionCall().settingsList();
         //fake melody just to get settings without any effort
-        Melody fakeMelody = new Melody();
-        fakeMelody.memory = stack.peek().memory;
-        fakeMelody.effects = stack.peek().effects;
+        Melody main = stack.peek();
+        Melody fakeMelody = Melody.deepCopyMelody(main);
+        fakeMelody.copyEffects(main.effects);
         stack.push(fakeMelody);
         if (settings!= null) {
             for (MusicParser.SettingsAssigmentContext set : settings.settingsAssigment())
