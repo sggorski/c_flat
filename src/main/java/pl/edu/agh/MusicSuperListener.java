@@ -949,7 +949,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     @Override
     public void exitForLoop(MusicParser.ForLoopContext ctx) {
         Scope scope = lastScope;
-        if(ctx.forInit().varDecl() == null) {return;}
+        if(ctx.forInit() == null || ctx.forInit().varDecl() == null) {return;}
         if(ctx.forInit().varDecl() instanceof MusicParser.VarDeclWithARgContext) {
             MusicParser.VarDeclWithARgContext varDecl = (MusicParser.VarDeclWithARgContext) ctx.forInit().varDecl();
             String varName = varDecl.ID().getText();

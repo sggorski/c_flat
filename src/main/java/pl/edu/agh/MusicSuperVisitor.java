@@ -632,6 +632,14 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitWhileLoop(MusicParser.WhileLoopContext ctx) {
         Scope callbackScope = currentScope;
+        Scope temp;
+
+        if (currentScope == null) {
+            temp = Scope.deepCopyScopeStructure(stack.peek().scopes.get(0), stack.peek(), null);
+        }else {
+            temp = Scope.deepCopyScopeStructure(currentScope.getChild(), null, currentScope);
+        }
+
         if (((BoolValue) visit(ctx.expr())).value) {
             try {
                 visit(ctx.scope());
@@ -641,6 +649,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 return null;
             } catch (ContinueError ignored) {
                 currentScope = callbackScope;
+                resetCurrScope(temp);
             }
             visit(ctx);
         } else {
@@ -678,6 +687,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitScope(MusicParser.ScopeContext ctx) {
+
         Scope temp = null;
         currentScope = getCurrScope(stack.peek());
         if (ctx.parent instanceof MusicParser.WhileLoopContext || ctx.parent instanceof MusicParser.ForLoopContext) {
@@ -686,14 +696,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         visitChildren(ctx);
         if (temp != null) {
             currentScope = currentScope.parent;
-            if (currentScope != null) {
-                currentScope.scopes.set(0, temp);
-            } else {
-                if (stack.peek() == null) {
-                    throw new RuntimeException("Stack is empty!");
-                }
-                stack.peek().scopes.set(0, temp);
-            }
+            resetCurrScope(temp);
         } else {
             changeScope();
         }
@@ -770,20 +773,20 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
              * information about declared variable in () goes to the parent Scope
              */
 
-            if(ctx.varDecl() instanceof MusicParser.VarDeclWithARgContext){
-                if(currentScope != null){
+            if (ctx.varDecl() instanceof MusicParser.VarDeclWithARgContext) {
+                if (currentScope != null) {
                     currentScope.forInit = ((MusicParser.VarDeclWithARgContext) ctx.varDecl()).ID().getText();
-                }else {
-                    if(stack.peek() == null){
+                } else {
+                    if (stack.peek() == null) {
                         throw new RuntimeException("Stack is empty!");
                     }
                     stack.peek().forInit = ((MusicParser.VarDeclWithARgContext) ctx.varDecl()).ID().getText();
                 }
-            }else{
-                if(currentScope != null){
+            } else {
+                if (currentScope != null) {
                     currentScope.forInit = ((MusicParser.VarDeclWithoutArgContext) ctx.varDecl()).ID().getText();
-                }else {
-                    if(stack.peek() == null){
+                } else {
+                    if (stack.peek() == null) {
                         throw new RuntimeException("Stack is empty!");
                     }
                     stack.peek().forInit = ((MusicParser.VarDeclWithoutArgContext) ctx.varDecl()).ID().getText();
@@ -817,6 +820,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         if (ctx.expr() == null || checkForExpr(ctx)) {
             while (ctx.expr() == null || checkForExpr(ctx)) {
+                Scope temp;
+                if (currentScope == null) {
+                    temp = Scope.deepCopyScopeStructure(stack.peek().scopes.get(0), stack.peek(), null);
+                }else {
+                    temp = Scope.deepCopyScopeStructure(currentScope.getChild(), null, currentScope);
+                }
                 Scope callbackScope = currentScope;
                 try {
                     visit(ctx.scope());
@@ -825,7 +834,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                     skipScope();
                     if (currentScope != null) {
                         currentScope.forInit = null;
-                    }else{
+                    } else {
                         if (stack.peek() == null) {
                             throw new RuntimeException("Stack is empty!");
                         }
@@ -834,6 +843,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                     return null;
                 } catch (ContinueError ignored) {
                     currentScope = callbackScope;
+                    resetCurrScope(temp);
                 }
                 if (ctx.forUpdate() != null) {
                     visit(ctx.forUpdate());
@@ -845,7 +855,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
         if (currentScope != null) {
             currentScope.forInit = null;
-        }else {
+        } else {
             if (stack.peek() == null) {
                 throw new RuntimeException("Stack is empty!");
             }
@@ -1535,19 +1545,19 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
              * Only works for for loops, or should
              */
 
-            if(current != null){
-                if(varName.equals(current.forInit)){
+            if (current != null) {
+                if (varName.equals(current.forInit)) {
                     return current.scopes.get(0).memory.get(varName);
                 }
 
-            }else {
-                if(varName.equals(melody.forInit)){
+            } else {
+                if (varName.equals(melody.forInit)) {
                     return melody.scopes.get(0).memory.get(varName);
                 }
             }
 
             while (current != null) {
-                if ( !current.memory.containsKey(varName) || current.memory.get(varName).valueObj == null) {
+                if (!current.memory.containsKey(varName) || current.memory.get(varName).valueObj == null) {
                     current = current.parent;
                 } else {
                     return current.memory.get(varName);
@@ -1562,7 +1572,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
 
         } else if (parentContexts == null || parentContexts.isEmpty()) {
-            if(varName.equals(melody.forInit)){
+            if (varName.equals(melody.forInit)) {
                 return melody.scopes.get(0).memory.get(varName);
             }
             return melody.memory.get(varName);
@@ -1620,13 +1630,25 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         changeScope();
     }
 
-    private boolean checkForExpr(MusicParser.ForLoopContext ctx){
+    private boolean checkForExpr(MusicParser.ForLoopContext ctx) {
 
-        if(((BoolValue) visit(ctx.expr())).value){
+        if (((BoolValue) visit(ctx.expr())).value) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
+
+    private void resetCurrScope(Scope temp){
+        if(currentScope == null) {
+            if (stack.peek() == null){
+                throw new RuntimeException("Stack is empty!");
+            }
+            stack.peek().scopes.set(0, temp);
+        }else {
+            currentScope.scopes.set(0, temp);
+        }
+    }
+
 
 }

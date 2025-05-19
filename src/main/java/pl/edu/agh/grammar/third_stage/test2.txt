@@ -1,0 +1,52 @@
+melody inc(int a){
+    a += 1;
+    int c = 100;
+    for(int a = 4; a < 6; a+=1){
+        PLAY A3 400;
+    }
+    while(true){
+        break;
+    }
+    while(true){
+        c-=1;
+        if(c < 92){
+            break;
+        }
+        if(c < 98){
+            continue;
+        }
+        for(int i = 2; i < 3;i+=1){
+            //i+=5;
+            PLAY D3 200;
+        }
+
+    }
+    RETURN a;
+}
+
+melody main(){
+    int k = 6;
+    while(k < 9){
+        int i = 1;
+
+        for (i = 2;i < 4; k += 1){
+            if(k + i > 15){
+                break;
+            }else{
+                i+=1;
+            }
+
+        }
+
+        if (i < 3){
+            break;
+        }else{
+            for (int k = 2; i + k < 8; PLAY inc(k) OUT k){
+                PLAY C1 1000;
+            }
+        }
+    }
+
+
+
+}

@@ -409,4 +409,9 @@ public class Scope {
                 break;
         }
     }
+
+    public Scope getChild(){
+        return this.scopes.get(0);
+    }
+
 }
