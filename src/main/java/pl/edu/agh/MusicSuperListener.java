@@ -549,7 +549,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     @Override
     public void enterVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) {
         String varName = ctx.ID().getText();
-        if(ctx.parent instanceof MusicParser.ForLoopContext){
+        if(ctx.parent instanceof MusicParser.ForInitContext){
             return;
         }
         if (scopes.isEmpty()) {
@@ -631,7 +631,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
     @Override
     public void enterVarDeclWithoutArg(MusicParser.VarDeclWithoutArgContext ctx) {
-        if(ctx.parent instanceof MusicParser.ForLoopContext){
+        if(ctx.parent instanceof MusicParser.ForInitContext){
             return;
         }
         String varName = ctx.ID().getText();
@@ -926,6 +926,16 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     public void exitElse(MusicParser.ElseContext ctx) {
     }
 
+    @Override
+    public void enterForInit(MusicParser.ForInitContext ctx) {
+
+    }
+
+    @Override
+    public void exitForInit(MusicParser.ForInitContext ctx) {
+
+    }
+
     /**
      * @param ctx the parse tree
      */
@@ -939,9 +949,9 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     @Override
     public void exitForLoop(MusicParser.ForLoopContext ctx) {
         Scope scope = lastScope;
-        if(ctx.varDecl() == null) {return;}
-        if(ctx.varDecl() instanceof MusicParser.VarDeclWithARgContext) {
-            MusicParser.VarDeclWithARgContext varDecl = (MusicParser.VarDeclWithARgContext) ctx.varDecl();
+        if(ctx.forInit().varDecl() == null) {return;}
+        if(ctx.forInit().varDecl() instanceof MusicParser.VarDeclWithARgContext) {
+            MusicParser.VarDeclWithARgContext varDecl = (MusicParser.VarDeclWithARgContext) ctx.forInit().varDecl();
             String varName = varDecl.ID().getText();
             if (scope.memory.containsKey(varName))
                 throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + scope.memory.get(varName).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
@@ -972,8 +982,8 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
                 default:
                     break;
             }
-        } else if (ctx.varDecl() instanceof MusicParser.VarDeclWithoutArgContext) {
-            MusicParser.VarDeclWithoutArgContext varDecl = (MusicParser.VarDeclWithoutArgContext) ctx.varDecl();
+        } else if (ctx.forInit().varDecl() instanceof MusicParser.VarDeclWithoutArgContext) {
+            MusicParser.VarDeclWithoutArgContext varDecl = (MusicParser.VarDeclWithoutArgContext) ctx.forInit().varDecl();
             String varName = varDecl.ID().getText();
             if (scope.memory.containsKey(varName))
                 throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + scope.memory.get(varName).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
@@ -1141,15 +1151,6 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     public void exitSettingsList(MusicParser.SettingsListContext ctx) {
     }
 
-    @Override
-    public void enterSelfAssignmentExpr(MusicParser.SelfAssignmentExprContext ctx) {
-
-    }
-
-    @Override
-    public void exitSelfAssignmentExpr(MusicParser.SelfAssignmentExprContext ctx) {
-
-    }
 
     /**
      * {@inheritDoc}

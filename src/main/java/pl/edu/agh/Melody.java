@@ -26,6 +26,7 @@ public class Melody {
     public int scopeLevel = 0;
     public ArrayList<Scope> scopes = new ArrayList<>();
     public Scope previous_scope;
+    public String forInit;
 
     Synthesizer synth;
     MidiChannel[] channels;
@@ -273,6 +274,7 @@ public class Melody {
         Melody copy = new Melody();
         copy.body = original.body;
         copy.parameters = new HashMap<>();
+        copy.forInit = original.forInit != null ? new String(original.forInit) : null;
         for (Map.Entry<Integer, VarInfo> entry : original.parameters.entrySet()) {
             Type type = entry.getValue().type;
             switch (type) {

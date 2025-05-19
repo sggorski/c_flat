@@ -28,7 +28,7 @@ public class Scope {
     public Scope parent = null;
     public Melody melodyParent = null;
     public boolean toBreak = false;
-
+    public String forInit = null;
 
     Synthesizer synth;
     public MidiChannel[] channels;
@@ -312,6 +312,8 @@ public class Scope {
         copy.copyEffects(original.effects);
         copy.setInstrument(original.instrument);
         copyMemory(copy, original.memory);
+        copy.forInit = original.forInit != null ? new String(original.forInit) : null;
+
 
         return copy;
     }

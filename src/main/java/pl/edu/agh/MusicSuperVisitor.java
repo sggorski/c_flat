@@ -2,6 +2,7 @@ package pl.edu.agh;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.errors.*;
@@ -497,11 +498,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (ctx.INT_VAL() != null || ctx.parentID(1) != null) {
             VarInfo varInfo;
             String varName = ctx.parentID(0).ID().getText();
-            if (currentScope != null) {
-                varInfo = findVar(varName, ctx, ctx.parentID(0).parent());
-            } else {
-                varInfo = melody.memory.get(varName);
-            }
+
+            varInfo = findVar(varName, ctx, ctx.parentID(0).parent());
+
 
             if (varInfo == null)
                 throw new ScopeError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
@@ -520,18 +519,17 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             }
         }
         //playing track
-        else{
-            if(!melody.name.equals("main"))
+        else {
+            if (!melody.name.equals("main"))
                 throw new SyntaxError("Track cannot be played outside of a main melody", this.lineMap.get(getLine(ctx)), getCol(ctx));
             String trackName = ctx.parentID(0).ID().getText();
-            if(!tracks.containsKey(trackName)){
+            if (!tracks.containsKey(trackName)) {
                 throw new UndefinedError("Undefined track variable: " + " " + trackName, this.lineMap.get(getLine(ctx)), getCol(ctx));
             }
             Track track = tracks.get(trackName);
-            try{
+            try {
                 track.play();
-            }
-            catch(InterruptedException e){
+            } catch (InterruptedException e) {
                 throw new RuntimeException(e.getMessage());
             }
         }
@@ -558,11 +556,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         } else if (ctx.parentID(lastId) != null) {
             VarInfo var;
             String varName = ctx.parentID(lastId).ID().getText();
-            if (currentScope != null) {
-                var = findVar(varName, ctx, ctx.parentID(lastId).parent());
-            } else {
-                var = melody.memory.get(varName);
-            }
+
+            var = findVar(varName, ctx, ctx.parentID(lastId).parent());
+
             if (var == null)
                 throw new ScopeError("Variable not defined: ", this.lineMap.get(getLine(ctx)), getCol(ctx));
             if (var.type != Type.INT)
@@ -582,15 +578,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 MusicParser.ParentIDContext idContext = (MusicParser.ParentIDContext) child;
                 VarInfo varInfo;
                 String varName = idContext.ID().getText();
-                if (currentScope != null) {
-                    varInfo = findVar(varName, ctx, idContext.parent());
-                } else {
-                    varInfo = melody.memory.get(varName);
-                }
+
+                varInfo = findVar(varName, ctx, idContext.parent());
+
                 if (varInfo.type == Type.NOTE) {
                     NoteValue noteVal = (NoteValue) varInfo.valueObj;
                     playNote(noteVal.note, duration);
-                } else if(varInfo.type == Type.CHORD) {
+                } else if (varInfo.type == Type.CHORD) {
                     ChordValue chordVal = (ChordValue) varInfo.valueObj;
                     playChord(chordVal.notes, duration);
                 } else {
@@ -612,11 +606,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 if (melody == null) throw new RuntimeException("Stack is empty!");
                 VarInfo var;
                 String varName = ctx.ID().getText();
-                if (currentScope != null) {
-                    var = findVar(varName, ctx, ctx.parent());
-                } else {
-                    var = melody.memory.get(varName);
-                }
+
+                var = findVar(varName, ctx, ctx.parent());
+
                 if (var == null)
                     throw new ScopeError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
                 if (var.type != Type.INT)
@@ -643,11 +635,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (((BoolValue) visit(ctx.expr())).value) {
             try {
                 visit(ctx.scope());
-            }catch (BreakError b){
+            } catch (BreakError b) {
                 currentScope = callbackScope;
                 skipScope();
                 return null;
-            }catch (ContinueError ignored){
+            } catch (ContinueError ignored) {
                 currentScope = callbackScope;
             }
             visit(ctx);
@@ -688,21 +680,21 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitScope(MusicParser.ScopeContext ctx) {
         Scope temp = null;
         currentScope = getCurrScope(stack.peek());
-        if(ctx.parent instanceof MusicParser.WhileLoopContext || ctx.parent instanceof MusicParser.ForLoopContext) {
+        if (ctx.parent instanceof MusicParser.WhileLoopContext || ctx.parent instanceof MusicParser.ForLoopContext) {
             temp = Scope.deepCopyScopeStructure(currentScope, currentScope.melodyParent, currentScope.parent);
         }
         visitChildren(ctx);
-        if (temp != null){
+        if (temp != null) {
             currentScope = currentScope.parent;
-            if (currentScope != null){
+            if (currentScope != null) {
                 currentScope.scopes.set(0, temp);
-            }else {
-                if(stack.peek() == null){
+            } else {
+                if (stack.peek() == null) {
                     throw new RuntimeException("Stack is empty!");
                 }
                 stack.peek().scopes.set(0, temp);
             }
-        }else {
+        } else {
             changeScope();
         }
         return null;
@@ -766,31 +758,98 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return null;
     }
 
+    @Override
+    public T visitForInit(MusicParser.ForInitContext ctx) {
+        if (ctx.varDecl() != null) {
+            currentScope = getCurrScope(stack.peek());
+            visit(ctx.varDecl());
+            currentScope = currentScope.parent;
+
+            /**
+             * if ForInit is Declaration then the variable goes to the scope representing For and
+             * information about declared variable in () goes to the parent Scope
+             */
+
+            if(ctx.varDecl() instanceof MusicParser.VarDeclWithARgContext){
+                if(currentScope != null){
+                    currentScope.forInit = ((MusicParser.VarDeclWithARgContext) ctx.varDecl()).ID().getText();
+                }else {
+                    if(stack.peek() == null){
+                        throw new RuntimeException("Stack is empty!");
+                    }
+                    stack.peek().forInit = ((MusicParser.VarDeclWithARgContext) ctx.varDecl()).ID().getText();
+                }
+            }else{
+                if(currentScope != null){
+                    currentScope.forInit = ((MusicParser.VarDeclWithoutArgContext) ctx.varDecl()).ID().getText();
+                }else {
+                    if(stack.peek() == null){
+                        throw new RuntimeException("Stack is empty!");
+                    }
+                    stack.peek().forInit = ((MusicParser.VarDeclWithoutArgContext) ctx.varDecl()).ID().getText();
+                }
+            }
+
+        } else {
+            visit(ctx.assignment());
+        }
+        return null;
+    }
+
 
     @Override
     public T visitForLoop(MusicParser.ForLoopContext ctx) {
-        if (ctx.varDecl() != null) {
-            visit(ctx.varDecl());
+        if (ctx.forInit() != null) {
+            visit(ctx.forInit());
         }
-        if (ctx.expr() == null || ((BoolValue) visit(ctx.expr())).value) {
-            while (ctx.expr() == null || ((BoolValue) visit(ctx.expr())).value){
+
+        /**
+         * For expr is outside for Scope to prevent something like this
+         *  main melody(){
+         *  for(int k = 2; i * k < 4; k +=1 ){
+         *      int i = 8;
+         *      ...
+         *      }
+         *  }
+         *  This would produce wrong Exception type if we were inside for loop at that time
+         *
+         */
+
+        if (ctx.expr() == null || checkForExpr(ctx)) {
+            while (ctx.expr() == null || checkForExpr(ctx)) {
                 Scope callbackScope = currentScope;
                 try {
                     visit(ctx.scope());
-                }catch (BreakError b){
+                } catch (BreakError b) {
                     currentScope = callbackScope;
                     skipScope();
+                    if (currentScope != null) {
+                        currentScope.forInit = null;
+                    }else{
+                        if (stack.peek() == null) {
+                            throw new RuntimeException("Stack is empty!");
+                        }
+                        stack.peek().forInit = null;
+                    }
                     return null;
-                }catch (ContinueError ignored){
+                } catch (ContinueError ignored) {
                     currentScope = callbackScope;
                 }
-                if(ctx.forUpdate() != null) {
+                if (ctx.forUpdate() != null) {
                     visit(ctx.forUpdate());
                 }
-
             }
+            skipScope();
         } else {
             skipScope();
+        }
+        if (currentScope != null) {
+            currentScope.forInit = null;
+        }else {
+            if (stack.peek() == null) {
+                throw new RuntimeException("Stack is empty!");
+            }
+            stack.peek().forInit = null;
         }
         return null;
     }
@@ -827,8 +886,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitFunctionCall(MusicParser.FunctionCallContext ctx) {
 
         String name = ctx.ID().getText();
-        if (name.equals("main")) throw new RuntimeError("You cannot call a main melody", this.lineMap.get(getLine(ctx)), getCol(ctx));
-        if (!melodyMemory.containsKey(name)) throw new RuntimeError("Melody " + name + " not declared" , this.lineMap.get(getLine(ctx)), getCol(ctx));
+        if (name.equals("main"))
+            throw new RuntimeError("You cannot call a main melody", this.lineMap.get(getLine(ctx)), getCol(ctx));
+        if (!melodyMemory.containsKey(name))
+            throw new RuntimeError("Melody " + name + " not declared", this.lineMap.get(getLine(ctx)), getCol(ctx));
 
         Melody melodyPattern = melodyMemory.get(name);
         Melody melody = Melody.deepCopyMelody(melodyPattern);
@@ -838,22 +899,22 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             melody.setInstrument(stack.peek().instrument);
         }
         if (ctx.arguments() == null && !melody.parameters.isEmpty())
-            throw new RuntimeError("Invalid number of arguments: 0"  + " instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
+            throw new RuntimeError("Invalid number of arguments: 0" + " instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         if (ctx.arguments() != null) {
             if (melody.parameters.size() != ctx.arguments().expr().size())
-                throw new RuntimeError("Invalid number of arguments: " +ctx.arguments().expr().size() + " instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
+                throw new RuntimeError("Invalid number of arguments: " + ctx.arguments().expr().size() + " instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
             int size = melody.parameters.size();
             for (int i = 0; i < size; i++) {
                 VarInfo par = melody.parameters.get(i);
                 Value arg = tryCasting(ctx.arguments().expr(i));
                 if (par.type != arg.getType())
-                    throw new RuntimeError("Invalid type of argument with index: " + (i+1) + " : " +  arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
+                    throw new RuntimeError("Invalid type of argument with index: " + (i + 1) + " : " + arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
                 par.valueObj = arg;
             }
         }
         for (Map.Entry<Integer, VarInfo> param : melody.parameters.entrySet()) {
             if (melody.memory.containsKey(param.getValue().name))
-                throw new RuntimeError("Redeclaration in line: " +melody.memory.get(param.getValue().name).line +  " of a melody parameter inside melody's body: " + param.getValue().name , this.lineMap.get(getLine(ctx.arguments())), getCol(ctx.arguments()));
+                throw new RuntimeError("Redeclaration in line: " + melody.memory.get(param.getValue().name).line + " of a melody parameter inside melody's body: " + param.getValue().name, this.lineMap.get(getLine(ctx.arguments())), getCol(ctx.arguments()));
             melody.memory.put(param.getValue().name, param.getValue());
 
         }
@@ -865,7 +926,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         melody.previous_scope = currentScope;
         currentScope = null;
         stack.push(melody);
-        if (stack.size() > 100)  throw new StackOverflow(name);
+        if (stack.size() > 100) throw new StackOverflow(name);
 
         if (ctx.settingsList() != null) {
             for (MusicParser.SettingsAssigmentContext set : ctx.settingsList().settingsAssigment())
@@ -1091,17 +1152,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     @SuppressWarnings("unchecked")
     public T visitIdExpr(MusicParser.IdExprContext ctx) {
-        Melody melody = stack.peek();
-        if (melody == null) throw new RuntimeException("Stack is empty!");
+
         VarInfo varInfo;
         String varName = ctx.ID().getText();
-        if (currentScope != null) {
-            varInfo = findVar(varName, ctx, ctx.parent());
-        } else if((ctx.parent().isEmpty())) {
-            varInfo = melody.memory.get(varName);
-        }else {
-            throw new ScopeError("There is no higher scope!", this.lineMap.get(getLine(ctx)), getCol(ctx));
-        }
+
+        varInfo = findVar(varName, ctx, ctx.parent());
+
         if (varInfo == null)
             throw new UndefinedError("No such variable defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
         return (T) varInfo.valueObj;
@@ -1146,11 +1202,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitIntExpr(MusicParser.IntExprContext ctx) {
         return visit(ctx.intVal());
-    }
-
-    @Override
-    public T visitSelfAssignmentExpr(MusicParser.SelfAssignmentExprContext ctx) {
-        return visit(ctx.selfAssignment());
     }
 
 
@@ -1212,12 +1263,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitTrackAdd(MusicParser.TrackAddContext ctx) {
         String name = ctx.trackStatement().ID().getText();
-        if(!tracks.containsKey(name)){
+        if (!tracks.containsKey(name)) {
             throw new UndefinedError("Undefined track variable: " + " " + name, this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         Track track = tracks.get(name);
         String funcName = ctx.trackStatement().functionCall().ID().getText();
-        if(!melodyMemory.containsKey(funcName)) throw new RuntimeError("Melody " + funcName + " not declared" , this.lineMap.get(getLine(ctx)), getCol(ctx));
+        if (!melodyMemory.containsKey(funcName))
+            throw new RuntimeError("Melody " + funcName + " not declared", this.lineMap.get(getLine(ctx)), getCol(ctx));
         Melody melody = melodyMemory.get(funcName);
         List<Value> argsOut = new ArrayList<>();
         MusicParser.ArgumentsContext args = ctx.trackStatement().functionCall().arguments();
@@ -1231,21 +1283,21 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 VarInfo par = melody.parameters.get(i);
                 Value arg = tryCasting(args.expr(i));
                 if (par.type != arg.getType())
-                    throw new RuntimeError("Invalid type of argument with index: " + (i+1) + " : " +  arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
+                    throw new RuntimeError("Invalid type of argument with index: " + (i + 1) + " : " + arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
                 argsOut.add(arg);
             }
         }
         MusicParser.SettingsListContext settings = ctx.trackStatement().functionCall().settingsList();
         Melody fakeMelody = new Melody();
         stack.push(fakeMelody);
-        if (settings!= null) {
+        if (settings != null) {
             for (MusicParser.SettingsAssigmentContext set : settings.settingsAssigment())
                 visit(set);
         }
         stack.pop();
-        String newCode = TrackHandler.generateNewCode(this.code,funcName,argsOut,fakeMelody.effects,fakeMelody.instrument);
-        AbstractMap.SimpleEntry<MusicSuperVisitor, MusicParser.ProgramContext> msv_prog = TrackHandler.prepareVisitor(newCode,this.lineMap);
-        TrackComponent newComponent = new TrackComponent(msv_prog.getKey(),msv_prog.getValue());
+        String newCode = TrackHandler.generateNewCode(this.code, funcName, argsOut, fakeMelody.effects, fakeMelody.instrument);
+        AbstractMap.SimpleEntry<MusicSuperVisitor, MusicParser.ProgramContext> msv_prog = TrackHandler.prepareVisitor(newCode, this.lineMap);
+        TrackComponent newComponent = new TrackComponent(msv_prog.getKey(), msv_prog.getValue());
         track.add(newComponent);
 
         return null;
@@ -1255,11 +1307,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitTrackDeclare(MusicParser.TrackDeclareContext ctx) {
 
         String name = ctx.trackDeclaration().ID().getText();
-        if(tracks.containsKey(name)){
+        if (tracks.containsKey(name)) {
             throw new VariableDeclarationError("Redeclaration of a track variable: " + name + " previously defined in line " + tracks.get(name).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
-        Track newTrack = new Track(name,getLine(ctx));
-        tracks.put(name,newTrack);
+        Track newTrack = new Track(name, getLine(ctx));
+        tracks.put(name, newTrack);
         return null;
     }
 
@@ -1362,14 +1414,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (melody == null) throw new RuntimeException("Stack is empty!");
         VarInfo var;
         String varName = id.getText();
-        if (currentScope != null) {
-            var = findVar(varName, ctx, parents);
-        } else {
-            if (parents != null && !parents.isEmpty()) {
-                throw new ScopeError("Higher scope does not exist!", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            }
-            var = melody.memory.get(varName);
-        }
+
+        var = findVar(varName, ctx, parents);
+
         if (var == null)
             throw new UndefinedError("Variable not defined: " + id.getText(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         if (type == null) {
@@ -1455,36 +1502,77 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return;
     }
 
-
+    /**
+     * The order is like this:
+     * current scope is not null then we first look for the first scope after up: statement
+     * then we check whether this scope has for scope with declared variable inside () of for
+     * then we check this and higher scopes memory (we dont want to check other scopes forInit because if the scope has variable in forInit
+     * then it child also has this variable)
+     * lastly we check the main memory
+     * if current scope is null then we only check main forInit and memory
+     *
+     * @param varName
+     * @param ctx
+     * @param parentContexts
+     * @return
+     */
     private VarInfo findVar(String varName, ParserRuleContext ctx, List<MusicParser.ParentContext> parentContexts) {
-        Scope current = currentScope;
+        Melody melody = stack.peek();
+        if (melody == null) throw new RuntimeException("Stack is empty!");
+        if (currentScope != null) {
+            Scope current = currentScope;
 
-        for (int i = 0; i < parentContexts.size(); i++) {
-            System.out.println("up");
-            current = currentScope.parent;
+            for (int i = 0; i < parentContexts.size(); i++) {
+                current = currentScope.parent;
+            }
+
+            /**
+             * After finding proper scope we check whether his forInit lines up with varName - if so we need to go back
+             * and pull out the variable from child memory (because child Scope representing for has varDecl of for inside)
+             * Only works for for loops, or should
+             */
+
+            if(current != null){
+                if(varName.equals(current.forInit)){
+                    return current.scopes.get(0).memory.get(varName);
+                }
+
+            }else {
+                if(varName.equals(melody.forInit)){
+                    return melody.scopes.get(0).memory.get(varName);
+                }
+            }
+
+            while (current != null) {
+                if ( !current.memory.containsKey(varName) || current.memory.get(varName).valueObj == null) {
+                    current = current.parent;
+                } else {
+                    return current.memory.get(varName);
+                }
+            }
+
+            if (stack.isEmpty()) throw new RuntimeException("Stack is empty!");
+
+            if (melody.memory.containsKey(varName)) {
+                return melody.memory.get(varName);
+            } else
+                throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
+
+        } else if (parentContexts == null || parentContexts.isEmpty()) {
+            if(varName.equals(melody.forInit)){
+                return melody.scopes.get(0).memory.get(varName);
+            }
+            return melody.memory.get(varName);
+        } else {
+            throw new ScopeError("There is no higher scope!", this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
-
-        while (current != null) {
-            if (!current.memory.containsKey(varName) || current.memory.get(varName).valueObj == null) {
-                current = current.parent;
-            } else return current.memory.get(varName);
-        }
-
-        if (stack.isEmpty()) throw new RuntimeException("Stack is empty!");
-
-        if (stack.peek().memory.containsKey(varName)) {
-            return stack.peek().memory.get(varName);
-        } else
-            throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
 
     }
 
     /**
-     *
      * Declares var saved in memory of scope or melody
      * if parent of declaration is For loop then we declare the value in
      * the child scope because this declaration happens BEFORE we jump into FOR scope
-     *
      *
      * @param varName
      * @param ctx
@@ -1492,13 +1580,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     private VarInfo declareVar(String varName, ParserRuleContext ctx) {
         Scope current = currentScope;
-        if(ctx instanceof MusicParser.ForLoopContext){
-            if(current == null){
-                current = stack.peek().scopes.get(0);
-            }else {
-                current = current.scopes.get(0);
-            }
-        }
+
         while (current != null) {
             if (!current.memory.containsKey(varName)) {
                 current = current.parent;
@@ -1530,11 +1612,18 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
     }
 
-    private void skipScope(){
+    private void skipScope() {
         currentScope = getCurrScope(stack.peek());
         changeScope();
     }
 
+    private boolean checkForExpr(MusicParser.ForLoopContext ctx){
 
+        if(((BoolValue) visit(ctx.expr())).value){
+            return true;
+        }else{
+            return false;
+        }
+    }
 
 }

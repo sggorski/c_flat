@@ -350,6 +350,12 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitElse(MusicParser.ElseContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MusicParser#forInit}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForInit(MusicParser.ForInitContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MusicParser#forUpdate}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -391,13 +397,6 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSettingsList(MusicParser.SettingsListContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code selfAssignmentExpr}
-	 * labeled alternative in {@link MusicParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSelfAssignmentExpr(MusicParser.SelfAssignmentExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code intExpr}
 	 * labeled alternative in {@link MusicParser#expr}.

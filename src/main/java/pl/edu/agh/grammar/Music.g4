@@ -35,6 +35,7 @@ mainStatement
 statement
     : functionDecl
     | assignment ';'
+    | selfAssignment ';'
     | settings ';'
     | varDecl ';'
     | playStatement ';'
@@ -136,7 +137,7 @@ parentID: parent* ID;
 
 loop:
     'while' '(' expr ')' scope #whileLoop
-    | 'for' '(' varDecl? ';' expr? ';' forUpdate? ')' scope #forLoop;
+    | 'for' '(' forInit? ';' expr? ';' forUpdate? ')' scope #forLoop;
 
 loopBody: (statement)+;
 
@@ -146,6 +147,9 @@ elseif: 'else' 'if' '(' expr ')' scope;
 
 else: 'else' scope;
 
+forInit
+    : assignment
+    | varDecl;
 
 forUpdate
     : playStatement
@@ -174,8 +178,7 @@ settingsList
     ;
 
 expr
-    : selfAssignment #selfAssignmentExpr
-    | LP expr RP  #paranthesesExpr
+    : LP expr RP  #paranthesesExpr
     | NOT expr #notExpr
     | expr mullDivOp expr #mullDivOperatorExpr
     | expr addSubOp expr #addSubOperatorExpr
