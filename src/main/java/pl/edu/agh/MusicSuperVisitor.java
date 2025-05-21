@@ -1550,9 +1550,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         Melody melody = stack.peek();
         if (currentScope != null) {
             Scope current = currentScope;
-
             for (int i = 0; i < parentContexts.size(); i++) {
-                current = currentScope.parent;
+                current = current.parent;
+                parentContexts.remove(0);
+                if (current == null) break;
+            }
+            if (parentContexts.size() > 1){
+                throw new ScopeError("There is no higher scope!", this.lineMap.get(getLine(ctx)), getCol(ctx));
             }
 
             /**
@@ -1565,15 +1569,14 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 if (varName.equals(current.forInit)) {
                     return current.scopes.get(0).memory.get(varName);
                 }
-
             } else {
-                if (melody != null && varName.equals(melody.forInit)) {
+                if (melody != null && melody.forInit != null && melody.forInit.equals(varName)) {
                     return melody.scopes.get(0).memory.get(varName);
                 }
             }
 
             while (current != null) {
-                if (!current.memory.containsKey(varName) || current.memory.get(varName).valueObj == null) {
+                if (!current.memory.containsKey(varName) || current.memory.get(varName) == null) {
                     current = current.parent;
                 } else {
                     return current.memory.get(varName);
@@ -1582,9 +1585,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
             //if (stack.isEmpty()) throw new RuntimeException("Stack is empty!");
 
-            if (melody != null && melody.memory.containsKey(varName)) {
-                return melody.memory.get(varName);
-            } else if (globalScope.containsKey(varName)) {
+            if (melody != null && (melody.memory.containsKey(varName) || melody.memory.get(varName) != null))  {
+                if(parentContexts.isEmpty()){
+                    return melody.memory.get(varName);
+                }
+            } else if (globalScope.containsKey(varName) || globalScope.get(varName) != null) {
                 return globalScope.get(varName);
             }
             throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
@@ -1599,14 +1604,14 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             if (parentContexts == null || parentContexts.isEmpty()) {
                 if (varName.equals(melody.forInit)) {
                     return melody.scopes.get(0).memory.get(varName);
-                } else if (melody.memory.containsKey(varName) && melody.memory.get(varName).valueObj != null) {
+                } else if (melody.memory.containsKey(varName) && melody.memory.get(varName) != null) {
                     return melody.memory.get(varName);
-                } else if (globalScope.containsKey(varName) && globalScope.get(varName).valueObj != null) {
+                } else if (globalScope.containsKey(varName) && globalScope.get(varName) != null) {
                     return globalScope.get(varName);
                 }
                 throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
             } else if (parentContexts.size() == 1) {
-                if (globalScope.containsKey(varName) && globalScope.get(varName).valueObj != null) {
+                if (globalScope.containsKey(varName) && globalScope.get(varName) != null) {
                     return globalScope.get(varName);
                 }
                 throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
