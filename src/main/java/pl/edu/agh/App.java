@@ -25,7 +25,7 @@ public class App
         ImportHandler resolver = new ImportHandler();
         String mergedSource;
         try {
-            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/third_stage/test2.txt");
+            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/third_stage/test3.cb");
         } catch (ImportError e) {
             System.err.println(e.getMessage());
             return;

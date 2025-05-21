@@ -1,0 +1,10 @@
+int a = 5;
+
+melody main(){
+
+    up:a = 7;
+    int c = 1000;
+    up:a = c;
+    PLAY C1 a;
+
+}
