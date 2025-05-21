@@ -1,0 +1,22 @@
+melody fibonacci(int n){
+    if(n < 0){
+        RETURN -1;
+    }
+
+    if(n==1 OR n==2){
+        RETURN 1;
+    }
+    int k1;
+    int k2;
+    PLAY fibonacci(n-1) OUT k1;
+    PLAY fibonacci(n-2) OUT k2;
+    RETURN k1+ k2;
+}
+
+melody main(){
+    int result;
+    for(int i=1; i<8; i+=1){
+        PLAY fibonacci(i) OUT result;
+        PRINT(result);
+    }
+}
