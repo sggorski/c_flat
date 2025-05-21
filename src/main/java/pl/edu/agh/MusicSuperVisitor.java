@@ -903,8 +903,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         Melody melodyPattern = melodyMemory.get(name);
         Melody melody = Melody.deepCopyMelody(melodyPattern);
-
-        if (stack.peek() != null) {
+        if(currentScope!=null){
+            melody.copyEffects(currentScope.effects);
+            melody.setInstrument(currentScope.instrument);
+        }
+        else {
             melody.copyEffects(stack.peek().effects);
             melody.setInstrument(stack.peek().instrument);
         }
