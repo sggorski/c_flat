@@ -1,0 +1,11 @@
+melody f1(Note n, int k){
+    n+=k/100;
+    PLAY n k;
+    RETURN k+100;
+}
+
+melody main(){
+    for(int i=0; i<1000; PLAY f1(C2, i) OUT i){
+        PRINT(i);
+    }
+ }

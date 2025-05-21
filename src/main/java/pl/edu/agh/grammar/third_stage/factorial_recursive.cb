@@ -1,0 +1,18 @@
+melody silnia(int n){
+    int b = 0;
+
+    if (n == 1){
+        RETURN 1;
+    }else{
+        int a = 0;
+        PLAY silnia(n-1) OUT a;
+        PRINT(n*a);
+        RETURN n * a;
+    }
+}
+
+melody main(){
+    int k;
+    PLAY silnia(5) OUT k;
+    RETURN k;
+}

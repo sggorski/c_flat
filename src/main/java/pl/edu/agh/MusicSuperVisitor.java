@@ -51,7 +51,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         for (MusicParser.MainStatementContext statement : melodyMemory.get("main").mainBody) {
             visit(statement);
         }
-        System.out.println(melodyMemory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
+        //System.out.println(melodyMemory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
         return (T) (new BoolValue(true)); //everything went ok
     }
 
@@ -98,6 +98,14 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitStatement(MusicParser.StatementContext ctx) {
         return visitChildren(ctx);
+    }
+
+    @Override
+    public T visitPrint(MusicParser.PrintContext ctx) {
+        Value value = tryCasting(ctx.expr());
+        int line = getLine(ctx);
+        System.out.println("LINE " + line + " :" + value);
+        return null;
     }
 
     @Override
@@ -354,7 +362,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             else if (ctx.assOp().MULIS() != null) intVar.value *= intValue.value;
             else if (ctx.assOp().DIVIS() != null && intValue.value != 0) intVar.value /= intValue.value;
             else throw new ArithmeticOperationError("Division by zero", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            System.out.println(varInfo);
+            //System.out.println(varInfo);
             return (T) new IntValue(intVar.value);
         } else if (varInfo.type == Type.NOTE && exprValue.getType() == Type.INT) {
             IntValue intValue = (IntValue) exprValue;
@@ -371,7 +379,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 throw new ArithmeticOperationError("Invalid operation with notes", this.lineMap.get(getLine(ctx)), getCol(ctx));
             newNoteValue = Math.abs(newNoteValue) % 85;
             noteValue.note = findNote(newNoteValue);
-            System.out.println(varInfo);
+            //System.out.println(varInfo);
             return (T) new NoteValue(noteValue.note);
         } else if (varInfo.type == Type.CHORD && exprValue.getType() == Type.NOTE) {
             NoteValue noteValue = (NoteValue) exprValue;
@@ -384,7 +392,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 chordValue.notes.remove(noteValue);
             } else
                 throw new ArithmeticOperationError("Invalid operation with chords", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            System.out.println(varInfo);
+            //System.out.println(varInfo);
             return (T) new ChordValue(chordValue.notes);
         } else if (varInfo.type == Type.CHORD && exprValue.getType() == Type.CHORD) {
             ChordValue chordValue = (ChordValue) exprValue;
@@ -402,7 +410,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                     throw new ArithmeticOperationError("Invalid operation with chords: less than 2 notes left in a chord", this.lineMap.get(getLine(ctx)), getCol(ctx));
                 chordModified.notes = listNotes;
             }
-            System.out.println(varInfo);
+            //System.out.println(varInfo);
             return (T) new ChordValue(chordModified.notes);
         } else throw new ArithmeticOperationError("Invalid operation", this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
@@ -424,10 +432,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
         varInfo.valueObj = val;
         if (currentScope != null) {
-            System.out.println(currentScope.memory.get(varInfo.name).toString());
+            //System.out.println(currentScope.memory.get(varInfo.name).toString());
         } else {
             if(melody != null){
-                System.out.println(melody.memory.get(varInfo.name).toString());
+                //System.out.println(melody.memory.get(varInfo.name).toString());
             }
         }
 

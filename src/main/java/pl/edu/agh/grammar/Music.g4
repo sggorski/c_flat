@@ -50,7 +50,11 @@ statement
     | continueStatement
     | breakStatement
     | scope
+    | print ';'
     ;
+
+print
+    : 'PRINT' '(' expr ')';
 
 returnStatement
     : 'RETURN' expr?;
