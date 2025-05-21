@@ -6,7 +6,7 @@ public class UndefinedError extends RuntimeException {
     public UndefinedError(String message, LineOrigin origin, int column) {
         super();
         this.lineOrigin = origin;
-        this.message = "Undefined error at: " + lineOrigin.getOriginalLine() + " character: " + column + " file: " + lineOrigin.getFileName() + " " + message;
+        this.message = "Undefined error at line: " + lineOrigin.getOriginalLine() + " character: " + column + " file: " + lineOrigin.getFileName() + " " + message;
         this.column = column ;
     }
     private final LineOrigin lineOrigin;

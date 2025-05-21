@@ -1,0 +1,17 @@
+melody mel1(Note n) {
+    while(n != C3) {
+        PRINT(n);
+        PLAY n 250;
+        n+=1;
+    }
+}
+
+melody main() {
+    PLAY mel1(C2);
+
+    for(Note n=C2; n<C3; n+=1) {
+        PRINT(n);
+        PLAY n 250;
+        n+=1;
+    }
+}

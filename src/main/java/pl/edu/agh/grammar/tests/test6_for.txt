@@ -5,7 +5,7 @@ melody main() {
 	PLAY G3 F#3 F3 D3 G3 F#3 F3 D3 E3 25;
 	PLAY G3 50;
 
-	Note n1 = G#3;
+	Note n1 = G#2;
 
 	for(int k=0; k<4; k+=1) {
 		PLAY n1 200;
