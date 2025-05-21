@@ -304,21 +304,21 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitSettingsValues(MusicParser.SettingsValuesContext ctx) {
         Melody melody = stack.peek();
         if (melody == null) throw new RuntimeException("Stack is empty");
-        if (ctx.BLUES() != null) return (T) (melody.effects.get(Effect.BLUES));
-        if (ctx.JAZZ() != null) return (T) (melody.effects.get(Effect.JAZZ));
-        if (ctx.SUSTAIN() != null) return (T) (melody.effects.get(Effect.SUSTAIN));
-        if (ctx.DISTORTION() != null) return (T) (melody.effects.get(Effect.DISTORTION));
-        if (ctx.PACE() != null) return (T) (melody.effects.get(Effect.PACE));
-        if (ctx.VOLUME() != null) return (T) (melody.effects.get(Effect.VOLUME));
-        if (ctx.VIBRATO() != null) return (T) (melody.effects.get(Effect.VIBRATO));
-        if (ctx.BALANCE() != null) return (T) (melody.effects.get(Effect.BALANCE));
-        if (ctx.SOSTENUTO() != null) return (T) (melody.effects.get(Effect.SOSTENUTO));
-        if (ctx.SOFT() != null) return (T) (melody.effects.get(Effect.SOFT));
-        if (ctx.RESONANCE() != null) return (T) (melody.effects.get(Effect.RESONANCE));
-        if (ctx.REVERB() != null) return (T) (melody.effects.get(Effect.REVERB));
-        if (ctx.TREMOLO() != null) return (T) (melody.effects.get(Effect.TREMOLO));
-        if (ctx.CHORUS() != null) return (T) (melody.effects.get(Effect.CHORUS));
-        if (ctx.PHRASER() != null) return (T) (melody.effects.get(Effect.PHRASER));
+        if (ctx.BLUES() != null) return (T) (getSettings(Effect.BLUES));
+        if (ctx.JAZZ() != null) return (T) (getSettings(Effect.JAZZ));
+        if (ctx.SUSTAIN() != null) return (T) (getSettings(Effect.SUSTAIN));
+        if (ctx.DISTORTION() != null) return (T) (getSettings(Effect.DISTORTION));
+        if (ctx.PACE() != null) return (T) (getSettings(Effect.PACE));
+        if (ctx.VOLUME() != null) return (T) (getSettings(Effect.VOLUME));
+        if (ctx.VIBRATO() != null) return (T) (getSettings(Effect.VIBRATO));
+        if (ctx.BALANCE() != null) return (T) (getSettings(Effect.BALANCE));
+        if (ctx.SOSTENUTO() != null) return (T) getSettings(Effect.SOSTENUTO);
+        if (ctx.SOFT() != null) return (T) (getSettings(Effect.SOFT));
+        if (ctx.RESONANCE() != null) return (T) (getSettings(Effect.RESONANCE));
+        if (ctx.REVERB() != null) return (T) (getSettings(Effect.REVERB));
+        if (ctx.TREMOLO() != null) return (T) (getSettings(Effect.TREMOLO));
+        if (ctx.CHORUS() != null) return (T) (getSettings(Effect.CHORUS));
+        if (ctx.PHRASER() != null) return (T) (getSettings(Effect.PHRASER));
         if (ctx.INSTRUMENT() != null) return (T) (melody.instrument);
         else throw new SyntaxError("Syntax error", this.lineMap.get(getLine(ctx)), getCol(ctx));
 
@@ -909,8 +909,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         Melody melodyPattern = melodyMemory.get(name);
         Melody melody = Melody.deepCopyMelody(melodyPattern);
-
-        if (stack.peek() != null) {
+        if(currentScope!=null){
+            melody.copyEffects(currentScope.effects);
+            melody.setInstrument(currentScope.instrument);
+        }
+        else {
             melody.copyEffects(stack.peek().effects);
             melody.setInstrument(stack.peek().instrument);
         }
@@ -1661,6 +1664,17 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         } else {
             currentScope.scopes.set(0, temp);
         }
+    }
+
+    /**
+     * Allows us to get settings from a proper place, scope or melody
+     */
+    private Value getSettings(Effect effect){
+        Melody melody = stack.peek();
+        if (currentScope != null) {
+            return currentScope.effects.get(effect);
+        } else if (melody != null) return melody.effects.get(effect);
+        return null;
     }
 
 
