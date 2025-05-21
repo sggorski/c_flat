@@ -1589,24 +1589,38 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             }
             throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
 
-        } else if (parentContexts == null || parentContexts.isEmpty()) {
-            if (varName.equals(melody.forInit)) {
-                return melody.scopes.get(0).memory.get(varName);
-            } else if (melody.memory.containsKey(varName) && melody.memory.get(varName).valueObj != null) {
-                return melody.memory.get(varName);
-            }else if (globalScope.containsKey(varName) && globalScope.get(varName).valueObj != null ) {
-                return globalScope.get(varName);
-            }
-            throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
-        }else if(parentContexts.size() == 1){
-            if (globalScope.containsKey(varName) && globalScope.get(varName).valueObj != null) {
-                return globalScope.get(varName);
-            }
-            throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
-        }else {
-            throw new ScopeError("There is no higher scope!", this.lineMap.get(getLine(ctx)), getCol(ctx));
-        }
+            /**
+             * This section looks bad, don't worry
+             * will be changed in my spare time
+             */
 
+        } else if (melody != null) {
+
+            if (parentContexts == null || parentContexts.isEmpty()) {
+                if (varName.equals(melody.forInit)) {
+                    return melody.scopes.get(0).memory.get(varName);
+                } else if (melody.memory.containsKey(varName) && melody.memory.get(varName).valueObj != null) {
+                    return melody.memory.get(varName);
+                } else if (globalScope.containsKey(varName) && globalScope.get(varName).valueObj != null) {
+                    return globalScope.get(varName);
+                }
+                throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
+            } else if (parentContexts.size() == 1) {
+                if (globalScope.containsKey(varName) && globalScope.get(varName).valueObj != null) {
+                    return globalScope.get(varName);
+                }
+                throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
+            }else {
+                throw new ScopeError("There is no higher scope!", this.lineMap.get(getLine(ctx)), getCol(ctx));
+            }
+        } else {
+            if(parentContexts != null && !parentContexts.isEmpty()) {
+                throw new ScopeError("There is no higher scope!", this.lineMap.get(getLine(ctx)), getCol(ctx));
+            }
+            if(globalScope.containsKey(varName)) {
+                return globalScope.get(varName);
+            }else throw new UndefinedError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        }
     }
 
     /**
