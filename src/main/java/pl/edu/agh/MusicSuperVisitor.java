@@ -936,7 +936,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 Value arg = tryCasting(ctx.arguments().expr(i));
                 if (par.type != arg.getType())
                     throw new RuntimeError("Invalid type of argument with index: " + (i + 1) + " : " + arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
-                par.valueObj = arg;
+                par.valueObj = copyValue(arg);
             }
         }
         for (Map.Entry<Integer, VarInfo> param : melody.parameters.entrySet()) {
