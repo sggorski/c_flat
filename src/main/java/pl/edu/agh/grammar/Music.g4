@@ -1,6 +1,10 @@
 grammar Music;
 
-program : imports* functionDecl* mainDecl? EOF;
+program : imports* globalVars? functionDecl* mainDecl? EOF;
+
+globalVars
+    : (varDecl ';')+
+    ;
 
 imports
     : IMPORT STRING_VAL ';'

@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import pl.edu.agh.errors.*;
 import pl.edu.agh.utils.LineOrigin;
+import pl.edu.agh.utils.VarInfo;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,13 +18,14 @@ import java.util.Map;
 public class App 
 {
     public static HashMap<String,Melody> melodyMemory = new HashMap<>();
+    public static HashMap<String, VarInfo> globalScope  = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
 
         ImportHandler resolver = new ImportHandler();
         String mergedSource;
         try {
-            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/tests/test19_functions_advanced.cb");
+            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/third_stage/test2.txt");
         } catch (ImportError e) {
             System.err.println(e.getMessage());
             return;
@@ -49,11 +51,11 @@ public class App
             Melody main = new Melody();
             MusicParser.ProgramContext program = parser.program();
 
-            MusicSuperListener listener = new MusicSuperListener(melodyMemory, lexer, lineMap);
+            MusicSuperListener listener = new MusicSuperListener(melodyMemory, lexer, lineMap, globalScope);
             ParseTreeWalker walker = new ParseTreeWalker();
             walker.walk(listener, program);
             System.out.println(melodyMemory.toString());
-            MusicSuperVisitor visitor = new MusicSuperVisitor(melodyMemory, lineMap, mergedSource);
+            MusicSuperVisitor visitor = new MusicSuperVisitor(melodyMemory, lineMap, mergedSource, globalScope);
             visitor.visitProgram(program);
 
         } catch (ParseCancellationException e) {
@@ -65,8 +67,8 @@ public class App
         } catch (SyntaxError | ValueError | ScopeError | VariableDeclarationError | StackOverflow e) {
             System.err.println(e.getMessage() /*+ " Errors"*/);
         }
-        catch (Exception e) {
-            System.err.println(/*"Error: +"*/ e.getMessage());
-        }
+//        catch (Exception e) {
+//            System.err.println(/*"Error: +"*/ e.getMessage());
+//        }
     }
 }

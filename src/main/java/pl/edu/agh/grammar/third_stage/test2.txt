@@ -1,3 +1,8 @@
+int d;
+int e = 9;
+Note f = C3;
+
+
 melody inc(int a){
     a += 1;
     int c = 100;
@@ -41,7 +46,7 @@ melody main(){
         if (i < 3){
             break;
         }else{
-            for (int k = 2; i + k < 8; PLAY inc(k) OUT k){
+            for (int k = 2; i + k < 2; PLAY inc(k) OUT k){
                 PLAY C1 1000;
             }
         }

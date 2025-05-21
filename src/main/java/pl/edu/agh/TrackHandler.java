@@ -88,6 +88,7 @@ public class TrackHandler {
      */
     public static AbstractMap.SimpleEntry<MusicSuperVisitor, MusicParser.ProgramContext> prepareVisitor(String code, Map<Integer, LineOrigin> lineMap){
         HashMap<String,Melody> melodyMemory = new HashMap<>();
+        HashMap<String, VarInfo> globalScope = new HashMap<>();
         CharStream stream = CharStreams.fromString(code);
         MusicLexer lexer = new MusicLexer(stream);
         lexer.removeErrorListeners();
@@ -97,10 +98,10 @@ public class TrackHandler {
         parser.removeErrorListeners();
         parser.addErrorListener(new MusicErrorListener(lineMap));
         MusicParser.ProgramContext program = parser.program();
-        MusicSuperListener listener = new MusicSuperListener(melodyMemory, lexer, lineMap);
+        MusicSuperListener listener = new MusicSuperListener(melodyMemory, lexer, lineMap, globalScope);
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(listener, program);
-        MusicSuperVisitor visitor = new MusicSuperVisitor(melodyMemory, lineMap,null);
+        MusicSuperVisitor visitor = new MusicSuperVisitor(melodyMemory, lineMap,null, globalScope);
         return new AbstractMap.SimpleEntry<>(visitor, program);
     }
 }

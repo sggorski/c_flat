@@ -17,6 +17,12 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProgram(MusicParser.ProgramContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MusicParser#globalVars}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGlobalVars(MusicParser.GlobalVarsContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MusicParser#imports}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

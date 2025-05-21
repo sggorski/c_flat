@@ -18,6 +18,16 @@ public interface MusicListener extends ParseTreeListener {
 	 */
 	void exitProgram(MusicParser.ProgramContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MusicParser#globalVars}.
+	 * @param ctx the parse tree
+	 */
+	void enterGlobalVars(MusicParser.GlobalVarsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MusicParser#globalVars}.
+	 * @param ctx the parse tree
+	 */
+	void exitGlobalVars(MusicParser.GlobalVarsContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MusicParser#imports}.
 	 * @param ctx the parse tree
 	 */
