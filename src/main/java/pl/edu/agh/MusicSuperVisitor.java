@@ -339,7 +339,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (exprValue.getType() != varInfo.type) {
             throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + exprValue.getType(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
-        varInfo.valueObj = exprValue;
+        varInfo.valueObj = copyValue(exprValue);
 
         //To check if everything is ok, will be deleted in a future
         Melody melody = stack.peek();
@@ -430,7 +430,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (val.getType() != varInfo.type) {
             throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + val.getType(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
-        varInfo.valueObj = val;
+        varInfo.valueObj = copyValue(val);
         if (currentScope != null) {
             //System.out.println(currentScope.memory.get(varInfo.name).toString());
         } else {
@@ -1687,6 +1687,26 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         } else if (melody != null) return melody.effects.get(effect);
         return null;
     }
+
+    private Value copyValue(Value value){
+        Type type = value.getType();
+        switch(type){
+            case INT:
+                IntValue valInt = (IntValue) value;
+                return new IntValue(valInt.value);
+            case BOOL:
+                BoolValue valBool = (BoolValue) value;
+                return new BoolValue(valBool.value);
+            case NOTE:
+                NoteValue valNote = (NoteValue) value;
+                return new NoteValue(valNote.note);
+            case CHORD:
+                ChordValue val = (ChordValue) value;
+                return new ChordValue(val.notes);
+        }
+        return null;
+    }
+
 
 
 }
