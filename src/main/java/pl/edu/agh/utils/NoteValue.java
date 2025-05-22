@@ -1,6 +1,7 @@
 package pl.edu.agh.utils;
 
 import pl.edu.agh.musicUtils.Note;
+import pl.edu.agh.musicUtils.NoteMap;
 
 import java.util.Objects;
 
