@@ -2,18 +2,18 @@ package pl.edu.agh;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.errors.*;
 import pl.edu.agh.utils.*;
-import pl.edu.agh.utils.Instrument;
+import pl.edu.agh.musicUtils.Instrument;
+import pl.edu.agh.musicUtils.*;
 
+import javax.sound.midi.MidiChannel;
 import java.util.*;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 
-import static pl.edu.agh.utils.Instrument.*;
+import static pl.edu.agh.musicUtils.Instrument.*;
 
 
 @SuppressWarnings("CheckReturnValue")
@@ -156,8 +156,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitPace(MusicParser.PaceContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.PACE, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.PACE, this);
+            editEffect(ctx, Effect.PACE, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.PACE,null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -165,8 +165,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitSustain(MusicParser.SustainContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.SUSTAIN, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.SUSTAIN, this);
+            editEffect(ctx, Effect.SUSTAIN, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.SUSTAIN, null, melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -194,8 +194,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitDistortion(MusicParser.DistortionContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.DISTORTION, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.DISTORTION, this);
+            editEffect(ctx, Effect.DISTORTION, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.DISTORTION, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -203,8 +203,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitJazz(MusicParser.JazzContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.JAZZ, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.JAZZ, this);
+            editEffect(ctx, Effect.JAZZ, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.JAZZ, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -212,8 +212,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitBlues(MusicParser.BluesContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.BLUES, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.BLUES, this);
+            editEffect(ctx, Effect.BLUES, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.BLUES, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -221,8 +221,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitVolume(MusicParser.VolumeContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.VOLUME, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.VOLUME, this);
+            editEffect(ctx, Effect.VOLUME, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.VOLUME, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -230,8 +230,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitVibrato(MusicParser.VibratoContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.VIBRATO, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.VIBRATO, this);
+            editEffect(ctx, Effect.VIBRATO, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.VIBRATO, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -239,8 +239,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitBalance(MusicParser.BalanceContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.BALANCE, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.BALANCE, this);
+           editEffect(ctx, Effect.BALANCE, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.BALANCE, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -248,8 +248,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitSostenutoPedal(MusicParser.SostenutoPedalContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.SOSTENUTO, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.SOSTENUTO, this);
+            editEffect(ctx, Effect.SOSTENUTO, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.SOSTENUTO, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -257,8 +257,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitSoftPedal(MusicParser.SoftPedalContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.SOFT, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.SOFT, this);
+            editEffect(ctx, Effect.SOFT, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.SOFT, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -266,8 +266,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitResonance(MusicParser.ResonanceContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.RESONANCE, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.RESONANCE, this);
+            editEffect(ctx, Effect.RESONANCE, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.RESONANCE, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -275,8 +275,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitReverb(MusicParser.ReverbContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.REVERB, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.REVERB, this);
+            editEffect(ctx, Effect.REVERB, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.REVERB, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -284,8 +284,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitTremolo(MusicParser.TremoloContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.TREMOLO, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.TREMOLO, this);
+            editEffect(ctx, Effect.TREMOLO, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.TREMOLO, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -293,8 +293,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitChorus(MusicParser.ChorusContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.CHORUS, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.CHORUS, this);
+           editEffect(ctx, Effect.CHORUS, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.CHORUS, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -302,8 +302,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitPhraser(MusicParser.PhraserContext ctx) {
         Melody melody = stack.peek();
         if (currentScope != null) {
-            currentScope.editEffect(ctx, Effect.PHRASER, this, ctx.parent());
-        } else if (melody != null) melody.editEffect(ctx, Effect.PHRASER, this);
+            editEffect(ctx, Effect.PHRASER, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
+        } else if (melody != null) editEffect(ctx, Effect.PHRASER, null,melody.effects,melody.instrument,melody.channels);
         return visitChildren(ctx);
     }
 
@@ -378,8 +378,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             else
                 throw new ArithmeticOperationError("Invalid operation with notes", this.lineMap.get(getLine(ctx)), getCol(ctx));
             newNoteValue = Math.abs(newNoteValue) % 85;
-            noteValue.note = findNote(newNoteValue);
-            //System.out.println(varInfo);
+            noteValue.note = Music.findNote(newNoteValue);
             return (T) new NoteValue(noteValue.note);
         } else if (varInfo.type == Type.CHORD && exprValue.getType() == Type.NOTE) {
             NoteValue noteValue = (NoteValue) exprValue;
@@ -464,7 +463,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             duration = varInt.value;
         }
         Note note = Note.valueOf(ctx.NOTE_VAL().getText().replace('#', 's').replace('-', 'm'));
-        playNote(note, duration);
+        Music.playNote(note, duration,stack.peek(),currentScope);
         return visitChildren(ctx);
     }
 
@@ -478,7 +477,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             IntValue varInt = (IntValue) extractVariable(ctx, ctx.ID(), Type.INT, ctx.parent()).valueObj;
             duration = varInt.value;
         }
-        playChord(chord.notes, duration);
+        Music.playChord(chord.notes, duration,stack.peek(),currentScope);
         return visitChildren(ctx);
 
     }
@@ -527,10 +526,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             }
             if (varInfo.type == Type.NOTE) {
                 NoteValue noteVal = (NoteValue) varInfo.valueObj;
-                playNote(noteVal.note, duration);
+                Music.playNote(noteVal.note, duration,melody,currentScope);
             } else {
                 ChordValue chordVal = (ChordValue) varInfo.valueObj;
-                playChord(chordVal.notes, duration);
+                Music.playChord(chordVal.notes, duration,melody,currentScope);
             }
         }
         //playing track
@@ -585,10 +584,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             ParseTree child = ctx.getChild(i);
             if (visit(child) instanceof ChordValue) {
                 ChordValue chord = (ChordValue) visit(child);
-                playChord(chord.notes, duration);
+                Music.playChord(chord.notes, duration,melody,currentScope);
             } else if (visit(child) instanceof NoteValue) {
                 NoteValue note = (NoteValue) visit(child);
-                playNote(note.note, duration);
+                Music.playNote(note.note, duration,melody,currentScope);
             } else {
                 MusicParser.ParentIDContext idContext = (MusicParser.ParentIDContext) child;
                 VarInfo varInfo;
@@ -598,10 +597,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
                 if (varInfo.type == Type.NOTE) {
                     NoteValue noteVal = (NoteValue) varInfo.valueObj;
-                    playNote(noteVal.note, duration);
+                    Music.playNote(noteVal.note, duration,melody,currentScope);
                 } else if (varInfo.type == Type.CHORD) {
                     ChordValue chordVal = (ChordValue) varInfo.valueObj;
-                    playChord(chordVal.notes, duration);
+                    Music.playChord(chordVal.notes, duration,melody,currentScope);
                 } else {
                     throw new ValueError("Expecting Note or Chord value, got: " + varInfo, this.lineMap.get(getLine(ctx)), getCol(ctx));
                 }
@@ -981,7 +980,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     @SuppressWarnings("unchecked")
     public T visitNoteExpr(MusicParser.NoteExprContext ctx) {
-        return (T) parseNote(ctx.NOTE_VAL().getText());
+        return (T) Music.parseNote(ctx.NOTE_VAL().getText());
     }
 
     @Override
@@ -1065,7 +1064,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             if (ctx.addSubOp().SUB() != null) noteIntVal -= intVal;
             else noteIntVal += intVal;
             noteIntVal = Math.abs(noteIntVal) % 85;
-            Value result = new NoteValue(findNote(noteIntVal));
+            Value result = new NoteValue(Music.findNote(noteIntVal));
             return (T) result;
         } else if (firstValue.getType() == Type.CHORD && secondValue.getType() == Type.NOTE) {
             NoteValue noteValue = (NoteValue) secondValue;
@@ -1152,7 +1151,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             else
                 throw new ArithmeticOperationError("Invalid operation. % cannot be used with notes", this.lineMap.get(getLine(ctx)), getCol(ctx));
             noteIntVal = Math.abs(noteIntVal) % 85;
-            Value result = new NoteValue(findNote(noteIntVal));
+            Value result = new NoteValue(Music.findNote(noteIntVal));
             return (T) result;
         } else
             throw new ArithmeticOperationError("Invalid arguments for mull/div operation", this.lineMap.get(getLine(ctx)), getCol(ctx));
@@ -1366,20 +1365,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     @SuppressWarnings("unchecked")
     public T visitTerminal(TerminalNode node) {
-        if (parseNote(node.getText()) != null) {
-            return (T) parseNote(node.getText());
+        if (Music.parseNote(node.getText()) != null) {
+            return (T) Music.parseNote(node.getText());
         }
         return (T) node;
     }
 
-    private NoteValue parseNote(String noteText) {
-        try {
-            Note note = Note.valueOf(noteText.replace('#', 's').replace('-', 'm'));
-            return new NoteValue(note);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
 
     private int getLine(ParserRuleContext ctx) {
         return ctx.getStart().getLine();
@@ -1387,56 +1378,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     private int getCol(ParserRuleContext ctx) {
         return ctx.getStart().getCharPositionInLine();
-    }
-
-    private void playChord(List<NoteValue> notes, Integer duration) {
-        Melody melody = stack.peek();
-        if (melody == null) throw new RuntimeException("Stack is empty!");
-        List<Integer> notesInt = new ArrayList<>();
-        for (NoteValue note : notes) {
-            notesInt.add(NoteMap.notes.get(note.note));
-        }
-
-        try {
-            if (currentScope != null) {
-                if (currentScope.instrument == DRUMS) {
-                    currentScope.playChord(currentScope.channels[9], notesInt, duration, ((IntValue) currentScope.effects.get(Effect.VOLUME)).value);
-                } else {
-                    currentScope.playChord(currentScope.channels[0], notesInt, duration, ((IntValue) currentScope.effects.get(Effect.VOLUME)).value);
-                }
-            } else {
-                if (melody.instrument == DRUMS) {
-                    melody.playChord(melody.channels[9], notesInt, duration, ((IntValue) melody.effects.get(Effect.VOLUME)).value);
-                } else {
-                    melody.playChord(melody.channels[0], notesInt, duration, ((IntValue) melody.effects.get(Effect.VOLUME)).value);
-                }
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void playNote(Note note, Integer duration) {
-        Melody melody = stack.peek();
-        if (melody == null) throw new RuntimeException("Stack is empty!");
-        Integer noteInt = NoteMap.notes.get(note);
-        try {
-            if (currentScope != null) {
-                if (currentScope.instrument == DRUMS) {
-                    currentScope.playNote(currentScope.channels[9], noteInt, duration, ((IntValue) currentScope.effects.get(Effect.VOLUME)).value);
-                } else {
-                    currentScope.playNote(currentScope.channels[0], noteInt, duration, ((IntValue) currentScope.effects.get(Effect.VOLUME)).value);
-                }
-            } else {
-                if (melody.instrument == DRUMS) {
-                    melody.playNote(melody.channels[9], noteInt, duration, ((IntValue) melody.effects.get(Effect.VOLUME)).value);
-                } else {
-                    melody.playNote(melody.channels[0], noteInt, duration, ((IntValue) melody.effects.get(Effect.VOLUME)).value);
-                }
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public VarInfo extractVariable(ParserRuleContext ctx, TerminalNode id, Type type, List<MusicParser.ParentContext> parents) {
@@ -1457,14 +1398,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return var;
     }
 
-    private Note findNote(int value) {
-        Note newNote = NoteMap.notes.entrySet().stream()
-                .filter(pair -> pair.getValue().equals(value))
-                .findFirst()
-                .map(Map.Entry::getKey).orElse(null);
-        if (newNote == null) throw new RuntimeException("Note not found");
-        return newNote;
-    }
 
     private Value tryCasting(MusicParser.ExprContext expr) {
         T value = visit(expr);
@@ -1725,6 +1658,59 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
         return null;
     }
+
+    public void editEffect(MusicParser.SettingsAssigmentContext ctx, Effect effect, List<MusicParser.ParentContext> parents,
+                           HashMap<Effect,Value> effects, Instrument instrument, MidiChannel[] channels) {
+        ParseTree lastChild = ctx.children.get(ctx.children.size() - 1);
+        if (effect == Effect.PACE || effect == Effect.VOLUME) {
+            if (lastChild != null && isNumeric(String.valueOf(lastChild)))
+                effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(lastChild))));
+            else if (lastChild != null) {
+                IntValue varInt = (IntValue) this.extractVariable(ctx, (TerminalNode) lastChild, Type.INT, parents).valueObj;
+                effects.put(effect, varInt);
+            }
+
+        } else if (effect == Effect.JAZZ || effect == Effect.BLUES) {
+            if (lastChild != null && isBoolean(String.valueOf(lastChild)))
+                effects.put(effect, new BoolValue(Boolean.parseBoolean(String.valueOf(lastChild))));
+            else if (lastChild != null) {
+                BoolValue varBool = (BoolValue) this.extractVariable(ctx, (TerminalNode) lastChild, Type.BOOL, parents).valueObj;
+                effects.put(effect, varBool);
+            }
+        } else {
+            if (lastChild != null && isNumeric(String.valueOf(lastChild))) {
+                effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(lastChild))));
+                if (instrument == DRUMS)
+                    channels[9].controlChange(Music.effectControllers.get(effect), ((IntValue) effects.get(effect)).value);
+                else
+                    channels[0].controlChange(Music.effectControllers.get(effect), ((IntValue) effects.get(effect)).value);
+            } else if (lastChild != null) {
+                IntValue varInt = (IntValue) this.extractVariable(ctx, (TerminalNode) lastChild, Type.INT, parents).valueObj;
+                if (instrument == DRUMS)
+                    channels[9].controlChange(Music.effectControllers.get(effect), varInt.value);
+                else
+                    channels[0].controlChange(Music.effectControllers.get(effect), varInt.value);
+            }
+        }
+    }
+    private static boolean isNumeric(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private static boolean isBoolean(String str) {
+        try {
+            Boolean.parseBoolean(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
 
 
 

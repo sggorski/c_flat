@@ -4,6 +4,8 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import pl.edu.agh.musicUtils.Effect;
+import pl.edu.agh.musicUtils.Instrument;
 import pl.edu.agh.utils.*;
 
 import java.util.AbstractMap;

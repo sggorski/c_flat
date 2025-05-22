@@ -1,4 +1,4 @@
-package pl.edu.agh.utils;
+package pl.edu.agh.musicUtils;
 
 public enum Effect {
     PACE, VOLUME, JAZZ, BLUES, SUSTAIN, SOSTENUTO, SOFT, DISTORTION,

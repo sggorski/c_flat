@@ -1,10 +1,12 @@
 package pl.edu.agh.utils;
 
+import pl.edu.agh.musicUtils.Note;
+
 import java.util.Objects;
 
 public class NoteValue implements Value {
     public Type type = Type.NOTE;
-    public  Note note; // np. C4, D#5
+    public Note note; // np. C4, D#5
     public NoteValue(Note note) { this.note = note; }
     public Type getType() { return type; }
     public void setValue(Note value) { this.note = value; }

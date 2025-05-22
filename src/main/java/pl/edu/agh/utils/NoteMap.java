@@ -1,5 +1,7 @@
 package pl.edu.agh.utils;
 
+import pl.edu.agh.musicUtils.Note;
+
 import java.util.HashMap;
 
 public  class NoteMap {
