@@ -1,0 +1,9 @@
+melody fifth_passage(Note tonic, int rep, int duration) {
+    Note n2 = tonic + 7;
+    for(int i=0; i<rep; i+=1) {
+        PLAY tonic n2 duration;
+        tonic*=2;
+        n2*=2;
+    }
+    PLAY tonic duration;
+}
