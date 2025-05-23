@@ -1,7 +1,6 @@
 int a  = 4;
 int c = a + 6;
 
-
 melody main() {
     PRINT(PACE);
     SET PACE=500;
