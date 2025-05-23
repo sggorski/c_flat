@@ -2,7 +2,9 @@ package pl.edu.agh;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.errors.*;
 import pl.edu.agh.utils.*;
@@ -1363,12 +1365,27 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     @Override
+    public T visit(ParseTree parseTree) {
+        return null;
+    }
+
+    @Override
+    public T visitChildren(RuleNode ruleNode) {
+        return null;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public T visitTerminal(TerminalNode node) {
         if (Music.parseNote(node.getText()) != null) {
             return (T) Music.parseNote(node.getText());
         }
         return (T) node;
+    }
+
+    @Override
+    public T visitErrorNode(ErrorNode errorNode) {
+        return null;
     }
 
 
