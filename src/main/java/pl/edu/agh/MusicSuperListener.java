@@ -20,7 +20,7 @@ import java.util.*;
  * Tu można zrobić całe sprawdzanie składni oraz czy semantyka jest poprawna
  */
 
-public class MusicSuperListener extends MusicBaseListener implements MusicListener {
+public class MusicSuperListener  implements MusicListener {
     HashMap<String, Melody> melodyMemory;
     MusicLexer lexer;
     String currentMelody;
@@ -248,6 +248,16 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
     @Override
     public void exitStatement(MusicParser.StatementContext ctx) {
+    }
+
+    @Override
+    public void enterPrint(MusicParser.PrintContext ctx) {
+
+    }
+
+    @Override
+    public void exitPrint(MusicParser.PrintContext ctx) {
+
     }
 
     @Override
