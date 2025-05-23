@@ -4,6 +4,6 @@ import "src/main/java/pl/edu/agh/libs/passageslib/sus4_passage_reversed.cb";
 melody main() {
     PAUSE 500;
     PLAY sus4_passage(A1, 3, 200, INSTRUMENT=CLARINET);
-    PLAY sus4_passage_reversed(A4, 3, 200, INSTRUMENT=CLARINET);
+    PLAY sus4_passage_reversed(A3, 2, 200, INSTRUMENT=CLARINET);
     PAUSE 500;
 }
