@@ -54,6 +54,7 @@ public class App
             MusicSuperListener listener = new MusicSuperListener(melodyMemory, lexer, lineMap, globalScope);
             ParseTreeWalker walker = new ParseTreeWalker();
             walker.walk(listener, program);
+
             //System.out.println(melodyMemory.toString());
             MusicSuperVisitor visitor = new MusicSuperVisitor(melodyMemory, lineMap, mergedSource, globalScope);
             visitor.visitProgram(program);

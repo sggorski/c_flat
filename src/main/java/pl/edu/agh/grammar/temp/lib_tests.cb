@@ -1,9 +1,10 @@
-import "src/main/java/pl/edu/agh/libs/passageslib/sus4_passage.cb";
-import "src/main/java/pl/edu/agh/libs/passageslib/sus4_passage_reversed.cb";
+Note n = G2;
 
 melody main() {
-    PAUSE 500;
-    PLAY sus4_passage(A1, 3, 200, INSTRUMENT=CLARINET);
-    PLAY sus4_passage_reversed(A3, 2, 200, INSTRUMENT=CLARINET);
+    Note n1 = E2;
+    Note n2 = G2;
+    Chord c = [C2, n1, n];
+    PLAY c 500;
+    PLAY [n2, n2] 500;
     PAUSE 500;
 }

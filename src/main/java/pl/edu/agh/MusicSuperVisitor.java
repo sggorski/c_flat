@@ -35,10 +35,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         this.code = code;
         this.globalScope = globalScope;
         //to finish program when error occurrs in thread
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            System.err.println(throwable.getMessage());
-            System.exit(1);
-        });
+//        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+//            System.err.println(throwable.getMessage());
+//            System.exit(1);
+//        });
     }
 
     @Override
@@ -439,7 +439,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 //System.out.println(melody.memory.get(varInfo.name).toString());
             }
         }
-
 
         return null;
     }
@@ -1257,19 +1256,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public T visitChordExpr(MusicParser.ChordExprContext ctx) {
-        List<NoteValue> notes = new ArrayList<>();
-        for (TerminalNode node : ctx.chord().NOTE_VAL()) {
-            Note note = Note.valueOf(node.getText().replace('#', 's').replace('-', 'm'));
-            NoteValue newNote = new NoteValue(note);
-            if (!notes.contains(newNote)) notes.add(newNote);
-        }
-        if (notes.size() < 2)
-            throw new ValueError("Invalid operation with chords: same note repeated", this.lineMap.get(getLine(ctx)), getCol(ctx));
-        return (T) (new ChordValue(notes));
+        return visit(ctx.chord());
     }
-
 
     @Override
     public T visitAssOp(MusicParser.AssOpContext ctx) {
@@ -1282,10 +1271,18 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         List<NoteValue> notes = new ArrayList<>();
         for (TerminalNode node : ctx.NOTE_VAL()) {
             Note note = Note.valueOf(node.getText().replace('#', 's').replace('-', 'm'));
-            notes.add(new NoteValue(note));
+            NoteValue newNote = new NoteValue(note);
+            if (!notes.contains(newNote))
+                notes.add(newNote);
         }
+        for (TerminalNode node : ctx.ID()) {
+            NoteValue varNote = (NoteValue) extractVariable(ctx, node, Type.NOTE, ctx.parent()).valueObj;
+            if (!notes.contains(varNote))
+                notes.add(varNote);
+        }
+        if (notes.size() < 2)
+            throw new ValueError("Invalid operation with chords: same note repeated", this.lineMap.get(getLine(ctx)), getCol(ctx));
         return (T) (new ChordValue(notes));
-
     }
 
     @Override
@@ -1364,15 +1361,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return (T) valueInt;
     }
 
-    @Override
-    public T visit(ParseTree parseTree) {
-        return null;
-    }
-
-    @Override
-    public T visitChildren(RuleNode ruleNode) {
-        return null;
-    }
+//    @Override
+//    public T visit(ParseTree parseTree) {
+//        return null;
+//    }
+//
+//    @Override
+//    public T visitChildren(RuleNode ruleNode) {
+//        return null;
+//    }
 
     @Override
     @SuppressWarnings("unchecked")
