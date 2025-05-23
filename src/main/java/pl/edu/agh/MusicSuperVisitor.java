@@ -2,10 +2,7 @@ package pl.edu.agh;
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ErrorNode;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.RuleNode;
-import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.*;
 import pl.edu.agh.errors.*;
 import pl.edu.agh.utils.*;
 import pl.edu.agh.musicUtils.Instrument;
