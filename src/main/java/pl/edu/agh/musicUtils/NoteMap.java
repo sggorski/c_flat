@@ -1,4 +1,4 @@
-package pl.edu.agh.utils;
+package pl.edu.agh.musicUtils;
 
 import java.util.HashMap;
 

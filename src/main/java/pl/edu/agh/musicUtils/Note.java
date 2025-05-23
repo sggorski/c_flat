@@ -1,4 +1,4 @@
-package pl.edu.agh.utils;
+package pl.edu.agh.musicUtils;
 
 public enum Note {
     Cm2, Dm2, Em2, Fm2, Gm2, Am2, Hm2, Bm2, Csm2, Dsm2, Esm2, Fsm2, Gsm2, Asm2, Hsm2, Bsm2, Cbm2, Dbm2, Ebm2, Fbm2, Gbm2, Abm2, Hbm2, Bbm2,

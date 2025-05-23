@@ -1,4 +1,4 @@
-package pl.edu.agh.utils;
+package pl.edu.agh.musicUtils;
 
 public enum Instrument {
     PIANO, HARPSICHORD, XYLOPHONE, ORGAN, CHURCH_ORGAN, ACCORDION, HARMONICA,

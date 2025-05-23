@@ -8,6 +8,8 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.errors.ScopeError;
 import pl.edu.agh.errors.SyntaxError;
 import pl.edu.agh.errors.VariableDeclarationError;
+import pl.edu.agh.musicUtils.Instrument;
+import pl.edu.agh.musicUtils.Note;
 import pl.edu.agh.utils.*;
 
 import java.util.*;
