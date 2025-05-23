@@ -1,0 +1,6 @@
+melody dominant_seventh_chord(Note tonic, int duration) {
+    Note n2 = tonic + 4;
+    Note n3 = n2 + 3;
+    Note n4 = n3 + 3;
+    PLAY [tonic, n2, n3, n4] duration;
+}

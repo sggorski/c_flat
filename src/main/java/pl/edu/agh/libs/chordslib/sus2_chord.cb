@@ -1,0 +1,5 @@
+melody sus2_chord(Note tonic, int duration) {
+    Note n2 = tonic + 2;
+    Note n3 = n2 + 5;
+    PLAY [tonic, n2, n3] duration;
+}
