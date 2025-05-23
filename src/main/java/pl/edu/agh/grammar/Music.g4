@@ -228,7 +228,7 @@ assOp
     : SUMIS | SUBIS | MULIS | DIVIS ;
 
 chord
-    : '[' NOTE_VAL (',' NOTE_VAL) + ']';
+    : '[' (NOTE_VAL | (parent)*ID) (',' (NOTE_VAL | (parent)*ID))+ ']';
 
 trackStatements
     : trackStatement #trackAdd

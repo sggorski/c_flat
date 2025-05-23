@@ -17,6 +17,6 @@ melody silnia(int n){
 
 melody main(){
     int k;
-    PLAY silnia(5) OUT k;
+    PLAY silnia(6) OUT k;
     RETURN k;
 }
