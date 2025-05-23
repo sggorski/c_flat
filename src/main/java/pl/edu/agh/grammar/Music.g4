@@ -278,7 +278,7 @@ PHRASER : 'PHRASER';
 INSTRUMENT_VALUE : 'PIANO' | 'HARPSICHORD' | 'XYLOPHONE' | 'ORGAN' | 'CHURCH_ORGAN' | 'ACCORDION' | 'HARMONICA' |
                    'GUITAR' | 'ELECTRIC_GUITAR' | 'BASS' | 'VIOLIN' | 'VIOLA' | 'CELLO' | 'CONTRABASS' | 'HARP' |
                    'TRUMPET' | 'TROMBONE' | 'TUBA' | 'SAXOPHONE' | 'OBOE' | 'ENGLISH_HORN' | 'BASSOON' |
-                   'CLARINET' | 'FLUTE' |'DRUMS' ;
+                   'CLARINET' | 'FLUTE' | 'BELLS' | 'DRUMS' ;
 
 SET : 'SET';
 PLAY : 'PLAY';

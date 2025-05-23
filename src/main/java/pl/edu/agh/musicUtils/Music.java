@@ -244,6 +244,9 @@ public class Music {
             case FLUTE:
                 channels[0].programChange(73);
                 break;
+            case BELLS:
+                channels[0].programChange(14);
+                break;
             case DRUMS:
                 channels[9].programChange(35);
                 break;

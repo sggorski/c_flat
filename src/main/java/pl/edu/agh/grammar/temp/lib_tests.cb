@@ -4,4 +4,7 @@ melody main() {
     PAUSE 100;
     PLAY sus4_chord(E2, 600);
     PAUSE 300;
+
+    SET INSTRUMENT=BELLS;
+    PLAY C2 E2 G2 500;
 }
