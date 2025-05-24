@@ -1,4 +1,4 @@
-// Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
+// Generated from C:/Users/sggor/Desktop/TKK/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -784,6 +784,9 @@ public class MusicParser extends Parser {
 		public ControlStatementContext controlStatement() {
 			return getRuleContext(ControlStatementContext.class,0);
 		}
+		public PrintContext print() {
+			return getRuleContext(PrintContext.class,0);
+		}
 		public ExprStatementContext exprStatement() {
 			return getRuleContext(ExprStatementContext.class,0);
 		}
@@ -798,9 +801,6 @@ public class MusicParser extends Parser {
 		}
 		public ScopeContext scope() {
 			return getRuleContext(ScopeContext.class,0);
-		}
-		public PrintContext print() {
-			return getRuleContext(PrintContext.class,0);
 		}
 		public StatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -900,7 +900,7 @@ public class MusicParser extends Parser {
 				enterOuterAlt(_localctx, 9);
 				{
 				setState(203);
-				exprStatement();
+				print();
 				setState(204);
 				match(SEMICOLON);
 				}
@@ -909,7 +909,7 @@ public class MusicParser extends Parser {
 				enterOuterAlt(_localctx, 10);
 				{
 				setState(206);
-				returnStatement();
+				exprStatement();
 				setState(207);
 				match(SEMICOLON);
 				}
@@ -918,30 +918,30 @@ public class MusicParser extends Parser {
 				enterOuterAlt(_localctx, 11);
 				{
 				setState(209);
-				continueStatement();
+				returnStatement();
+				setState(210);
+				match(SEMICOLON);
 				}
 				break;
 			case 12:
 				enterOuterAlt(_localctx, 12);
 				{
-				setState(210);
-				breakStatement();
+				setState(212);
+				continueStatement();
 				}
 				break;
 			case 13:
 				enterOuterAlt(_localctx, 13);
 				{
-				setState(211);
-				scope();
+				setState(213);
+				breakStatement();
 				}
 				break;
 			case 14:
 				enterOuterAlt(_localctx, 14);
 				{
-				setState(212);
-				print();
-				setState(213);
-				match(SEMICOLON);
+				setState(214);
+				scope();
 				}
 				break;
 			}
@@ -5912,18 +5912,18 @@ public class MusicParser extends Parser {
 		"\u0000\u00c5\u00c6\u0005L\u0000\u0000\u00c6\u00d8\u0001\u0000\u0000\u0000"+
 		"\u00c7\u00c8\u0003,\u0016\u0000\u00c8\u00c9\u0005L\u0000\u0000\u00c9\u00d8"+
 		"\u0001\u0000\u0000\u0000\u00ca\u00d8\u0003.\u0017\u0000\u00cb\u00cc\u0003"+
-		"\u0018\f\u0000\u00cc\u00cd\u0005L\u0000\u0000\u00cd\u00d8\u0001\u0000"+
-		"\u0000\u0000\u00ce\u00cf\u0003\u0016\u000b\u0000\u00cf\u00d0\u0005L\u0000"+
-		"\u0000\u00d0\u00d8\u0001\u0000\u0000\u0000\u00d1\u00d8\u0003H$\u0000\u00d2"+
-		"\u00d8\u0003F#\u0000\u00d3\u00d8\u00030\u0018\u0000\u00d4\u00d5\u0003"+
-		"\u0014\n\u0000\u00d5\u00d6\u0005L\u0000\u0000\u00d6\u00d8\u0001\u0000"+
-		"\u0000\u0000\u00d7\u00b7\u0001\u0000\u0000\u0000\u00d7\u00b8\u0001\u0000"+
+		"\u0014\n\u0000\u00cc\u00cd\u0005L\u0000\u0000\u00cd\u00d8\u0001\u0000"+
+		"\u0000\u0000\u00ce\u00cf\u0003\u0018\f\u0000\u00cf\u00d0\u0005L\u0000"+
+		"\u0000\u00d0\u00d8\u0001\u0000\u0000\u0000\u00d1\u00d2\u0003\u0016\u000b"+
+		"\u0000\u00d2\u00d3\u0005L\u0000\u0000\u00d3\u00d8\u0001\u0000\u0000\u0000"+
+		"\u00d4\u00d8\u0003H$\u0000\u00d5\u00d8\u0003F#\u0000\u00d6\u00d8\u0003"+
+		"0\u0018\u0000\u00d7\u00b7\u0001\u0000\u0000\u0000\u00d7\u00b8\u0001\u0000"+
 		"\u0000\u0000\u00d7\u00bb\u0001\u0000\u0000\u0000\u00d7\u00be\u0001\u0000"+
 		"\u0000\u0000\u00d7\u00c1\u0001\u0000\u0000\u0000\u00d7\u00c4\u0001\u0000"+
 		"\u0000\u0000\u00d7\u00c7\u0001\u0000\u0000\u0000\u00d7\u00ca\u0001\u0000"+
 		"\u0000\u0000\u00d7\u00cb\u0001\u0000\u0000\u0000\u00d7\u00ce\u0001\u0000"+
-		"\u0000\u0000\u00d7\u00d1\u0001\u0000\u0000\u0000\u00d7\u00d2\u0001\u0000"+
-		"\u0000\u0000\u00d7\u00d3\u0001\u0000\u0000\u0000\u00d7\u00d4\u0001\u0000"+
+		"\u0000\u0000\u00d7\u00d1\u0001\u0000\u0000\u0000\u00d7\u00d4\u0001\u0000"+
+		"\u0000\u0000\u00d7\u00d5\u0001\u0000\u0000\u0000\u00d7\u00d6\u0001\u0000"+
 		"\u0000\u0000\u00d8\u0013\u0001\u0000\u0000\u0000\u00d9\u00da\u0005\u0006"+
 		"\u0000\u0000\u00da\u00db\u00057\u0000\u0000\u00db\u00dc\u0003P(\u0000"+
 		"\u00dc\u00dd\u00058\u0000\u0000\u00dd\u0015\u0001\u0000\u0000\u0000\u00de"+

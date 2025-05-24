@@ -94,8 +94,14 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
+    /**
+     * @Kacper, tu jesli zauważe że atomicznie jest returnStmt to zwracam to co on mi zwróci,
+     * tak żeby dalej nie odwiedzac jego dzieci, przy okazji wiem że jak odwiedzam statement
+     * po statemencie w visitFuncCall to ten return będzie wyłapany, podbnie trzeba zrobić to w pętlach i for
+     */
     @Override
     public T visitStatement(MusicParser.StatementContext ctx) {
+        if(ctx.returnStatement()!=null) return (T)visit(ctx.returnStatement());
         return visitChildren(ctx);
     }
 
@@ -107,14 +113,17 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return null;
     }
 
+    /**
+     * @Kacper, tu po prostu zwracam odpowiednio ReturnValue, musi ono byc propagowane dalej
+     * by dostało się z powrotem do visitFunctionCall a potem do visitFunctionPlay
+     * (stad ważna zmiana w visitStatement)
+     */
     @Override
     public T visitReturnStatement(MusicParser.ReturnStatementContext ctx) {
         Melody melody = stack.peek();
         if (melody == null) throw new RuntimeException("Stack is empty!");
         if (ctx.expr() == null) {
-            stack.pop();
-            currentScope = melody.previous_scope;
-            throw new ReturnValue(null);
+            return (T)new ReturnVal(null);
         }
         Value value = tryCasting(ctx.expr());
         if (melody.name.equals("main")) {
@@ -133,9 +142,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             }
             System.exit(0);
         } else {
-            stack.pop();
-            currentScope = melody.previous_scope;
-            throw new ReturnValue(value);
+            return (T)new ReturnVal(value);
         }
         return null;
     }
@@ -480,24 +487,26 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     }
 
+    /**
+     * @Kacper, wywoluje visit(ctx.functionCall()) bo wiem ze zwroci jakies ReturnValue,
+     * Po nim zmieniam scope do poprzedniego, przypisuje zwroconą wartosc i przegladanie idzie dalej
+     * po tym co dalej jest po wywolaniu funckji
+     */
     @Override
     public T visitPlayFunc(MusicParser.PlayFuncContext ctx) {
         String name = null;
         VarInfo var = null;
+        ReturnVal returnValue = (ReturnVal)visit(ctx.functionCall());
+        currentScope = stack.pop().previous_scope;
         if (ctx.ID() != null) {
             name = ctx.ID().getText();
             var = extractVariable(ctx, ctx.ID(), null, ctx.parent());
         }
-
-        try {
-            visit(ctx.functionCall());
-        } catch (ReturnValue returnValue) {
-            if (returnValue.getValue() == null) return null;
-            else if (name == null) return null;
-            else if (var.type != returnValue.getValue().getType())
-                throw new ValueError("Function returned: " + returnValue.getValue().getType() + " which was assigned to: " + var.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
-            else var.valueObj = returnValue.getValue();
-        }
+        if (returnValue.getValue() == null) return null;
+        else if (name == null) return null;
+        else if (var.type != returnValue.getValue().getType())
+            throw new ValueError("Function returned: " + returnValue.getValue().getType() + " which was assigned to: " + var.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        else var.valueObj = copyValue(returnValue.getValue());
         return null;
     }
 
@@ -691,7 +700,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                     skipScope();
                 }
             } else if (child instanceof MusicParser.ElseContext && !status) {
-                visit(child);
+                 T result = visit(child);
+                 if(result instanceof  ReturnVal) return result;
             }
         }
         return null;
@@ -943,10 +953,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         }
 
-//        for (Scope scope : melody.scopes) {
-//            Scope.addMemoryFromParams(melody, scope);
-//        }
-
         melody.previous_scope = currentScope;
         currentScope = null;
         stack.push(melody);
@@ -956,12 +962,23 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             for (MusicParser.SettingsAssigmentContext set : ctx.settingsList().settingsAssigment())
                 visit(set);
         }
+        /**
+         * @Kacper, odwiedzam każdy stmt funckji i sprawdzam czy przyadkiem nie zwraca typu ReturnVal
+         * Jeśli tak to przerywam i zwracam dalej ta wartosć -> visitPlayFunc, tam jest zmiana currentScope na melody.previousScope
+         * Jeśli nie to pętla dojedzie do końca i zwracam ReturnVal z wartością null
+         */
+        ReturnVal returnVal = null;
         for (MusicParser.StatementContext statement : melody.body) {
-            visit(statement);
+            T result = visit(statement);
+            if(result instanceof ReturnVal){
+                returnVal = (ReturnVal) visit(statement);
+                break;
+            }
         }
-        stack.pop();
-        currentScope = melody.previous_scope;
-        return null;
+        if(returnVal != null) return  (T)returnVal;
+        else{
+            return (T) new ReturnVal(null);
+        }
     }
 
     @Override

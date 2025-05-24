@@ -25,7 +25,7 @@ public class App
         ImportHandler resolver = new ImportHandler();
         String mergedSource;
         try {
-            mergedSource = resolver.resolveImports(args[0]);
+            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/temp/tmp.cb");
         } catch (ImportError e) {
             System.err.println(e.getMessage());
             return;
