@@ -663,7 +663,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         if (((BoolValue) visit(ctx.expr())).value) {
             try {
-                visit(ctx.scope());
+                T result = visit(ctx.scope());
+                if (result instanceof ReturnVal) return result;
             } catch (BreakError b) {
                 currentScope = callbackScope;
                 skipScope();
@@ -692,10 +693,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitIfStatement(MusicParser.IfStatementContext ctx) {
         Boolean status = false;
-        for (ParseTree child : ctx.children) {
+        for (int childIdx = 0; childIdx < ctx.getChildCount(); childIdx++ ) {
+            ParseTree child = ctx.getChild(childIdx);
             if (child instanceof MusicParser.IfContext || child instanceof MusicParser.ElseifContext) {
                 if (!status) {
-                    status = (Boolean) visit(child);
+                    T result = visit(child);
+                    if(result instanceof ReturnVal) return result;
+                    if (result instanceof Boolean) status = (Boolean) result;
                 } else {
                     skipScope();
                 }
@@ -715,6 +719,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             temp = Scope.deepCopyScopeStructure(currentScope, currentScope.melodyParent, currentScope.parent);
         }
         visitChildren(ctx);
+        for(ParseTree child : ctx.children) {
+            T result = visit(child);
+            if(result instanceof  ReturnVal){
+                currentScope = currentScope.parent;
+                return result;
+            }
+        }
         if (temp != null) {
             currentScope = currentScope.parent;
             resetCurrScope(temp);
@@ -749,8 +760,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         Value exprVal = tryCasting(ctx.expr());
         if (exprVal instanceof BoolValue) {
             if (((BoolValue) exprVal).value) {
-                visit(ctx.scope());
-                return (T) new Boolean(true);
+                T result = visit(ctx.scope());
+                if (result instanceof ReturnVal) return result;
+                else return (T) new Boolean(true);
             } else {
                 skipScope();
                 return (T) new Boolean(false);
@@ -764,9 +776,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         Value exprVal = tryCasting(ctx.expr());
         if (exprVal instanceof BoolValue) {
             if (((BoolValue) exprVal).value) {
-                visit(ctx.scope());
-                //System.out.println("Exiting elseif, elseif memory: " + currentScope.memory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
-                return (T) new Boolean(true);
+                T result = visit(ctx.scope());
+                if (result instanceof ReturnVal) return result;
+                else return (T) new Boolean(true);
             } else {
                 skipScope();
                 return (T) new Boolean(false);
@@ -778,8 +790,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitElse(MusicParser.ElseContext ctx) {
         //System.out.println("Exiting else, else memory: " + currentScope.memory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
-        visit(ctx.scope());
-        return null;
+        return visit(ctx.scope());
     }
 
     @Override
@@ -849,7 +860,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 }
                 Scope callbackScope = currentScope;
                 try {
-                    visit(ctx.scope());
+                    T result = visit(ctx.scope());
+                    if (result instanceof ReturnVal) return result;
                 } catch (BreakError b) {
                     currentScope = callbackScope;
                     skipScope();
