@@ -1,0 +1,22 @@
+import "src/main/java/pl/edu/agh/libs/chordslib/minor_chord.cb";
+import "src/main/java/pl/edu/agh/libs/chordslib/dominant_seventh_chord.cb";
+
+melody blues_progression(Note tonic, int rep, int duration) {
+    Note n2 = tonic + 5;
+    Note n3 = n2 + 2;
+
+    for(int i=0; i<rep; i+=1) {
+        PLAY minor_chord(tonic, duration);
+        PLAY minor_chord(tonic, duration);
+        PLAY minor_chord(tonic, duration);
+        PLAY minor_chord(tonic, duration);
+        PLAY dominant_seventh_chord(n2, duration);
+        PLAY dominant_seventh_chord(n2, duration);
+        PLAY minor_chord(tonic, duration);
+        PLAY minor_chord(tonic, duration);
+        PLAY minor_chord(n3, duration);
+        PLAY dominant_seventh_chord(n2, duration);
+        PLAY minor_chord(tonic, duration);
+        PLAY minor_chord(tonic, duration);
+    }
+}

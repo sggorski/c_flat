@@ -1,10 +1,7 @@
-import "src/main/java/pl/edu/agh/libs/chordslib/sus4_chord.cb";
+import "src/main/java/pl/edu/agh/libs/blueslib/blues_progression.cb";
 
 melody main() {
     PAUSE 100;
-    PLAY sus4_chord(E2, 600);
-    PAUSE 300;
-
-    SET INSTRUMENT=BELLS;
-    PLAY C2 E2 G2 500;
+    PLAY blues_progression(H1, 1, 1000, INSTRUMENT=PIANO);
+    PAUSE 200;
 }
