@@ -1,7 +1,7 @@
-import "src/main/java/pl/edu/agh/libs/blueslib/blues_progression.cb";
+import "src/main/java/pl/edu/agh/libs/jazzlib/jazz_baseline.cb";
 
 melody main() {
     PAUSE 100;
-    PLAY blues_progression(H1, 1, 1000, INSTRUMENT=PIANO);
+    PLAY jazz_baseline(H1, 1, 1000);
     PAUSE 200;
 }
