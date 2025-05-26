@@ -673,7 +673,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 currentScope = callbackScope;
                 resetCurrScope(temp);
             }
-            visit(ctx);
+            T result = visit(ctx);
+            if(result instanceof ReturnVal){
+                return result;
+            }
         } else {
             skipScope();
         }
@@ -718,14 +721,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (ctx.parent instanceof MusicParser.WhileLoopContext || ctx.parent instanceof MusicParser.ForLoopContext) {
             temp = Scope.deepCopyScopeStructure(currentScope, currentScope.melodyParent, currentScope.parent);
         }
-        visitChildren(ctx);
-        for(ParseTree child : ctx.children) {
-            T result = visit(child);
-            if(result instanceof  ReturnVal){
-                currentScope = currentScope.parent;
-                return result;
-            }
+
+        T result = visit(ctx.loopBody());
+        if(result instanceof ReturnVal){
+            currentScope = currentScope.parent;
+            return result;
         }
+
         if (temp != null) {
             currentScope = currentScope.parent;
             resetCurrScope(temp);
@@ -899,7 +901,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitLoopBody(MusicParser.LoopBodyContext ctx) {
-        return visitChildren(ctx);
+        for(ParseTree child: ctx.children){
+            T result = visit(child);
+            if (result instanceof ReturnVal) return result;
+        }
+        return null;
     }
 
     @Override

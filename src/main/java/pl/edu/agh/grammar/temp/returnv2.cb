@@ -1,0 +1,18 @@
+melody foo(int a){
+
+    while(true){
+        if(a>1){
+            PRINT(a);
+            RETURN a;
+        }
+        a+=1;
+    }
+
+}
+
+
+melody main(){
+    int k = 0;
+    PLAY foo(2) OUT k;
+    PRINT(k);
+}
