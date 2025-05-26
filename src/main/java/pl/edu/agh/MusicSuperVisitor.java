@@ -989,7 +989,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         for (MusicParser.StatementContext statement : melody.body) {
             T result = visit(statement);
             if(result instanceof ReturnVal){
-                returnVal = (ReturnVal) visit(statement);
+                returnVal = (ReturnVal) result;
                 break;
             }
         }
