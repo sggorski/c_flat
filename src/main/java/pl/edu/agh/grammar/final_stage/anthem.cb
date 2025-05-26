@@ -1,0 +1,84 @@
+int t = 500;
+int t2 = 2*t;
+int t3 = 3*t;
+int t6 = 6*t;
+int tp = 250;
+
+melody melody1(){
+    SET INSTRUMENT = PIANO;
+    SET REVERB = 127;
+    PAUSE 2100;
+    //PLAY D#3 20;
+    PLAY D#3 D#3 D#3 t;
+    PLAY C#3 t;
+    PLAY C3 C3 t2;
+
+    PLAY D#3 D#3 D#3 t;
+    PLAY C#3 t;
+    PLAY C3 C3 t2;
+
+    PLAY D#3 t3;
+    PLAY D#3 t;
+    PLAY F3 t3;
+    PLAY D#3 t;
+    PLAY D#3 C#3  t2;
+    PLAY [C#3,C#4] [C#3,C4] t2;
+    PLAY [C#3,B3] C#3 C#3 C3 t;
+    PLAY B2 B2 t2;
+    PLAY C#3 C#3 C#3 C3 t;
+    PLAY B2 B2 t2;
+    PLAY C#3 t3;
+    PLAY C#3 t;
+    PLAY [D#3, F3] t3;
+    PLAY [C#3, G3] t;
+    PLAY [C#3, G3] [C3, G#3] [C3, G#3] t2;
+    PLAY [C3, G#3] t6;
+
+}
+
+melody melody2(){
+    SET INSTRUMENT = BASS;
+    PAUSE 2170;
+    //PLAY G#1 530;
+    PLAY  G#1 G#1 G#1 G#1 G#1 G#1 G#1 G#1 G#1 G#1 G#1 G#1 t2;
+    PLAY  D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 t2;
+    PLAY  G#1 G#1 G#1 t2;
+    PLAY  G#1 t6;
+
+}
+melody melody3(){
+    SET INSTRUMENT = DRUMS;
+    PAUSE 100;
+    PLAY D1 C1 D1 C1 t;
+    PLAY D1 D1 D1 D1 D1 D1 D1 D1 tp;
+    PLAY C1 F#1 D1 F#1 C1 F#1 D1 F#1 t;
+    PLAY C1 F#1 D1 F#1 t;
+    PLAY C1 C1 tp;
+    PLAY F#1 D1 F#1 t;
+    PLAY C1 F#1 D1 t;
+    PLAY F#1 tp;
+    PLAY C1 t;
+    PLAY C1 F#1 C1 tp;
+    PLAY D1 F#1 t;
+    PLAY C1 F#1 D1 F#1 C1 F#1 t;
+    PLAY D1 D1 D1 D1 tp;
+    PLAY C1 F#1 D1 F#1 C1 F#1 D1 F#1 t;
+    PLAY C1 F#1 D1 F#1 C1 F#1 D1 F#1 t;
+    PLAY C1 F#1 D1 F#1 t;
+    PLAY C1 C1 tp;
+    PLAY F#1 D1 F#1 t;
+    PLAY C1 F#1 D1 F#1 t;
+    PLAY C1 t2;
+    PLAY C1 t6;
+}
+melody main(){
+    SET PACE = 1200;
+    Track track1;
+    track1 ADD melody1();
+    track1 ADD melody2();
+    track1 ADD melody3();
+    PAUSE 1000;
+    PLAY track1;
+
+
+}
