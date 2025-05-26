@@ -1,7 +1,7 @@
-import "src/main/java/pl/edu/agh/libs/jazzlib/jazz_baseline.cb";
+import "src/main/java/pl/edu/agh/libs/progressionslib/vi_IV_I_V_progression.cb";
 
 melody main() {
     PAUSE 100;
-    PLAY jazz_baseline(H1, 1, 1000);
+    PLAY vi_IV_I_V_progression(C2, 1, 1000);
     PAUSE 200;
 }
