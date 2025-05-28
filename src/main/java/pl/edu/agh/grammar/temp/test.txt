@@ -1,12 +1,21 @@
+int a = 5;
+
+melody silnia(int n){
+    int b = 0;
+
+    if (n == 1){
+        RETURN 1;
+    }else{
+        int a = 0;
+        PLAY silnia(n-1) OUT a;
+        PRINT(n*a);
+        RETURN n * a;
+    }
+}
+
+
 melody main(){
-
-    int n = (int)C2;
-    Note n2 = (Note)-2;
-    int n3 = (Chord)(true AND false);
-    bool n4 = (bool)0;
-    PRINT(n);
-    PRINT(n2);
-    PRINT(n3);
-    PRINT(n4);
-
+    int k;
+    PLAY silnia(5) OUT k;
+    RETURN k;
 }
