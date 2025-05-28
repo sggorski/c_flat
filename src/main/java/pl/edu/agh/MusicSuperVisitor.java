@@ -17,7 +17,7 @@ import java.util.function.BiPredicate;
 import static pl.edu.agh.musicUtils.Instrument.*;
 
 
-@SuppressWarnings("CheckReturnValue")
+@SuppressWarnings("unchecked")
 public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVisitor<T> {
     HashMap<String, Melody> melodyMemory;
     Deque<Melody> stack = new ArrayDeque<>();
@@ -33,27 +33,28 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         this.lineMap = lines;
         this.code = code;
         this.globalScope = globalScope;
-        //to finish program when error occurrs in thread
-//        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-//            System.err.println(throwable.getMessage());
-//            System.exit(1);
-//        });
+
+        //to finish program when error occurs in thread
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            System.err.println(throwable.getMessage());
+            System.exit(1);
+        });
     }
 
+    /**
+     * Visits the root of the program parse tree.
+     * Executes global variable declarations if present,
+     * verifies the presence of a "main" melody, and executes its main body.
+     */
     @Override
     @SuppressWarnings("unchecked")
     public T visitProgram(MusicParser.ProgramContext ctx) throws RuntimeException {
-        if(ctx.globalVars() != null) {
-            visit(ctx.globalVars());
-        }
+        if(ctx.globalVars() != null) visit(ctx.globalVars());
         if (!melodyMemory.containsKey("main"))
             throw new SyntaxError("No main melody declaration found!", this.lineMap.get(getLine(ctx)), getCol(ctx));
         stack.push(melodyMemory.get("main"));
-        for (MusicParser.MainStatementContext statement : melodyMemory.get("main").mainBody) {
-            visit(statement);
-        }
-        //System.out.println(melodyMemory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
-        return (T) (new BoolValue(true)); //everything went ok
+        for (MusicParser.MainStatementContext statement : melodyMemory.get("main").mainBody) visit(statement);
+        return (T) (new BoolValue(true));
     }
 
     @Override
@@ -97,16 +98,21 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     /**
-     * @Kacper, tu jesli zauważe że atomicznie jest returnStmt to zwracam to co on mi zwróci,
-     * tak żeby dalej nie odwiedzac jego dzieci, przy okazji wiem że jak odwiedzam statement
-     * po statemencie w visitFuncCall to ten return będzie wyłapany, podbnie trzeba zrobić to w pętlach i for
+     * Visits a general statement in the parse tree.
+     * If it is a return statement, visits it directly;
+     * otherwise, delegates to visiting all child nodes.
      */
     @Override
     public T visitStatement(MusicParser.StatementContext ctx) {
-        if(ctx.returnStatement()!=null) return (T)visit(ctx.returnStatement());
+        if(ctx.returnStatement()!=null) return visit(ctx.returnStatement());
         return visitChildren(ctx);
     }
 
+    /**
+     * Visits a print statement node in the parse tree.
+     * Evaluates the expression, retrieves the current line number,
+     * and prints the result to the console.
+     */
     @Override
     public T visitPrint(MusicParser.PrintContext ctx) {
         Value value = tryCasting(ctx.expr());
@@ -116,9 +122,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     /**
-     * @Kacper, tu po prostu zwracam odpowiednio ReturnValue, musi ono byc propagowane dalej
-     * by dostało się z powrotem do visitFunctionCall a potem do visitFunctionPlay
-     * (stad ważna zmiana w visitStatement)
+     * Visits a return statement node in the parse tree.
+     * Retrieves the current melody from the stack and evaluates the return expression if present.
+     * If the current melody is "main", prints the returned value and exits the program.
+     * Otherwise, returns a ReturnVal object wrapping the evaluated value.
      */
     @Override
     public T visitReturnStatement(MusicParser.ReturnStatementContext ctx) {
@@ -162,28 +169,25 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitPace(MusicParser.PaceContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.PACE, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.PACE,null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.PACE);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitSustain(MusicParser.SustainContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.SUSTAIN, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.SUSTAIN, null, melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.SUSTAIN);
         return visitChildren(ctx);
     }
 
-
+    /**
+     * Visits an instrument declaration node.
+     * Retrieves the current melody from the stack and validates the instrument value.
+     * Sets the instrument in the current scope or melody, throwing an error if invalid.
+     */
     @Override
     public T visitInstrument(MusicParser.InstrumentContext ctx) {
         Melody melody = stack.peek();
         if (melody != null) {
-            // If not Instrument_Value then it is recognised as ID, if not then it should be a lexer error
             if (ctx.INSTRUMENT_VALUE() == null)
                 throw new ValueError(ctx.ID() + " is not valid INSTRUMENT", this.lineMap.get(getLine(ctx)), getCol(ctx));
             String instrumentName = ctx.INSTRUMENT_VALUE().getText();
@@ -200,238 +204,143 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitDistortion(MusicParser.DistortionContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.DISTORTION, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.DISTORTION, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.DISTORTION);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitJazz(MusicParser.JazzContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.JAZZ, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.JAZZ, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.JAZZ);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitBlues(MusicParser.BluesContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.BLUES, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.BLUES, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.BLUES);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitVolume(MusicParser.VolumeContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.VOLUME, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.VOLUME, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.VOLUME);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitVibrato(MusicParser.VibratoContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.VIBRATO, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.VIBRATO, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.VIBRATO);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitBalance(MusicParser.BalanceContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-           editEffect(ctx, Effect.BALANCE, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.BALANCE, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.BALANCE);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitSostenutoPedal(MusicParser.SostenutoPedalContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.SOSTENUTO, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.SOSTENUTO, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.SOSTENUTO);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitSoftPedal(MusicParser.SoftPedalContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.SOFT, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.SOFT, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.SOFT);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitResonance(MusicParser.ResonanceContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.RESONANCE, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.RESONANCE, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.RESONANCE);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitReverb(MusicParser.ReverbContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.REVERB, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.REVERB, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.REVERB);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitTremolo(MusicParser.TremoloContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.TREMOLO, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.TREMOLO, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.TREMOLO);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitChorus(MusicParser.ChorusContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-           editEffect(ctx, Effect.CHORUS, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.CHORUS, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.CHORUS);
         return visitChildren(ctx);
     }
 
     @Override
     public T visitPhraser(MusicParser.PhraserContext ctx) {
-        Melody melody = stack.peek();
-        if (currentScope != null) {
-            editEffect(ctx, Effect.PHRASER, ctx.parent(),currentScope.effects,currentScope.instrument,currentScope.channels);
-        } else if (melody != null) editEffect(ctx, Effect.PHRASER, null,melody.effects,melody.instrument,melody.channels);
+        editProperSettings(ctx,ctx.parent(),Effect.PHRASER);
         return visitChildren(ctx);
     }
 
+    /**
+     * Visits a settings values node.
+     * Retrieves the current melody from the stack and returns the instrument if specified.
+     * Otherwise, tries to parse and return the corresponding effect setting.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitSettingsValues(MusicParser.SettingsValuesContext ctx) {
         Melody melody = stack.peek();
         if (melody == null) throw new RuntimeException("Stack is empty");
-        if (ctx.BLUES() != null) return (T) (VisitorUtils.getSettings(Effect.BLUES,melody,currentScope));
-        if (ctx.JAZZ() != null) return (T) (VisitorUtils.getSettings(Effect.JAZZ,melody,currentScope));
-        if (ctx.SUSTAIN() != null) return (T) (VisitorUtils.getSettings(Effect.SUSTAIN,melody,currentScope));
-        if (ctx.DISTORTION() != null) return (T) (VisitorUtils.getSettings(Effect.DISTORTION,melody,currentScope));
-        if (ctx.PACE() != null) return (T) (VisitorUtils.getSettings(Effect.PACE,melody,currentScope));
-        if (ctx.VOLUME() != null) return (T) (VisitorUtils.getSettings(Effect.VOLUME,melody,currentScope));
-        if (ctx.VIBRATO() != null) return (T) (VisitorUtils.getSettings(Effect.VIBRATO,melody,currentScope));
-        if (ctx.BALANCE() != null) return (T) (VisitorUtils.getSettings(Effect.BALANCE,melody,currentScope));
-        if (ctx.SOSTENUTO() != null) return (T) VisitorUtils.getSettings(Effect.SOSTENUTO,melody,currentScope);
-        if (ctx.SOFT() != null) return (T) (VisitorUtils.getSettings(Effect.SOFT,melody,currentScope));
-        if (ctx.RESONANCE() != null) return (T) (VisitorUtils.getSettings(Effect.RESONANCE,melody,currentScope));
-        if (ctx.REVERB() != null) return (T) (VisitorUtils.getSettings(Effect.REVERB,melody,currentScope));
-        if (ctx.TREMOLO() != null) return (T) (VisitorUtils.getSettings(Effect.TREMOLO,melody,currentScope));
-        if (ctx.CHORUS() != null) return (T) (VisitorUtils.getSettings(Effect.CHORUS,melody,currentScope));
-        if (ctx.PHRASER() != null) return (T) (VisitorUtils.getSettings(Effect.PHRASER,melody,currentScope));
         if (ctx.INSTRUMENT() != null) return (T) (melody.instrument);
-        else throw new SyntaxError("Syntax error", this.lineMap.get(getLine(ctx)), getCol(ctx));
-
+        Effect effect;
+        try{
+            effect = Effect.valueOf(ctx.getText());
+            return (T) (VisitorUtils.getSettings(effect,melody,currentScope));
+        }
+        catch(Exception e){
+            throw new SyntaxError("Syntax error", this.lineMap.get(getLine(ctx)), getCol(ctx));
+        }
     }
 
+    /**
+     * Visits an assignment statement node.
+     * Extracts the variable info and evaluates the expression.
+     * Checks for type compatibility and updates the variable's value.
+     */
     @Override
     public T visitAssignment(MusicParser.AssignmentContext ctx) {
-        VarInfo varInfo = VisitorUtils.extractVariable(ctx.ID(), null, ctx.parent(),stack.peek(),currentScope,globalScope,getOrigin(ctx),getCol(ctx));
+        VarInfo varInfo = VisitorUtils.extractVariable(ctx.ID(), null, ctx.parent(),stack.peek(),
+                currentScope,globalScope,getOrigin(ctx),getCol(ctx));
+
         Value exprValue = tryCasting(ctx.expr());
         if (exprValue.getType() != varInfo.type) {
-            throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + exprValue.getType(), this.lineMap.get(getLine(ctx)), getCol(ctx));
+            throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + exprValue.getType(),
+                    this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         varInfo.valueObj = VisitorUtils.copyValue(exprValue);
-
-        //To check if everything is ok, will be deleted in a future
-        Melody melody = stack.peek();
-        if (melody == null) throw new RuntimeException("Stack is empty!");
-        //System.out.println(melody.memory.get(varInfo.name).toString());
-        //TODO println throws null pointer exception cuz it tries to get it from melody memory
         return visitChildren(ctx);
     }
 
+    /**
+     * Visits a self-assignment statement node, extracts the variable and expression value,
+     * then performs the self-assignment operation (e.g., +=, -=) using the assign method.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitSelfAssignment(MusicParser.SelfAssignmentContext ctx) {
         VarInfo varInfo = VisitorUtils.extractVariable(ctx.ID(), null, ctx.parent(),stack.peek(),currentScope,globalScope,getOrigin(ctx),getCol(ctx));
         Value exprValue = tryCasting(ctx.expr());
-        if (varInfo.type == Type.INT && exprValue.getType() == Type.INT) {
-            IntValue intValue = (IntValue) exprValue;
-            IntValue intVar = (IntValue) varInfo.valueObj;
-            if (ctx.assOp().SUMIS() != null) intVar.value += intValue.value;
-            else if (ctx.assOp().SUBIS() != null) intVar.value -= intValue.value;
-            else if (ctx.assOp().MULIS() != null) intVar.value *= intValue.value;
-            else if (ctx.assOp().DIVIS() != null && intValue.value != 0) intVar.value /= intValue.value;
-            else throw new ArithmeticOperationError("Division by zero", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            //System.out.println(varInfo);
-            return (T) new IntValue(intVar.value);
-        } else if (varInfo.type == Type.NOTE && exprValue.getType() == Type.INT) {
-            IntValue intValue = (IntValue) exprValue;
-            NoteValue noteValue = (NoteValue) varInfo.valueObj;
-            int newNoteValue;
-            int oldNoteValue = NoteMap.notes.get(noteValue.note);
-            if (ctx.assOp().SUMIS() != null) newNoteValue = oldNoteValue + intValue.value;
-            else if (ctx.assOp().SUBIS() != null) newNoteValue = oldNoteValue - intValue.value;
-            else if (ctx.assOp().MULIS() != null && intValue.value >= 1)
-                newNoteValue = oldNoteValue + (intValue.value - 1) * 12;
-            else if (ctx.assOp().DIVIS() != null && intValue.value >= 1)
-                newNoteValue = oldNoteValue - (intValue.value - 1) * 12;
-            else
-                throw new ArithmeticOperationError("Invalid operation with notes", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            newNoteValue = Math.abs(newNoteValue) % 85;
-            noteValue.note = Music.findNote(newNoteValue);
-            return (T) new NoteValue(noteValue.note);
-        } else if (varInfo.type == Type.CHORD && exprValue.getType() == Type.NOTE) {
-            NoteValue noteValue = (NoteValue) exprValue;
-            ChordValue chordValue = (ChordValue) varInfo.valueObj;
-            if (ctx.assOp().SUMIS() != null) {
-                if (!chordValue.notes.contains(noteValue)) chordValue.notes.add(noteValue);
-            } else if (ctx.assOp().SUBIS() != null) {
-                if (chordValue.notes.size() <= 2)
-                    throw new ArithmeticOperationError("Invalid operation with chords", this.lineMap.get(getLine(ctx)), getCol(ctx));
-                chordValue.notes.remove(noteValue);
-            } else
-                throw new ArithmeticOperationError("Invalid operation with chords", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            //System.out.println(varInfo);
-            return (T) new ChordValue(chordValue.notes);
-        } else if (varInfo.type == Type.CHORD && exprValue.getType() == Type.CHORD) {
-            ChordValue chordValue = (ChordValue) exprValue;
-            ChordValue chordModified = (ChordValue) varInfo.valueObj;
-            if (ctx.assOp().SUMIS() != null) {
-                Set<NoteValue> setNotes = new HashSet<>();
-                setNotes.addAll(chordModified.notes);
-                setNotes.addAll(chordValue.notes);
-                chordModified.notes = new ArrayList<>(setNotes);
-            } else {
-                List<NoteValue> listNotes = new ArrayList<>();
-                for (NoteValue note : chordModified.notes)
-                    if (!chordValue.notes.contains(note)) listNotes.add(note);
-                if (listNotes.size() <= 1)
-                    throw new ArithmeticOperationError("Invalid operation with chords: less than 2 notes left in a chord", this.lineMap.get(getLine(ctx)), getCol(ctx));
-                chordModified.notes = listNotes;
-            }
-            //System.out.println(varInfo);
-            return (T) new ChordValue(chordModified.notes);
-        } else throw new ArithmeticOperationError("Invalid operation", this.lineMap.get(getLine(ctx)), getCol(ctx));
+        return (T) SelfAssignment.assign(ctx,varInfo,exprValue,getOrigin(ctx),getCol(ctx));
     }
 
-
+    /**
+     * Visits a variable declaration with initialization.
+     * Declares a new variable in the current scope and assigns it the value
+     * obtained from evaluating the expression. Checks for type consistency.
+     */
     @Override
     public T visitVarDeclWithARg(MusicParser.VarDeclWithARgContext ctx) {
         Melody melody = stack.peek();
         String varName = ctx.ID().getText();
-        VarInfo varInfo;
-
-        varInfo = VisitorUtils.declareVar(varName, melody,currentScope,globalScope,getOrigin(ctx), getCol(ctx));
+        VarInfo varInfo= VisitorUtils.declareVar(varName, melody,currentScope,globalScope,getOrigin(ctx), getCol(ctx));
         Value val = tryCasting(ctx.expr());
-
         if (val.getType() != varInfo.type) {
             throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + val.getType(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
@@ -450,7 +359,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-
+    /**
+     * Plays a musical note for the specified duration.
+     * Duration can be provided as an integer literal or retrieved from an integer variable.
+     * The note name is converted to the internal format before playing.
+     */
     @Override
     public T visitPlayNote(MusicParser.PlayNoteContext ctx) {
         int duration;
@@ -464,7 +377,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-
+    /**
+     * Plays a chord for the given duration.
+     * Duration can be specified directly as an integer or via an integer variable.
+     * Retrieves the chord notes and plays them using the current melody and scope.
+     */
     @Override
     public T visitPlayChord(MusicParser.PlayChordContext ctx) {
         ChordValue chord = (ChordValue) visit(ctx.chord());
@@ -476,13 +393,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         }
         Music.playChord(chord.notes, duration,stack.peek(),currentScope);
         return visitChildren(ctx);
-
     }
 
     /**
-     * @Kacper, wywoluje visit(ctx.functionCall()) bo wiem ze zwroci jakies ReturnValue,
-     * Po nim zmieniam scope do poprzedniego, przypisuje zwroconą wartosc i przegladanie idzie dalej
-     * po tym co dalej jest po wywolaniu funckji
+     * Executes a function call and assigns its return value to a variable if specified.
+     * Checks type compatibility between the function's return value and the target variable.
+     * Updates the variable's value if types match; otherwise, throws a type error.
      */
     @Override
     public T visitPlayFunc(MusicParser.PlayFuncContext ctx) {
@@ -494,62 +410,30 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             name = ctx.ID().getText();
             var = VisitorUtils.extractVariable(ctx.ID(), null, ctx.parent(),stack.peek(),currentScope,globalScope,getOrigin(ctx),getCol(ctx));
         }
-        if (returnValue.getValue() == null) return null;
-        else if (name == null) return null;
+        if (returnValue.getValue() == null || name == null) return null;
         else if (var.type != returnValue.getValue().getType())
             throw new ValueError("Function returned: " + returnValue.getValue().getType() + " which was assigned to: " + var.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
         else var.valueObj = VisitorUtils.copyValue(returnValue.getValue());
         return null;
     }
 
-
+    /**
+     * Visits play statements for ID variants (notes, chords, or tracks).
+     * Retrieves the current melody from the stack and delegates the play action
+     * to the PlayIDVariants utility method.
+     */
     @Override
-    public T visitPlayIDVariants(MusicParser.PlayIDVariantsContext ctx) { //TODO trzeba zmienić tu używanie parentów bo może być wiele ID
+    public T visitPlayIDVariants(MusicParser.PlayIDVariantsContext ctx) {
         Melody melody = stack.peek();
         if (melody == null) throw new RuntimeException("Stack is empty!");
-        //playing note or chord
-        if (ctx.INT_VAL() != null || ctx.parentID(1) != null) {
-            VarInfo varInfo;
-            String varName = ctx.parentID(0).ID().getText();
-
-            varInfo = VisitorUtils.findVar(varName, ctx.parentID(0).parent(), stack.peek(), currentScope, globalScope, lineMap.get(getLine(ctx)), getCol(ctx));
-
-
-            if (varInfo == null)
-                throw new ScopeError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
-            int duration = 0;
-            if (ctx.INT_VAL() != null) duration = Integer.parseInt(ctx.INT_VAL().getText());
-            else if (ctx.parentID(1) != null) {
-                IntValue varInt = (IntValue) VisitorUtils.extractVariable(ctx.parentID(1).ID(), Type.INT, ctx.parentID(1).parent(),stack.peek(),currentScope,globalScope,getOrigin(ctx),getCol(ctx)).valueObj;
-                duration = varInt.value;
-            }
-            if (varInfo.type == Type.NOTE) {
-                NoteValue noteVal = (NoteValue) varInfo.valueObj;
-                Music.playNote(noteVal.note, duration,melody,currentScope);
-            } else {
-                ChordValue chordVal = (ChordValue) varInfo.valueObj;
-                Music.playChord(chordVal.notes, duration,melody,currentScope);
-            }
-        }
-        //playing track
-        else {
-            if (!melody.name.equals("main"))
-                throw new SyntaxError("Track cannot be played outside of a main melody", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            String trackName = ctx.parentID(0).ID().getText();
-            if (!tracks.containsKey(trackName)) {
-                throw new UndefinedError("Undefined track variable: " + " " + trackName, this.lineMap.get(getLine(ctx)), getCol(ctx));
-            }
-            Track track = tracks.get(trackName);
-            try {
-                track.play();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e.getMessage());
-            }
-        }
+        PlayIDVariants.play(ctx,melody,currentScope,globalScope,tracks,getOrigin(ctx),getCol(ctx));
         return visitChildren(ctx);
     }
 
-
+    /**
+     * Visits and plays multiple values sequentially.
+     * Iterates over all MultiPlayValues in the context and visits each one.
+     */
     @Override
     public T visitPlayMulti(MusicParser.PlayMultiContext ctx) {
         for (MusicParser.MultiPlayValuesContext multi : ctx.multiPlayValues()) {
@@ -1431,63 +1315,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return (Value) value;
     }
 
-
-
     private boolean checkForExpr(MusicParser.ForLoopContext ctx) {
         return ((BoolValue) visit(ctx.expr())).value;
     }
 
-    public void editEffect(MusicParser.SettingsAssigmentContext ctx, Effect effect, List<MusicParser.ParentContext> parents,
-                           HashMap<Effect,Value> effects, Instrument instrument, MidiChannel[] channels) {
-
-        ParseTree lastChild = ctx.children.get(ctx.children.size() - 1);
-        if (effect == Effect.PACE || effect == Effect.VOLUME) {
-            if (lastChild != null && isNumeric(String.valueOf(lastChild)))
-                effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(lastChild))));
-            else if (lastChild != null) {
-                IntValue varInt = (IntValue) VisitorUtils.extractVariable((TerminalNode) lastChild, Type.INT, parents,stack.peek(),currentScope,globalScope,getOrigin(ctx),getCol(ctx)).valueObj;
-                effects.put(effect, varInt);
-            }
-
-        } else if (effect == Effect.JAZZ || effect == Effect.BLUES) {
-            if (lastChild != null && isBoolean(String.valueOf(lastChild)))
-                effects.put(effect, new BoolValue(Boolean.parseBoolean(String.valueOf(lastChild))));
-            else if (lastChild != null) {
-                BoolValue varBool = (BoolValue) VisitorUtils.extractVariable((TerminalNode) lastChild, Type.BOOL, parents,stack.peek(),currentScope,globalScope,getOrigin(ctx),getCol(ctx)).valueObj;
-                effects.put(effect, varBool);
-            }
-        } else {
-            if (lastChild != null && isNumeric(String.valueOf(lastChild))) {
-                effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(lastChild))));
-                if (instrument == DRUMS)
-                    channels[9].controlChange(Music.effectControllers.get(effect), ((IntValue) effects.get(effect)).value);
-                else
-                    channels[0].controlChange(Music.effectControllers.get(effect), ((IntValue) effects.get(effect)).value);
-            } else if (lastChild != null) {
-                IntValue varInt = (IntValue) VisitorUtils.extractVariable((TerminalNode) lastChild, Type.INT, parents,stack.peek(),currentScope,globalScope,getOrigin(ctx),getCol(ctx)).valueObj;
-                if (instrument == DRUMS)
-                    channels[9].controlChange(Music.effectControllers.get(effect), varInt.value);
-                else
-                    channels[0].controlChange(Music.effectControllers.get(effect), varInt.value);
-            }
-        }
-    }
-
-    private static boolean isNumeric(String str) {
-        try {
-            Integer.parseInt(str);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    private static boolean isBoolean(String str) {
-        try {
-            Boolean.parseBoolean(str);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
+    private void editProperSettings(MusicParser.SettingsAssigmentContext ctx, List<MusicParser.ParentContext> parents, Effect effect){
+        Melody melody = stack.peek();
+        if (currentScope != null) {
+            VisitorUtils.editEffect(ctx, effect, parents,currentScope.effects,currentScope.instrument,
+                    currentScope.channels, melody,currentScope,globalScope,getOrigin(ctx),getCol(ctx));
+        } else if (stack.peek() != null) VisitorUtils.editEffect(ctx, effect,null,melody.effects,melody.instrument,
+                melody.channels,melody,currentScope,globalScope,getOrigin(ctx),getCol(ctx));
     }
 }

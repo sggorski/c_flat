@@ -1,5 +1,6 @@
 package pl.edu.agh.visitorActions;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.Melody;
 import pl.edu.agh.MusicParser;
@@ -7,12 +8,26 @@ import pl.edu.agh.errors.ScopeError;
 import pl.edu.agh.errors.UndefinedError;
 import pl.edu.agh.errors.ValueError;
 import pl.edu.agh.musicUtils.Effect;
+import pl.edu.agh.musicUtils.Instrument;
+import pl.edu.agh.musicUtils.Music;
 import pl.edu.agh.utils.*;
 
+import javax.sound.midi.MidiChannel;
 import java.util.HashMap;
 import java.util.List;
 
+import static pl.edu.agh.musicUtils.Instrument.*;
+
 public class VisitorUtils {
+
+    /**
+     * Creates and returns a deep copy of the given Value object.
+     * Supports the following types: INT, BOOL, NOTE, and CHORD.
+     * Returns null if the Value type is unrecognized.
+     *
+     * @param value the Value object to copy
+     * @return a deep copy of the given Value, or null if type is unknown
+     */
     public static Value copyValue(Value value){
         Type type = value.getType();
         switch(type){
@@ -36,9 +51,6 @@ public class VisitorUtils {
      * Finds the new active Scope when visiting if or any other IfStatement
      * which translates to finding the first child Scope of the previous currentScope
      * or first child of the Melody if there is no active Scope at the moment -> currentScope is null
-     *
-     * @param melody
-     * @return
      */
     public static Scope getCurrScope(Melody melody,Scope currentScope) {
         Scope firstScope;
@@ -46,12 +58,10 @@ public class VisitorUtils {
         if (melody.scopes.isEmpty()) return null;
         if (currentScope != null) {
             firstScope = currentScope.scopes.get(0);
-            //Copying settings from parent scope
             firstScope.copyEffects(currentScope.effects);
             firstScope.setInstrument(currentScope.instrument);
         } else {
             firstScope = melody.scopes.get(0);
-            //Copying settings from parent melody
             firstScope.setInstrument(melody.instrument);
             firstScope.copyEffects(melody.effects);
         }
@@ -84,6 +94,11 @@ public class VisitorUtils {
         return currentScope;
     }
 
+    /**
+     * Resets the first inner scope of the given currentScope or melody to the provided temp scope.
+     * If currentScope is null, modifies the root scope of the melody.
+     * Throws a RuntimeException if both currentScope and melody are null.
+     */
     public static  void resetCurrScope(Scope temp, Melody melody, Scope currentScope) {
         if (currentScope == null) {
             if (melody== null) {
@@ -95,6 +110,10 @@ public class VisitorUtils {
         }
     }
 
+    /**
+     * Skips to the next scope by retrieving the current scope
+     * and applying a scope change operation.
+     */
     public static Scope skipScope(Scope currentScope, Melody melody ) {
         currentScope = getCurrScope(melody, currentScope);
         currentScope = changeScope(melody, currentScope);
@@ -148,7 +167,6 @@ public class VisitorUtils {
                 }
             }
 
-            //if (stack.isEmpty()) throw new RuntimeException("Stack is empty!");
 
             if (melody != null && (melody.memory.containsKey(varName) || melody.memory.get(varName) != null))  {
                 if(parentContexts.isEmpty()){
@@ -158,11 +176,6 @@ public class VisitorUtils {
                 return globalScope.get(varName);
             }
             throw new UndefinedError("Variable not defined: " + varName, origin, col);
-
-            /**
-             * This section looks bad, don't worry
-             * will be changed in my spare time
-             */
 
         } else if (melody != null) {
 
@@ -193,6 +206,10 @@ public class VisitorUtils {
         }
     }
 
+    /**
+     * Extracts a variable by name from the current scope, parent contexts, or global scope.
+     * Validates the variable's existence and optionally its type.
+     */
     public static VarInfo extractVariable(TerminalNode id, Type type, List<MusicParser.ParentContext> parents, Melody melody,
                                    Scope currentScope, HashMap<String,VarInfo> globalScope, LineOrigin origin, int col) {
 
@@ -238,6 +255,72 @@ public class VisitorUtils {
             return currentScope.effects.get(effect);
         } else if (melody != null) return melody.effects.get(effect);
         return null;
+    }
+
+    /**
+     * Edits the specified musical effect by evaluating the value from the assignment context.
+     * Depending on the effect type, it supports integer or boolean values, either directly or via variable lookup.
+     * Applies the effect to the corresponding MIDI channel if needed.
+     */
+    public static void editEffect(MusicParser.SettingsAssigmentContext ctx, Effect effect, List<MusicParser.ParentContext> parents,
+                           HashMap<Effect,Value> effects, Instrument instrument, MidiChannel[] channels, Melody melody,
+                           Scope currentScope, HashMap<String, VarInfo> globalScope, LineOrigin origin, int col) {
+
+        ParseTree lastChild = ctx.children.get(ctx.children.size() - 1);
+        if (effect == Effect.PACE || effect == Effect.VOLUME) {
+            if (lastChild != null && isNumeric(String.valueOf(lastChild)))
+                effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(lastChild))));
+            else if (lastChild != null) {
+                IntValue varInt = (IntValue) VisitorUtils.extractVariable((TerminalNode) lastChild, Type.INT, parents,melody,currentScope,globalScope,origin, col).valueObj;
+                effects.put(effect, varInt);
+            }
+
+        } else if (effect == Effect.JAZZ || effect == Effect.BLUES) {
+            if (lastChild != null && isBoolean(String.valueOf(lastChild)))
+                effects.put(effect, new BoolValue(Boolean.parseBoolean(String.valueOf(lastChild))));
+            else if (lastChild != null) {
+                BoolValue varBool = (BoolValue) VisitorUtils.extractVariable((TerminalNode) lastChild, Type.BOOL, parents,melody,currentScope,globalScope,origin, col).valueObj;
+                effects.put(effect, varBool);
+            }
+        } else {
+            if (lastChild != null && isNumeric(String.valueOf(lastChild))) {
+                effects.put(effect, new IntValue(Integer.parseInt(String.valueOf(lastChild))));
+                if (instrument == DRUMS)
+                    channels[9].controlChange(Music.effectControllers.get(effect), ((IntValue) effects.get(effect)).value);
+                else
+                    channels[0].controlChange(Music.effectControllers.get(effect), ((IntValue) effects.get(effect)).value);
+            } else if (lastChild != null) {
+                IntValue varInt = (IntValue) VisitorUtils.extractVariable((TerminalNode) lastChild, Type.INT, parents,melody,currentScope,globalScope,origin,col).valueObj;
+                if (instrument == DRUMS)
+                    channels[9].controlChange(Music.effectControllers.get(effect), varInt.value);
+                else
+                    channels[0].controlChange(Music.effectControllers.get(effect), varInt.value);
+            }
+        }
+    }
+
+    /**
+     * Utility method used in editEffect()
+     */
+    private static boolean isNumeric(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Utility method editEffect()
+     */
+    private static boolean isBoolean(String str) {
+        try {
+            Boolean.parseBoolean(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
 }
