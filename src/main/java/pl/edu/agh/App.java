@@ -25,7 +25,7 @@ public class App
         ImportHandler resolver = new ImportHandler();
         String mergedSource;
         try {
-            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/temp/lib_tests.cb");
+            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/temp/test.txt");
         } catch (ImportError e) {
             System.err.println(e.getMessage());
             return;
@@ -68,8 +68,8 @@ public class App
         } catch (SyntaxError | ValueError | ScopeError | VariableDeclarationError | StackOverflow e) {
             System.err.println(e.getMessage() /*+ " Errors"*/);
         }
-//        catch (Exception e) {
-//            System.err.println(/*"Error: +"*/ e.getMessage());
-//        }
+        catch (Exception e) {
+            System.err.println(/*"Error: +"*/ e.getMessage());
+        }
     }
 }

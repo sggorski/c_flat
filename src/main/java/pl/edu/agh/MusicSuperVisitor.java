@@ -7,6 +7,8 @@ import pl.edu.agh.errors.*;
 import pl.edu.agh.utils.*;
 import pl.edu.agh.musicUtils.Instrument;
 import pl.edu.agh.musicUtils.*;
+import pl.edu.agh.visitorActions.*;
+import pl.edu.agh.visitorActions.VisitorUtils;
 
 import javax.sound.midi.MidiChannel;
 import java.util.*;
@@ -345,7 +347,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (exprValue.getType() != varInfo.type) {
             throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + exprValue.getType(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
-        varInfo.valueObj = copyValue(exprValue);
+        varInfo.valueObj = VisitorUtils.copyValue(exprValue);
 
         //To check if everything is ok, will be deleted in a future
         Melody melody = stack.peek();
@@ -435,7 +437,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (val.getType() != varInfo.type) {
             throw new ValueError("Incorrect type of variable: " + ctx.ID().getText() + " Type " + varInfo.type + " not: " + val.getType(), this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
-        varInfo.valueObj = copyValue(val);
+        varInfo.valueObj = VisitorUtils.copyValue(val);
         if (currentScope != null) {
             //System.out.println(currentScope.memory.get(varInfo.name).toString());
         } else {
@@ -506,7 +508,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         else if (name == null) return null;
         else if (var.type != returnValue.getValue().getType())
             throw new ValueError("Function returned: " + returnValue.getValue().getType() + " which was assigned to: " + var.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
-        else var.valueObj = copyValue(returnValue.getValue());
+        else var.valueObj = VisitorUtils.copyValue(returnValue.getValue());
         return null;
     }
 
@@ -961,7 +963,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 Value arg = tryCasting(ctx.arguments().expr(i));
                 if (par.type != arg.getType())
                     throw new RuntimeError("Invalid type of argument with index: " + (i + 1) + " : " + arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
-                par.valueObj = copyValue(arg);
+                par.valueObj = VisitorUtils.copyValue(arg);
             }
         }
         for (Map.Entry<Integer, VarInfo> param : melody.parameters.entrySet()) {
@@ -1261,6 +1263,13 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitIntExpr(MusicParser.IntExprContext ctx) {
         return visit(ctx.intVal());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override public T visitCastExpr(MusicParser.CastExprContext ctx) {
+        Value value = tryCasting(ctx.expr());
+        Type type = Type.valueOf(ctx.type().getText().toUpperCase());
+        return (T) CastExpression.cast(value,type, this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
 
@@ -1683,25 +1692,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (currentScope != null) {
             return currentScope.effects.get(effect);
         } else if (melody != null) return melody.effects.get(effect);
-        return null;
-    }
-
-    private Value copyValue(Value value){
-        Type type = value.getType();
-        switch(type){
-            case INT:
-                IntValue valInt = (IntValue) value;
-                return new IntValue(valInt.value);
-            case BOOL:
-                BoolValue valBool = (BoolValue) value;
-                return new BoolValue(valBool.value);
-            case NOTE:
-                NoteValue valNote = (NoteValue) value;
-                return new NoteValue(valNote.note);
-            case CHORD:
-                ChordValue val = (ChordValue) value;
-                return new ChordValue(val.notes);
-        }
         return null;
     }
 

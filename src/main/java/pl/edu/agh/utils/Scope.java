@@ -1,10 +1,6 @@
 package pl.edu.agh.utils;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import pl.edu.agh.Melody;
-import pl.edu.agh.MusicParser;
-import pl.edu.agh.MusicSuperVisitor;
 import pl.edu.agh.musicUtils.Effect;
 import pl.edu.agh.musicUtils.Instrument;
 import pl.edu.agh.musicUtils.Music;
@@ -14,8 +10,6 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Synthesizer;
 import java.util.*;
-
-import static pl.edu.agh.musicUtils.Instrument.DRUMS;
 
 public class Scope {
 

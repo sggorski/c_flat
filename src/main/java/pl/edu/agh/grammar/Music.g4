@@ -187,6 +187,7 @@ settingsList
 
 expr
     : LP expr RP  #paranthesesExpr
+    | LP type RP expr #castExpr
     | NOT expr #notExpr
     | expr mullDivOp expr #mullDivOperatorExpr
     | expr addSubOp expr #addSubOperatorExpr
