@@ -1,6 +1,5 @@
 package pl.edu.agh;
 
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.*;
 import pl.edu.agh.errors.*;
@@ -9,11 +8,7 @@ import pl.edu.agh.musicUtils.Instrument;
 import pl.edu.agh.musicUtils.*;
 import pl.edu.agh.visitorActions.*;
 import pl.edu.agh.visitorActions.VisitorUtils;
-
-import javax.sound.midi.MidiChannel;
 import java.util.*;
-import java.util.function.BiPredicate;
-
 import static pl.edu.agh.musicUtils.Instrument.*;
 
 
@@ -442,81 +437,44 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return null;
     }
 
+    /**
+     * Visits a MultiPlayValuesContext to play multiple musical elements.
+     * Retrieves the duration for playback, then iterates over each child node in the context.
+     * Depending on the type of each child (Note, Chord, or variable), it plays the corresponding sound.
+     * Falls back to variable resolution if the type is not directly identifiable.
+     */
     @Override
-    public T visitMultiPlayValues(MusicParser.MultiPlayValuesContext ctx) { //TODO trzeba zmienić tu używanie parentów bo może być wiele ID
-        int duration = 0;
-        int lastId = ctx.parentID().size() - 1;
+    public T visitMultiPlayValues(MusicParser.MultiPlayValuesContext ctx) {
         Melody melody = stack.peek();
-        if (melody == null) throw new RuntimeException("Stack is empty!");
-        if (ctx.INT_VAL() != null) {
-            duration = Integer.parseInt(ctx.INT_VAL().getText());
-        } else if (ctx.parentID(lastId) != null) {
-            VarInfo var;
-            String varName = ctx.parentID(lastId).ID().getText();
-
-            var = VisitorUtils.findVar(varName, ctx.parentID(lastId).parent(),stack.peek(), currentScope, globalScope, lineMap.get(getLine(ctx)), getCol(ctx));
-
-            if (var == null)
-                throw new ScopeError("Variable not defined: ", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            if (var.type != Type.INT)
-                throw new ValueError("Incorrect type of variable: " + varName + "Type " + var.type + "not int", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            duration = ((IntValue) var.valueObj).value;
-        }
-
+        int duration = MultiPlayValues.getDuration(ctx,melody,currentScope,globalScope,getOrigin(ctx),getCol(ctx));
         for (int i = 0; i < ctx.getChildCount() - 1; i++) {
             ParseTree child = ctx.getChild(i);
-            if (visit(child) instanceof ChordValue) {
-                ChordValue chord = (ChordValue) visit(child);
+            T childValue = visit(child);
+            if (childValue instanceof ChordValue) {
+                ChordValue chord = (ChordValue) childValue;
                 Music.playChord(chord.notes, duration,melody,currentScope);
-            } else if (visit(child) instanceof NoteValue) {
-                NoteValue note = (NoteValue) visit(child);
+            } else if (childValue instanceof NoteValue) {
+                NoteValue note = (NoteValue) childValue;
                 Music.playNote(note.note, duration,melody,currentScope);
             } else {
                 MusicParser.ParentIDContext idContext = (MusicParser.ParentIDContext) child;
-                VarInfo varInfo;
-                String varName = idContext.ID().getText();
-
-                varInfo = VisitorUtils.findVar(varName, idContext.parent(),stack.peek(),currentScope,globalScope,lineMap.get(getLine(ctx)),getCol(ctx));
-
-                if (varInfo.type == Type.NOTE) {
-                    NoteValue noteVal = (NoteValue) varInfo.valueObj;
-                    Music.playNote(noteVal.note, duration,melody,currentScope);
-                } else if (varInfo.type == Type.CHORD) {
-                    ChordValue chordVal = (ChordValue) varInfo.valueObj;
-                    Music.playChord(chordVal.notes, duration,melody,currentScope);
-                } else {
-                    throw new ValueError("Expecting Note or Chord value, got: " + varInfo, this.lineMap.get(getLine(ctx)), getCol(ctx));
-                }
+                MultiPlayValues.playVariable(idContext,melody,currentScope,globalScope,duration,getOrigin(ctx),getCol(ctx));
             }
         }
         return visitChildren(ctx);
     }
 
 
+    /**
+     * Visits a PauseStatementContext to pause the execution.
+     * Delegates to the PauseStatement.Pause method to determine the duration
+     * and perform the thread sleep. Uses the current Melody and scope information
+     * to resolve potential variable-based durations.
+     */
     @Override
     public T visitPauseStatement(MusicParser.PauseStatementContext ctx) {
-        try {
-            int sleep = 0;
-            if (ctx.INT_VAL() != null) sleep = Integer.parseInt(ctx.INT_VAL().getText());
-            else if (ctx.ID() != null) {
-                Melody melody = stack.peek();
-                if (melody == null) throw new RuntimeException("Stack is empty!");
-                VarInfo var;
-                String varName = ctx.ID().getText();
-
-                var = VisitorUtils.findVar(varName, ctx.parent(),stack.peek(),currentScope,globalScope,lineMap.get(getLine(ctx)),getCol(ctx));
-
-                if (var == null)
-                    throw new ScopeError("Variable not defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
-                if (var.type != Type.INT)
-                    throw new ValueError("Incorrect type of variable: " + varName + "Type " + var.type + "not int", this.lineMap.get(getLine(ctx)), getCol(ctx));
-                IntValue varInt = (IntValue) var.valueObj;
-                sleep = varInt.value;
-            }
-            Thread.sleep(sleep);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        Melody melody = stack.peek();
+        PauseStatement.pause(ctx,melody,currentScope,globalScope,getOrigin(ctx),getCol(ctx));
         return visitChildren(ctx);
     }
 
@@ -525,7 +483,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
-
+    /**
+     * Visits a WhileLoopContext to execute a while-loop construct.
+     * Evaluates the loop condition and, if true, enters the loop's scope.
+     * Manages loop control flow, including break and continue statements.
+     * Ensures correct handling of scope restoration and variable context during each iteration.
+     */
     @Override
     public T visitWhileLoop(MusicParser.WhileLoopContext ctx) {
         Scope callbackScope = currentScope;
@@ -550,12 +513,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 VisitorUtils.resetCurrScope(temp,stack.peek(),currentScope);
             }
             T result = visit(ctx);
-            if(result instanceof ReturnVal){
-                return result;
-            }
-        } else {
-            currentScope = VisitorUtils.skipScope(currentScope,stack.peek());
+            if(result instanceof ReturnVal) return result;
         }
+        else currentScope = VisitorUtils.skipScope(currentScope,stack.peek());
         return null;
     }
 
@@ -565,9 +525,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      * It iterates over every IF/ELSE/ELSEIF ctx and visits it to check if its expression is true or false
      * The first found expr that return True is executed and the remaining statements are deleted from currentScope's list of Child Scopes
      * (because changeScope brings us back to the parent Scope not the Scope of the IF/ELSE/ELSEIF we are entering)
-     *
-     * @param ctx the parse tree
-     * @return
      */
     @Override
     public T visitIfStatement(MusicParser.IfStatementContext ctx) {
@@ -590,6 +547,12 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return null;
     }
 
+    /**
+     * Visits a ScopeContext to handle variable scoping within loops or code blocks.
+     * Adjusts the current scope based on the parent context (e.g., while or for loops).
+     * Ensures proper scope restoration after loop execution or return statements.
+     * Uses deep copying of scope structure for loop-related scopes to maintain isolation.
+     */
     @Override
     public T visitScope(MusicParser.ScopeContext ctx) {
         Scope temp = null;
@@ -607,11 +570,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (temp != null) {
             currentScope = currentScope.parent;
             VisitorUtils.resetCurrScope(temp,stack.peek(),currentScope);
-        } else {
-            currentScope = VisitorUtils.changeScope(stack.peek(), currentScope);
         }
+        else currentScope = VisitorUtils.changeScope(stack.peek(), currentScope);
         return null;
     }
+
 
     @Override
     public T visitParent(MusicParser.ParentContext ctx) {
@@ -629,9 +592,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      * else we execute it (we are not worried about checking if we should execute this IF when expression is True
      * because after executing the first IF with expr == True we delete remaining IF/ELSE/ELSEIF that weren't checked)
      * getCurrentScope enters this IF Scope and changeScope leaves this IF's Scope after we visited everything that is in it
-     *
-     * @param ctx the parse tree
-     * @return
      */
     @Override
     public T visitIf(MusicParser.IfContext ctx) {
@@ -640,15 +600,21 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             if (((BoolValue) exprVal).value) {
                 T result = visit(ctx.scope());
                 if (result instanceof ReturnVal) return result;
-                else return (T) new Boolean(true);
+                else return (T) Boolean.TRUE;
             } else {
                 currentScope = VisitorUtils.skipScope(currentScope,stack.peek());
-                return (T) new Boolean(false);
+                return (T) Boolean.FALSE;
             }
         } else
             throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getClass().getName(), this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
+    /**
+     * Visits an ElseifContext to evaluate and execute an else-if branch.
+     * Evaluates the conditional expression; if it resolves to true,
+     * the corresponding scope is executed. If false, the scope is skipped.
+     * Throws a ValueError if the expression is not of boolean type.
+     */
     @Override
     public T visitElseif(MusicParser.ElseifContext ctx) {
         Value exprVal = tryCasting(ctx.expr());
@@ -656,10 +622,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             if (((BoolValue) exprVal).value) {
                 T result = visit(ctx.scope());
                 if (result instanceof ReturnVal) return result;
-                else return (T) new Boolean(true);
+                else return (T) Boolean.TRUE;
             } else {
                 currentScope = VisitorUtils.skipScope(currentScope,stack.peek());
-                return (T) new Boolean(false);
+                return (T) Boolean.FALSE;
             }
         } else
             throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getClass().getName(), this.lineMap.get(getLine(ctx)), getCol(ctx));
@@ -667,10 +633,15 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
     @Override
     public T visitElse(MusicParser.ElseContext ctx) {
-        //System.out.println("Exiting else, else memory: " + currentScope.memory.values().stream().map(e -> e.toString()).collect(Collectors.joining(" ")));
         return visit(ctx.scope());
     }
 
+    /**
+     * Visits a ForInitContext to handle the initialization part of a for-loop.
+     * If the initialization is a variable declaration, it visits the declaration
+     * and assigns the declared variable's name to the forInit field in the current
+     * or parent scope for tracking. If it's an assignment, it simply visits the assignment.
+     */
     @Override
     public T visitForInit(MusicParser.ForInitContext ctx) {
         if (ctx.varDecl() != null) {
@@ -678,7 +649,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             visit(ctx.varDecl());
             currentScope = currentScope.parent;
 
-            /**
+            /*
              * if ForInit is Declaration then the variable goes to the scope representing For and
              * information about declared variable in () goes to the parent Scope
              */
@@ -687,46 +658,33 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 if (currentScope != null) {
                     currentScope.forInit = ((MusicParser.VarDeclWithARgContext) ctx.varDecl()).ID().getText();
                 } else {
-                    if (stack.peek() == null) {
-                        throw new RuntimeException("Stack is empty!");
-                    }
+                    if (stack.peek() == null) throw new RuntimeException("Stack is empty!");
                     stack.peek().forInit = ((MusicParser.VarDeclWithARgContext) ctx.varDecl()).ID().getText();
                 }
             } else {
                 if (currentScope != null) {
                     currentScope.forInit = ((MusicParser.VarDeclWithoutArgContext) ctx.varDecl()).ID().getText();
                 } else {
-                    if (stack.peek() == null) {
-                        throw new RuntimeException("Stack is empty!");
-                    }
+                    if (stack.peek() == null) throw new RuntimeException("Stack is empty!");
                     stack.peek().forInit = ((MusicParser.VarDeclWithoutArgContext) ctx.varDecl()).ID().getText();
                 }
             }
-
-        } else {
-            visit(ctx.assignment());
-        }
+        } else visit(ctx.assignment());
         return null;
     }
 
-
+    /**
+     * Visits a ForLoopContext to execute a for-loop construct.
+     * Handles initialization, condition checking, loop body execution,
+     * and update expressions. Manages scope creation and restoration for each iteration,
+     * and correctly handles control flow statements like break and continue.
+     * Ensures the forInit variable tracking is cleared after the loop.
+     */
     @Override
     public T visitForLoop(MusicParser.ForLoopContext ctx) {
         if (ctx.forInit() != null) {
             visit(ctx.forInit());
         }
-
-        /**
-         * For expr is outside for Scope to prevent something like this
-         *  main melody(){
-         *  for(int k = 2; i * k < 4; k +=1 ){
-         *      int i = 8;
-         *      ...
-         *      }
-         *  }
-         *  This would produce wrong Exception type if we were inside for loop at that time
-         *
-         */
 
         if (ctx.expr() == null || checkForExpr(ctx)) {
             while (ctx.expr() == null || checkForExpr(ctx)) {
@@ -743,12 +701,9 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 } catch (BreakError b) {
                     currentScope = callbackScope;
                     currentScope = VisitorUtils.skipScope(currentScope,stack.peek());
-                    if (currentScope != null) {
-                        currentScope.forInit = null;
-                    } else {
-                        if (stack.peek() == null) {
-                            throw new RuntimeException("Stack is empty!");
-                        }
+                    if (currentScope != null) currentScope.forInit = null;
+                    else {
+                        if (stack.peek() == null) throw new RuntimeException("Stack is empty!");
                         stack.peek().forInit = null;
                     }
                     return null;
@@ -756,25 +711,23 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                     currentScope = callbackScope;
                     VisitorUtils.resetCurrScope(temp,stack.peek(),currentScope);
                 }
-                if (ctx.forUpdate() != null) {
-                    visit(ctx.forUpdate());
-                }
+                if (ctx.forUpdate() != null) visit(ctx.forUpdate());
             }
-            currentScope = VisitorUtils.skipScope(currentScope,stack.peek());
-        } else {
-            currentScope = VisitorUtils.skipScope(currentScope,stack.peek());
         }
-        if (currentScope != null) {
-            currentScope.forInit = null;
-        } else {
-            if (stack.peek() == null) {
-                throw new RuntimeException("Stack is empty!");
-            }
+        currentScope = VisitorUtils.skipScope(currentScope,stack.peek());
+        if (currentScope != null) currentScope.forInit = null;
+        else {
+            if (stack.peek() == null) throw new RuntimeException("Stack is empty!");
             stack.peek().forInit = null;
         }
         return null;
     }
 
+    /**
+     * Visits a LoopBodyContext to execute all child statements inside a loop body.
+     * Iterates through each child node, visiting and executing it.
+     * If a ReturnVal is encountered during execution, it immediately returns it.
+     */
     @Override
     public T visitLoopBody(MusicParser.LoopBodyContext ctx) {
         for(ParseTree child: ctx.children){
@@ -807,60 +760,25 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         throw new ContinueError("Continue statement cannot be used here!", this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
+    /**
+     * Executes a function call: retrieves the melody, checks argument count and types,
+     * assigns parameter values, manages scope and call stack, applies settings,
+     * and runs the melody body. Returns the result or null if no return.
+     */
     @Override
     public T visitFunctionCall(MusicParser.FunctionCallContext ctx) {
-
         String name = ctx.ID().getText();
-        if (name.equals("main"))
-            throw new RuntimeError("You cannot call a main melody", this.lineMap.get(getLine(ctx)), getCol(ctx));
-        if (!melodyMemory.containsKey(name))
-            throw new RuntimeError("Melody " + name + " not declared", this.lineMap.get(getLine(ctx)), getCol(ctx));
-
-        Melody melodyPattern = melodyMemory.get(name);
-        Melody melody = Melody.deepCopyMelody(melodyPattern);
-        if(currentScope!=null){
-            melody.copyEffects(currentScope.effects);
-            melody.setInstrument(currentScope.instrument);
-        }
-        else {
-            melody.copyEffects(stack.peek().effects);
-            melody.setInstrument(stack.peek().instrument);
-        }
-        if (ctx.arguments() == null && !melody.parameters.isEmpty())
-            throw new RuntimeError("Invalid number of arguments: 0" + " instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
-        if (ctx.arguments() != null) {
-            if (melody.parameters.size() != ctx.arguments().expr().size())
-                throw new RuntimeError("Invalid number of arguments: " + ctx.arguments().expr().size() + " instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
-            int size = melody.parameters.size();
-            for (int i = 0; i < size; i++) {
-                VarInfo par = melody.parameters.get(i);
-                Value arg = tryCasting(ctx.arguments().expr(i));
-                if (par.type != arg.getType())
-                    throw new RuntimeError("Invalid type of argument with index: " + (i + 1) + " : " + arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
-                par.valueObj = VisitorUtils.copyValue(arg);
-            }
-        }
-        for (Map.Entry<Integer, VarInfo> param : melody.parameters.entrySet()) {
-            if (melody.memory.containsKey(param.getValue().name))
-                throw new RuntimeError("Redeclaration in line: " + melody.memory.get(param.getValue().name).line + " of a melody parameter inside melody's body: " + param.getValue().name, this.lineMap.get(getLine(ctx.arguments())), getCol(ctx.arguments()));
-            melody.memory.put(param.getValue().name, param.getValue());
-
-        }
+        Melody melody = FunctionCall.getMelodyCopy(name,melodyMemory,getOrigin(ctx),getCol(ctx));
+        FunctionCall.copyEffects(melody, stack.peek(),currentScope);
+        this.handleParameters(ctx,melody);
 
         melody.previous_scope = currentScope;
         currentScope = null;
         stack.push(melody);
         if (stack.size() > 100) throw new StackOverflow(name);
-
         if (ctx.settingsList() != null) {
-            for (MusicParser.SettingsAssigmentContext set : ctx.settingsList().settingsAssigment())
-                visit(set);
+            for (MusicParser.SettingsAssigmentContext set : ctx.settingsList().settingsAssigment()) visit(set);
         }
-        /**
-         * @Kacper, odwiedzam każdy stmt funckji i sprawdzam czy przyadkiem nie zwraca typu ReturnVal
-         * Jeśli tak to przerywam i zwracam dalej ta wartosć -> visitPlayFunc, tam jest zmiana currentScope na melody.previousScope
-         * Jeśli nie to pętla dojedzie do końca i zwracam ReturnVal z wartością null
-         */
         ReturnVal returnVal = null;
         for (MusicParser.StatementContext statement : melody.body) {
             T result = visit(statement);
@@ -870,9 +788,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
             }
         }
         if(returnVal != null) return  (T)returnVal;
-        else{
-            return (T) new ReturnVal(null);
-        }
+        else return (T) new ReturnVal(null);
     }
 
     @Override
@@ -887,188 +803,94 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public T visitNoteExpr(MusicParser.NoteExprContext ctx) {
         return (T) Music.parseNote(ctx.NOTE_VAL().getText());
     }
 
+    /**
+     * Visits a logical OR expression node. Casts both operands to boolean values
+     * and evaluates the OR operation.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitOrOperatorExpr(MusicParser.OrOperatorExprContext ctx) {
         Value firstValue = tryCasting(ctx.expr(0));
         Value secondValue = tryCasting(ctx.expr(1));
-
-        if (firstValue instanceof BoolValue && secondValue instanceof BoolValue) {
-            BoolValue boolExpr1 = (BoolValue) firstValue;
-            BoolValue boolExpr2 = (BoolValue) secondValue;
-            return (T) (new BoolValue(boolExpr1.value || boolExpr2.value));
-        } else if (firstValue instanceof BoolValue)
-            throw new ValueError("Incorrect type of expression: " + secondValue.getType() + " not BOOL", this.lineMap.get(getLine(ctx)), getCol(ctx));
-        else
-            throw new ValueError("Incorrect type of expression: " + firstValue.getType() + " not BOOL", this.lineMap.get(getLine(ctx)), getCol(ctx));
+        return (T)OrOperatorExpr.evaluate(firstValue,secondValue,getOrigin(ctx),getCol(ctx));
     }
 
-
+    /**
+     * Visits a logical NOT expression. Casts the operand to boolean and negates it.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitNotExpr(MusicParser.NotExprContext ctx) {
         Value expr = tryCasting(ctx.expr());
         if (expr instanceof BoolValue) {
             BoolValue boolExpr = (BoolValue) expr;
             return (T) new BoolValue(!boolExpr.value);
-        } else
-            throw new ValueError("Incorrect type of expression: " + expr.getType() + " not BOOL", this.lineMap.get(getLine(ctx)), getCol(ctx));
+        } else throw new ValueError("Incorrect type of expression: " + expr.getType() + " not BOOL", getOrigin(ctx), getCol(ctx));
     }
 
-
+    /**
+     * Visits an order operator expression (>, <, >=, <=), casts operands,
+     * and evaluates the comparison.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitOrderOperatorExpr(MusicParser.OrderOperatorExprContext ctx) {
         Value firstValue = tryCasting(ctx.expr(0));
         Value secondValue = tryCasting(ctx.expr(1));
-
-        BiPredicate<Integer, Integer> predicate = (x, y) -> false;
-        if (ctx.orderOp().GT() != null) predicate = (x, y) -> x > y;
-        if (ctx.orderOp().LT() != null) predicate = (x, y) -> x < y;
-        if (ctx.orderOp().GEQ() != null) predicate = (x, y) -> x >= y;
-        if (ctx.orderOp().LEQ() != null) predicate = (x, y) -> x <= y;
-
-        if (firstValue instanceof IntValue && secondValue instanceof IntValue) {
-            return (T) new BoolValue(predicate.test(((IntValue) firstValue).value, ((IntValue) secondValue).value));
-        } else if (firstValue instanceof NoteValue && secondValue instanceof NoteValue) {
-            return (T) new BoolValue(predicate.test(NoteMap.notes.get(((NoteValue) firstValue).note), NoteMap.notes.get(((NoteValue) secondValue).note)));
-        } else
-            throw new ArithmeticOperationError("Incorrect type of comparison!", this.lineMap.get(getLine(ctx)), getCol(ctx));
+        return (T)OrderOperatorExpr.evaluate(ctx,firstValue,secondValue,getOrigin(ctx), getCol(ctx));
     }
 
+    /**
+     * Visits an instrument comparison expression. Checks if the current melody's
+     * instrument matches the specified instrument value.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitInstrumentOperatorExpr(MusicParser.InstrumentOperatorExprContext ctx) {
         Melody melody = stack.peek();
         if (melody == null) throw new RuntimeException("Stack is empty!");
         return (T) new BoolValue(melody.instrument.toString().equals(ctx.INSTRUMENT_VALUE().getText()));
     }
 
+    /**
+     * Visits an addition or subtraction expression, casts operands,
+     * and evaluates the operation using the AddSubOperatorExpr evaluator.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitAddSubOperatorExpr(MusicParser.AddSubOperatorExprContext ctx) {
         Value firstValue = tryCasting(ctx.expr(0));
         Value secondValue = tryCasting(ctx.expr(1));
-
-        if (firstValue.getType() == Type.INT && secondValue.getType() == Type.INT) {
-            int firstInt = ((IntValue) firstValue).value;
-            int secondInt = ((IntValue) secondValue).value;
-            int resultInt;
-            if (ctx.addSubOp().SUB() != null)
-                resultInt = firstInt - secondInt;
-            else
-                resultInt = firstInt + secondInt;
-            Value result = new IntValue(resultInt);
-            return (T) result;
-        } else if (firstValue.getType() == Type.NOTE && secondValue.getType() == Type.INT) {
-            Note note = ((NoteValue) firstValue).note;
-            int intVal = ((IntValue) secondValue).value;
-            int noteIntVal = NoteMap.notes.get(note);
-
-            if (ctx.addSubOp().SUB() != null) noteIntVal -= intVal;
-            else noteIntVal += intVal;
-            noteIntVal = Math.abs(noteIntVal) % 85;
-            Value result = new NoteValue(Music.findNote(noteIntVal));
-            return (T) result;
-        } else if (firstValue.getType() == Type.CHORD && secondValue.getType() == Type.NOTE) {
-            NoteValue noteValue = (NoteValue) secondValue;
-            ChordValue chordValue = (ChordValue) firstValue;
-            ChordValue result;
-            if (ctx.addSubOp().ADD() != null) {
-                result = new ChordValue(chordValue.notes);
-                if (!chordValue.notes.contains(noteValue)) result.notes.add(noteValue);
-            } else {
-                if (chordValue.notes.size() <= 2 && chordValue.notes.contains(noteValue))
-                    throw new ArithmeticOperationError("Invalid operation with chords", this.lineMap.get(getLine(ctx)), getCol(ctx));
-                result = new ChordValue(chordValue.notes);
-                result.notes.remove(noteValue);
-            }
-            return (T) result;
-        } else if (firstValue.getType() == Type.CHORD && secondValue.getType() == Type.CHORD) {
-            ChordValue chordValue2 = (ChordValue) secondValue;
-            ChordValue chordValue1 = (ChordValue) firstValue;
-            ChordValue result;
-            if (ctx.addSubOp().ADD() != null) {
-                Set<NoteValue> setNotes = new HashSet<>();
-                setNotes.addAll(chordValue1.notes);
-                setNotes.addAll(chordValue2.notes);
-                result = new ChordValue(new ArrayList<>(setNotes));
-            } else {
-                List<NoteValue> listNotes = new ArrayList<>();
-                for (NoteValue note : chordValue1.notes)
-                    if (!chordValue2.notes.contains(note)) listNotes.add(note);
-                if (listNotes.size() <= 1)
-                    throw new ArithmeticOperationError("Invalid operation with chords: less than 2 notes left in a chord", this.lineMap.get(getLine(ctx)), getCol(ctx));
-                result = new ChordValue(listNotes);
-            }
-            return (T) result;
-
-        } else
-            throw new ArithmeticOperationError("Invalid arguments for add/subtract operation", this.lineMap.get(getLine(ctx)), getCol(ctx));
-
+        return (T)AddSubOperatorExpr.evaluate(ctx,firstValue,secondValue,getOrigin(ctx),getCol(ctx));
     }
 
+    /**
+     * Visits a logical AND expression, casts operands,
+     * and evaluates the AND operation using AndOperatorExpr.evaluate.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitAndOperatorExpr(MusicParser.AndOperatorExprContext ctx) {
         Value firstValue = tryCasting(ctx.expr(0));
         Value secondValue = tryCasting(ctx.expr(1));
-        if (firstValue instanceof BoolValue && secondValue instanceof BoolValue) {
-            BoolValue boolExpr1 = (BoolValue) firstValue;
-            BoolValue boolExpr2 = (BoolValue) secondValue;
-            return (T) (new BoolValue(boolExpr1.value && boolExpr2.value));
-        } else if (firstValue instanceof BoolValue)
-            throw new ValueError("Incorrect type of expression: " + secondValue.getType() + " not BOOL", this.lineMap.get(getLine(ctx)), getCol(ctx));
-        else
-            throw new ValueError("Incorrect type of expression: " + firstValue.getType() + " not BOOL", this.lineMap.get(getLine(ctx)), getCol(ctx));
+        return (T) AndOperatorExpr.evaluate(firstValue,secondValue,getOrigin(ctx), getCol(ctx));
     }
 
-
+    /**
+     * Visits and evaluates multiplication, division, or modulus expressions.
+     * Casts operands and calls the static evaluate method for computation.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitMullDivOperatorExpr(MusicParser.MullDivOperatorExprContext ctx) {
         Value firstValue = tryCasting(ctx.expr(0));
         Value secondValue = tryCasting(ctx.expr(1));
-
-        if (firstValue.getType() == Type.INT && secondValue.getType() == Type.INT) {
-            int firstInt = ((IntValue) firstValue).value;
-            int secondInt = ((IntValue) secondValue).value;
-            int resultInt;
-
-            if (ctx.mullDivOp().MUL() != null) resultInt = firstInt * secondInt;
-            else if (ctx.mullDivOp().PER() != null) resultInt = firstInt % secondInt;
-            else if (secondInt != 0) resultInt = firstInt / secondInt;
-            else throw new ArithmeticOperationError("Division by zero!", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            Value result = new IntValue(resultInt);
-            return (T) result;
-        }
-        if (firstValue.getType() == Type.NOTE && secondValue.getType() == Type.INT) {
-            Note note = ((NoteValue) firstValue).note;
-            int intVal = ((IntValue) secondValue).value;
-            int noteIntVal = NoteMap.notes.get(note);
-
-            if (noteIntVal < 1)
-                throw new ArithmeticOperationError("Invalid operation", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            if (ctx.mullDivOp().MUL() != null)
-                noteIntVal += (intVal - 1) * 12;
-            else if (ctx.mullDivOp().DIV() != null) noteIntVal -= (intVal - 1) * 12;
-            else
-                throw new ArithmeticOperationError("Invalid operation. % cannot be used with notes", this.lineMap.get(getLine(ctx)), getCol(ctx));
-            noteIntVal = Math.abs(noteIntVal) % 85;
-            Value result = new NoteValue(Music.findNote(noteIntVal));
-            return (T) result;
-        } else
-            throw new ArithmeticOperationError("Invalid arguments for mull/div operation", this.lineMap.get(getLine(ctx)), getCol(ctx));
+        return (T)MullDivOperatorExpr.evaluate(ctx,firstValue,secondValue,getOrigin(ctx),getCol(ctx));
     }
 
-
+    /**
+     * Visits a boolean expression node.
+     * Converts the boolean literal text ("true" or "false") to a BoolValue object.
+     * Throws a SyntaxError if no boolean value is found in the context.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitBoolExpr(MusicParser.BoolExprContext ctx) {
         if (ctx.BOOL_VAL() != null) {
             BoolValue result = new BoolValue(ctx.BOOL_VAL().getText().equals("true"));
@@ -1083,16 +905,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visit(ctx.expr());
     }
 
-
+    /**
+     * Visits an identifier expression node.
+     * Looks up the variable information by name in the current and global scopes.
+     * Throws UndefinedError if the variable is not defined.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitIdExpr(MusicParser.IdExprContext ctx) {
-
         VarInfo varInfo;
         String varName = ctx.ID().getText();
-
         varInfo = VisitorUtils.findVar(varName, ctx.parent(), stack.peek(),currentScope,globalScope,lineMap.get(getLine(ctx)),getCol(ctx));
-
         if (varInfo == null)
             throw new UndefinedError("No such variable defined: " + varName, this.lineMap.get(getLine(ctx)), getCol(ctx));
         return (T) varInfo.valueObj;
@@ -1138,30 +960,26 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     public T visitIntExpr(MusicParser.IntExprContext ctx) {
         return visit(ctx.intVal());
     }
-
-    @SuppressWarnings("unchecked")
+    /**
+     * Visits a cast expression node.
+     * Casts the evaluated value of the expression to the specified type.
+     */
     @Override public T visitCastExpr(MusicParser.CastExprContext ctx) {
         Value value = tryCasting(ctx.expr());
         Type type = Type.valueOf(ctx.type().getText().toUpperCase());
         return (T) CastExpression.cast(value,type, this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
-
+    /**
+     * Visits the equality operator expression node.
+     * Retrieves and casts both operand values,
+     * then evaluates equality or inequality.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitEqOperatorExpr(MusicParser.EqOperatorExprContext ctx) {
         Value firstValue = tryCasting(ctx.expr(0));
         Value secondValue = tryCasting(ctx.expr(1));
-
-        if (firstValue.getType() != secondValue.getType()) {
-            throw new IncomparableError("Types are not the same: " + firstValue + " != " + secondValue, this.lineMap.get(getLine(ctx)), getCol(ctx));
-        }
-        BoolValue result = firstValue.equals(secondValue);
-        if (ctx.eqOp().EQ() != null) return (T) result;
-        else {
-            if (result.value) return (T) new BoolValue(false);
-            else return (T) new BoolValue(true);
-        }
+        return (T)EqOperatorExpr.evaluate(ctx,firstValue,secondValue,getOrigin(ctx), getCol(ctx));
     }
 
 
@@ -1180,26 +998,19 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
+    /**
+     * Visits a Chord node in the parse tree and returns its ChordValue.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitChord(MusicParser.ChordContext ctx) {
-        List<NoteValue> notes = new ArrayList<>();
-        for (TerminalNode node : ctx.NOTE_VAL()) {
-            Note note = Note.valueOf(node.getText().replace('#', 's').replace('-', 'm'));
-            NoteValue newNote = new NoteValue(note);
-            if (!notes.contains(newNote))
-                notes.add(newNote);
-        }
-        for (TerminalNode node : ctx.ID()) {
-            NoteValue varNote = (NoteValue) VisitorUtils.extractVariable(node, Type.NOTE, ctx.parent(),stack.peek(),currentScope,globalScope,getOrigin(ctx),getCol(ctx)).valueObj;
-            if (!notes.contains(varNote))
-                notes.add(varNote);
-        }
-        if (notes.size() < 2)
-            throw new ValueError("Invalid operation with chords: same note repeated", this.lineMap.get(getLine(ctx)), getCol(ctx));
-        return (T) (new ChordValue(notes));
+        return (T) Chord.get(ctx,stack.peek(),currentScope,globalScope,getOrigin(ctx), getCol(ctx));
     }
 
+    /**
+     * Visits a TrackAdd node, handling the addition of a melody (function call) to a track.
+     * It verifies track and melody existence, applies settings, generates new code,
+     * creates a new visitor context, and appends the resulting TrackComponent to the track.
+     */
     @Override
     public T visitTrackAdd(MusicParser.TrackAddContext ctx) {
         String name = ctx.trackStatement().ID().getText();
@@ -1211,44 +1022,28 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (!melodyMemory.containsKey(funcName))
             throw new RuntimeError("Melody " + funcName + " not declared", this.lineMap.get(getLine(ctx)), getCol(ctx));
         Melody melody = melodyMemory.get(funcName);
-        List<Value> argsOut = new ArrayList<>();
         MusicParser.ArgumentsContext args = ctx.trackStatement().functionCall().arguments();
-        if (args == null && !melody.parameters.isEmpty())
-            throw new RuntimeError("Invalid number of arguments: 0 instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
-        if (args != null) {
-            if (melody.parameters.size() != args.expr().size())
-                throw new RuntimeError("Invalid number of arguments: " + args.expr().size() + " instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
-            int size = melody.parameters.size();
-            for (int i = 0; i < size; i++) {
-                VarInfo par = melody.parameters.get(i);
-                Value arg = tryCasting(args.expr(i));
-                if (par.type != arg.getType())
-                    throw new RuntimeError("Invalid type of argument with index: " + (i + 1) + " : " + arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
-                argsOut.add(arg);
-            }
-        }
+        List<Value> argsOut = handleTrackParameters(ctx,args,melody);
         MusicParser.SettingsListContext settings = ctx.trackStatement().functionCall().settingsList();
-        //fake melody just to get settings without any effort
         Melody main = stack.peek();
         Melody fakeMelody = Melody.deepCopyMelody(main);
         fakeMelody.copyEffects(main.effects);
         stack.push(fakeMelody);
-        if (settings != null) {
-            for (MusicParser.SettingsAssigmentContext set : settings.settingsAssigment())
-                visit(set);
-        }
+        if (settings != null) for (MusicParser.SettingsAssigmentContext set : settings.settingsAssigment())  visit(set);
         stack.pop();
         String newCode = TrackHandler.generateNewCode(this.code, funcName, argsOut, fakeMelody.effects, fakeMelody.instrument);
         AbstractMap.SimpleEntry<MusicSuperVisitor, MusicParser.ProgramContext> msv_prog = TrackHandler.prepareVisitor(newCode, this.lineMap);
         TrackComponent newComponent = new TrackComponent(msv_prog.getKey(), msv_prog.getValue());
         track.add(newComponent);
-
         return null;
     }
 
+    /**
+     * Visits a TrackDeclare node and declares a new track variable.
+     * Ensures that the track name hasn't been declared before to avoid redeclaration.
+     */
     @Override
     public T visitTrackDeclare(MusicParser.TrackDeclareContext ctx) {
-
         String name = ctx.trackDeclaration().ID().getText();
         if (tracks.containsKey(name)) {
             throw new VariableDeclarationError("Redeclaration of a track variable: " + name + " previously defined in line " + tracks.get(name).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
@@ -1268,8 +1063,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return visitChildren(ctx);
     }
 
+    /**
+     * Visits an IntVal node and parses it into an IntValue.
+     * Handles optional negation if a minus sign is present before the value.
+     */
     @Override
-    @SuppressWarnings("unchecked")
     public T visitIntVal(MusicParser.IntValContext ctx) {
         IntValue valueInt = new IntValue(Integer.parseInt(ctx.INT_VAL().getText()));
         if (ctx.SUB() != null) valueInt.value *= -1;
@@ -1278,7 +1076,6 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
 
     @Override
-    @SuppressWarnings("unchecked")
     public T visitTerminal(TerminalNode node) {
         if (Music.parseNote(node.getText()) != null) {
             return (T) Music.parseNote(node.getText());
@@ -1304,6 +1101,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return ctx.getStart().getCharPositionInLine();
     }
 
+    /**
+     * Attempts to evaluate and cast the given expression into a Value.
+     * Throws an error if the result is null (undefined variable) or if the result is of type Instrument,
+     * which is not allowed in this context.
+     */
     private Value tryCasting(MusicParser.ExprContext expr) {
         T value = visit(expr);
         if (value == null) {
@@ -1319,6 +1121,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         return ((BoolValue) visit(ctx.expr())).value;
     }
 
+    /**
+     * Applies the settings defined in the given SettingsAssignmentContext to the specified effect.
+     * Depending on whether a current scope is active, it applies settings either from the current scope
+     * or directly from the melody on top of the stack.
+     */
     private void editProperSettings(MusicParser.SettingsAssigmentContext ctx, List<MusicParser.ParentContext> parents, Effect effect){
         Melody melody = stack.peek();
         if (currentScope != null) {
@@ -1326,5 +1133,55 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                     currentScope.channels, melody,currentScope,globalScope,getOrigin(ctx),getCol(ctx));
         } else if (stack.peek() != null) VisitorUtils.editEffect(ctx, effect,null,melody.effects,melody.instrument,
                 melody.channels,melody,currentScope,globalScope,getOrigin(ctx),getCol(ctx));
+    }
+
+    /**
+     * Validates and assigns function call arguments to melody parameters.
+     * Checks argument count and types, copies argument values,
+     * and ensures no parameter re-declarations within the melody's memory.
+     */
+    private void handleParameters(MusicParser.FunctionCallContext ctx, Melody melody){
+        if (ctx.arguments() == null && !melody.parameters.isEmpty())
+            throw new RuntimeError("Invalid number of arguments: 0" + " instead of: " + melody.parameters.size(), getOrigin(ctx), getCol(ctx));
+        if (ctx.arguments() != null) {
+            if (melody.parameters.size() != ctx.arguments().expr().size())
+                throw new RuntimeError("Invalid number of arguments: " + ctx.arguments().expr().size() + " instead of: " + melody.parameters.size(), getOrigin(ctx), getCol(ctx));
+            int size = melody.parameters.size();
+            for (int i = 0; i < size; i++) {
+                VarInfo par = melody.parameters.get(i);
+                Value arg = tryCasting(ctx.arguments().expr(i));
+                if (par.type != arg.getType())
+                    throw new RuntimeError("Invalid type of argument with index: " + (i + 1) + " : " + arg.getType() + " instead of: " + par.type,getOrigin(ctx), getCol(ctx));
+                par.valueObj = VisitorUtils.copyValue(arg);
+            }
+        }
+        for (Map.Entry<Integer, VarInfo> param : melody.parameters.entrySet()) {
+            if (melody.memory.containsKey(param.getValue().name))
+                throw new RuntimeError("Redeclaration in line: " + melody.memory.get(param.getValue().name).line + " of a melody parameter inside melody's body: " + param.getValue().name, getOrigin(ctx), getCol(ctx.arguments()));
+            melody.memory.put(param.getValue().name, param.getValue());
+        }
+    }
+
+    /**
+     * Handles the evaluation and validation of arguments passed to a track function call.
+     * Ensures that the number and types of arguments match the melody's defined parameters.
+     */
+    private List<Value> handleTrackParameters(MusicParser.TrackAddContext ctx, MusicParser.ArgumentsContext args, Melody melody){
+        List<Value> argsOut = new ArrayList<>();
+        if (args == null && !melody.parameters.isEmpty())
+            throw new RuntimeError("Invalid number of arguments: 0 instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
+        if (args != null) {
+            if (melody.parameters.size() != args.expr().size())
+                throw new RuntimeError("Invalid number of arguments: " + args.expr().size() + " instead of: " + melody.parameters.size(), this.lineMap.get(getLine(ctx)), getCol(ctx));
+            int size = melody.parameters.size();
+            for (int i = 0; i < size; i++) {
+                VarInfo par = melody.parameters.get(i);
+                Value arg = tryCasting(args.expr(i));
+                if (par.type != arg.getType())
+                    throw new RuntimeError("Invalid type of argument with index: " + (i + 1) + " : " + arg.getType() + " instead of: " + par.type, this.lineMap.get(getLine(ctx)), getCol(ctx));
+                argsOut.add(arg);
+            }
+        }
+        return argsOut;
     }
 }
