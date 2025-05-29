@@ -39,7 +39,7 @@ public class LevenshteinDamerau {
         int currentCost = accSimilarity + 1;
         for (String potentialMatch : grammar){
             //System.out.println(potentialMatch);
-            int newCost = distance(word, potentialMatch);
+            int newCost = distance(word.toLowerCase(), potentialMatch.toLowerCase());
             if (newCost < currentCost) {
                 currentCost = newCost;
                 currentWord = potentialMatch;

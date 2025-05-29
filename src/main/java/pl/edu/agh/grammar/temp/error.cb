@@ -1,6 +1,6 @@
 melody main(){
 
-    PEUSE 50;
+    play 50;
 
     PLAY C1 50;
 
