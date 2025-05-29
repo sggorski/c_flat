@@ -1,0 +1,8 @@
+melody main(){
+
+    PEUSE 50;
+
+    PLAY C1 50;
+
+    int a = 0;
+}

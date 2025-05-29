@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import pl.edu.agh.errors.*;
 import pl.edu.agh.utils.LineOrigin;
+import pl.edu.agh.utils.SuperErrorStrategy;
 import pl.edu.agh.utils.VarInfo;
 
 import java.io.IOException;
@@ -22,10 +23,11 @@ public class App
 
     public static void main(String[] args) throws IOException {
 
+
         ImportHandler resolver = new ImportHandler();
         String mergedSource;
         try {
-            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/final_stage/anthem.cb");
+            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/temp/error.cb");
         } catch (ImportError e) {
             System.err.println(e.getMessage());
             return;
@@ -47,6 +49,8 @@ public class App
 
             parser.removeErrorListeners();
             parser.addErrorListener(new MusicErrorListener(lineMap));
+            //System.out.println(parser.getErrorHandler().getClass().getName());
+            parser.setErrorHandler(new SuperErrorStrategy());
 
             Melody main = new Melody();
             MusicParser.ProgramContext program = parser.program();
