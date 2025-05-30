@@ -1,8 +1,11 @@
 melody main(){
 
-    play 50;
 
-    PLAY C1 50;
+    if(PLAY C1){
+        int a = 5;
+    }
+
+
 
     int a = 0;
 }

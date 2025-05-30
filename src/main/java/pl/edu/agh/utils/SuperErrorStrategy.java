@@ -13,8 +13,8 @@ public class SuperErrorStrategy extends DefaultErrorStrategy {
         TokenStream tokens = recognizer.getInputStream();
         Token prevToken = tokens.get(e.getOffendingToken().getTokenIndex() - 1);
 
-        String msg = "mismatched input " + this.getTokenErrorDisplay(prevToken) + " expecting " + e.getExpectedTokens().toString(recognizer.getVocabulary());
-        recognizer.notifyErrorListeners(prevToken, msg, e);
+        String msg = "mismatched input " + this.getTokenErrorDisplay(e.getOffendingToken()) + " expecting " + e.getExpectedTokens().toString(recognizer.getVocabulary());
+        recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
     }
 
     @Override
@@ -22,7 +22,9 @@ public class SuperErrorStrategy extends DefaultErrorStrategy {
 
         TokenStream tokens = recognizer.getInputStream();
         Token prevToken = tokens != null ? tokens.get(e.getOffendingToken().getTokenIndex() - 1) : null;
-        //System.out.println(recognizer.getExpectedTokens().toString(recognizer.getVocabulary()));
+        System.out.println(recognizer.getExpectedTokens().toString(recognizer.getVocabulary()));
+        IntervalSet expecting = this.getExpectedTokens(recognizer);
+        System.out.println("missing " + expecting.toString(recognizer.getVocabulary()) + " at " + this.getTokenErrorDisplay(e.getOffendingToken()));
         String input;
         if (tokens != null) {
             if (e.getStartToken().getType() == -1) {
@@ -41,6 +43,7 @@ public class SuperErrorStrategy extends DefaultErrorStrategy {
     @Override
     protected void reportUnwantedToken(Parser recognizer) {
         if (!this.inErrorRecoveryMode(recognizer)) {
+            System.out.println("Unwanted Token");
             this.beginErrorCondition(recognizer);
             Token t = recognizer.getCurrentToken();
             TokenStream input = recognizer.getInputStream();
@@ -55,6 +58,7 @@ public class SuperErrorStrategy extends DefaultErrorStrategy {
     @Override
     protected void reportMissingToken(Parser recognizer) {
         if (!this.inErrorRecoveryMode(recognizer)) {
+            System.out.println("Missing token");
             this.beginErrorCondition(recognizer);
             Token t = recognizer.getCurrentToken();
             TokenStream input = recognizer.getInputStream();

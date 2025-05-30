@@ -1,17 +1,13 @@
 package pl.edu.agh;
 
-import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.misc.IntervalSet;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.tool.Grammar;
 import pl.edu.agh.errors.*;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import pl.edu.agh.utils.LevenshteinDamerau;
 import pl.edu.agh.utils.LineOrigin;
+import pl.edu.agh.utils.MappedGrammar;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MusicErrorListener extends BaseErrorListener {
     private final Map<Integer, LineOrigin> lineMap;
@@ -30,14 +26,29 @@ public class MusicErrorListener extends BaseErrorListener {
             MusicParser parser = (MusicParser) recognizer;
             ParserRuleContext ctx = parser.getRuleContext();
             String rulename = parser.getRuleNames()[ctx.getRuleIndex()];
+            String tokenType = parser.getVocabulary().getSymbolicName(token.getType());
+            String message = tryToResolveError(parser, token, rulename, e);
 
-            //System.out.println(e != null ? e.getClass().getSimpleName() : "null");
+            System.out.println(e != null ? e.getClass().getSimpleName() : "null");
 
             if(e == null) {
                 throw new SyntaxError(msg, lineMap.get(line), charPositionInLine);
+            } else if (e instanceof NoViableAltException) {
+
+                if(tokenType.equals("ID")){
+                    throw new SyntaxError(message==null ? msg : message, lineMap.get(line), charPositionInLine);
+                }else {
+                    throw new SyntaxError("Missing input try one of the following: " + getUserExpTokens(parser), lineMap.get(line), charPositionInLine);
+                }
+
+            }else {
+                // e = InputMismatchException
+
+                System.out.println(e.getClass().getSimpleName());
+
             }
 
-            String message = tryToResolveError(parser, token, rulename, e);
+
 
 //            System.out.println(ExpectedTokens(parser));
 //            System.out.println(rulename + " " + token.getText() + " " + ctx.start.getText());
@@ -61,27 +72,45 @@ public class MusicErrorListener extends BaseErrorListener {
         // throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
     }
 
-    private String ExpectedTokens(Parser parser) {
+    private String getUserExpTokens(Parser parser) {
 
-//        ArrayList<String> expectedTokens = new ArrayList<>();
-//
-//        if (parser.getExpectedTokens() == null) {
-//            return null;
-//        }
+        ArrayList<String> expectedTokens = new ArrayList<>();
+
+        if (parser.getExpectedTokens() == null) {
+            return null;
+        }
 
         IntervalSet tokens = parser.getExpectedTokens();
 
-//        for (int i = 0; i < tokens.size() - 1; i++) {
-//            expectedTokens.add(parser.getVocabulary().getDisplayName(tokens.get(i)));
-//        }
-        return tokens.toString(parser.getVocabulary());
+        for (int i = 0; i < tokens.size(); i++) {
+            String token = changeToName(tokens.get(i), parser).replaceAll("\'", "");
+
+            if(MappedGrammar.tokensToUser.containsKey(token)) {
+                token = MappedGrammar.tokensToUser.get(token);
+            }
+            expectedTokens.add(token);
+        }
+
+        return expectedTokens.toString();
+
+    }
+
+    private String changeToName(int tokenId, Parser parser) {
+        Vocabulary vocabulary = parser.getVocabulary();
+
+        if (vocabulary.getLiteralName(tokenId) != null) {
+            return vocabulary.getLiteralName(tokenId);
+        }
+        else if (vocabulary.getDisplayName(tokenId) != null) {
+            return vocabulary.getDisplayName(tokenId);
+        }else return null;
 
     }
 
     public String tryToResolveError(MusicParser parser, CommonToken faultyToken, String rulename, RecognitionException e) {
         ParserRuleContext ctx = parser.getRuleContext();
         String tokenTypeName = getLexemName(faultyToken);
-        String tokens = ExpectedTokens(parser);
+        String tokens = getUserExpTokens(parser);
 
         //System.out.println(ctx.start.getText() + " " + ctx.getText() + " " + faultyToken.getText() + " " + rulename + " " + tokenTypeName);
 //        if(tokens.equals("';'")) {
