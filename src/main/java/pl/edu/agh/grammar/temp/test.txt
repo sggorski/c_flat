@@ -1,11 +1,9 @@
-int a = 5;
 
 melody silnia(int n){
     int b = 0;
-
     if (n == 1){
         RETURN 1;
-    }else{
+    } else{
         int a = 0;
         PLAY silnia(n-1) OUT a;
         PRINT(n*a);
@@ -14,7 +12,7 @@ melody silnia(int n){
 }
 
 
-melody main(){
+melody main2(){
     int k;
     PLAY silnia(5) OUT k;
     RETURN k;

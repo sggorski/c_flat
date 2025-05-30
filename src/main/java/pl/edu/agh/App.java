@@ -4,11 +4,14 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import pl.edu.agh.errors.*;
+import pl.edu.agh.utils.FilePreImportProcessing;
 import pl.edu.agh.utils.LineOrigin;
 import pl.edu.agh.utils.SuperErrorStrategy;
 import pl.edu.agh.utils.VarInfo;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,12 +25,24 @@ public class App
     public static HashMap<String, VarInfo> globalScope  = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
+        FilePreImportProcessing analyser = new FilePreImportProcessing();
+        try {
+            analyser.analiseFile(args[0]);
+        } catch (SyntaxError e) {
+            System.err.println(e.getMessage());
+            return;
+        } catch (IOException e) {
+            System.err.println("Cannot open file " + e.getMessage());
+            return;
+        }
 
-
-        ImportHandler resolver = new ImportHandler();
+        ImportHandler importer = new ImportHandler(args[0]);
         String mergedSource;
         try {
-            mergedSource = resolver.resolveImports("src/main/java/pl/edu/agh/grammar/temp/error.cb");
+            mergedSource = importer.resolveImports(args[0]);
+        } catch (IncludeError e) {
+            System.err.println(e.getMessage());
+            return;
         } catch (ImportError e) {
             System.err.println(e.getMessage());
             return;
@@ -36,8 +51,8 @@ public class App
             return;
         }
 
-        Map<Integer, LineOrigin> lineMap = resolver.getLineMap();
         CharStream stream = CharStreams.fromString(mergedSource);
+        Map<Integer, LineOrigin> lineMap = importer.getLineMap();
         try {
             MusicLexer lexer = new MusicLexer(stream);
             lexer.removeErrorListeners();
@@ -49,7 +64,6 @@ public class App
 
             parser.removeErrorListeners();
             parser.addErrorListener(new MusicErrorListener(lineMap));
-            //System.out.println(parser.getErrorHandler().getClass().getName());
             parser.setErrorHandler(new SuperErrorStrategy());
 
             Melody main = new Melody();
@@ -59,7 +73,6 @@ public class App
             ParseTreeWalker walker = new ParseTreeWalker();
             walker.walk(listener, program);
 
-            //System.out.println(melodyMemory.toString());
             MusicSuperVisitor visitor = new MusicSuperVisitor(melodyMemory, lineMap, mergedSource, globalScope);
             visitor.visitProgram(program);
 

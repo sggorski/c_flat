@@ -1,6 +1,6 @@
-import "src/main/java/pl/edu/agh/libs/chordslib/minor_seventh_chord.cb";
-import "src/main/java/pl/edu/agh/libs/chordslib/dominant_seventh_chord.cb";
-import "src/main/java/pl/edu/agh/libs/chordslib/major_seventh_chord.cb";
+include chordslib.minor_seventh_chord;
+include chordslib.dominant_seventh_chord;
+include chordslib.major_seventh_chord;
 
 melody jazz_progression(Note tonic, int rep, int duration) {
     Note n2 = tonic + 2;

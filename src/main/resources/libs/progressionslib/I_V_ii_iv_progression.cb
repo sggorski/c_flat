@@ -1,5 +1,5 @@
-import "src/main/java/pl/edu/agh/libs/chordslib/major_chord.cb";
-import "src/main/java/pl/edu/agh/libs/chordslib/minor_chord.cb";
+include chordslib.major_chord;
+include chordslib.minor_chord;
 
 melody I_V_ii_iv_progression(Note tonic, int rep, int duration) {
     Note n2 = tonic + 2;

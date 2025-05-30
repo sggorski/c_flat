@@ -1,20 +1,8 @@
-melody f(){
-    PRINT(1);
-    if(true){
-        PRINT(222);
-    }
-    int c;
-    PLAY f2() OUT c;
-    RETURN 2+c;
-    PRINT(2);
-}
+include jazzlib.jazz_progression;
+include blueslib.blues_baseline;
+include chordslib.major_seventh_chord;
 
-melody f2(){
-    RETURN;
-}
-
-melody main(){
-    int k;
-    PLAY f() OUT k;
-    PRINT(k);
+melody main() {
+    PLAY jazz_progression(H2, 1, 1000);
+    PLAY blues_baseline(H0, 2, 500);
 }
