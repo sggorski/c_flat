@@ -1,9 +1,13 @@
 grammar Music;
 
-program : imports* globalVars? functionDecl* mainDecl? EOF;
+program : includes* imports* globalVars? functionDecl* mainDecl? EOF;
 
 globalVars
     : (varDecl ';')+
+    ;
+
+includes
+    : INCLUDE LIB_VAL ('.' ID)? ';'
     ;
 
 imports
@@ -246,6 +250,7 @@ intVal
     : ('-'|'+')? INT_VAL;
 
 IMPORT: 'import';
+INCLUDE: 'include';
 
 INT: 'int';
 BOOL: 'bool';
@@ -258,6 +263,7 @@ INT_VAL : [1-9][0-9]* | '0' ;
 NOTE_VAL : [CDEFGABH]('#'|'b')?[01234] | [CDEFGABH]('#'|'b')?'-1' | [CDEFGABH]('#'|'b')?'-2';
 STRING_VAL: '"' (ESC|.)*? '"';
 ESC : '\\"' | '\\\\' ;
+LIB_VAL: 'blueslib' | 'chordslib' | 'jazzlib' | 'orientalscaleslib' | 'passageslib' | 'progressionslib' | 'scaleslib';
 
 PACE: 'PACE';
 DISTORTION : 'DISTORTION';
