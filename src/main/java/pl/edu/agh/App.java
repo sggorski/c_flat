@@ -40,6 +40,7 @@ public class App
         String mergedSource;
         try {
             mergedSource = importer.resolveImports(args[0]);
+            System.out.println(mergedSource);
         } catch (IncludeError e) {
             System.err.println(e.getMessage());
             return;

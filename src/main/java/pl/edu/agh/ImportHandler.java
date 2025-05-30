@@ -4,14 +4,15 @@ import pl.edu.agh.errors.ImportError;
 import pl.edu.agh.errors.IncludeError;
 import pl.edu.agh.utils.LineOrigin;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 public class ImportHandler {
@@ -65,7 +66,10 @@ public class ImportHandler {
                 String importedFile = extractFilename(line);
                 result.append(resolveImportsHelper(importedFile));
             } else if (line.matches("^include [a-z]+;$")) {
-                //TODO
+                List<String> libFiles = resolveAllIncludes(line);
+                for (String libFile : libFiles) {
+                    result.append(resolveIncludesHelper(libFile));
+                }
             } else if (line.matches("^include [a-z]+\\.[a-zA-Z_0-9]+;$")) {
                 result.append(resolveIncludesHelper(line));
             } else {
@@ -76,6 +80,29 @@ public class ImportHandler {
         }
 
         return result.toString();
+    }
+
+    private List<String> resolveAllIncludes(String line) throws UnsupportedEncodingException, IOException {
+        String[] split = line.split(" ");
+        List<String> libFiles = new ArrayList<>();
+        String fullPath = "libs/" + split[1].replace(';', ' ').trim();
+
+        URL url = ImportHandler.class.getClassLoader().getResource(fullPath);
+        String jarPath = url.getPath().substring(5, url.getPath().indexOf("!"));
+
+        try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                String name = entry.getName();
+                if (name.startsWith(fullPath) && name.endsWith(".cb") && !entry.isDirectory()) {
+                    String originalLineSimulation = "include " + name.substring(5).replace('/', '.').replace(".cb", "") + ';';
+                    libFiles.add(originalLineSimulation);
+                }
+            }
+        }
+
+        return libFiles;
     }
 
     private String resolveIncludesHelper(String originalLine) {
