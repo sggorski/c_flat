@@ -2,6 +2,8 @@ package pl.edu.agh.visitorActions;
 
 import pl.edu.agh.Melody;
 import pl.edu.agh.errors.RuntimeError;
+import pl.edu.agh.errors.UndefinedError;
+import pl.edu.agh.utils.LevenshteinDamerau;
 import pl.edu.agh.utils.LineOrigin;
 import pl.edu.agh.utils.Scope;
 
@@ -13,7 +15,7 @@ public class FunctionCall {
         if (name.equals("main"))
             throw new RuntimeError("You cannot call a main melody", origin,col);
         if (!melodyMemory.containsKey(name))
-            throw new RuntimeError("Melody " + name + " not declared", origin,col);
+            throw new UndefinedError("Melody " + name + " not declared", origin,col, LevenshteinDamerau.proposeWord(name, melodyMemory.keySet(), 1));
         Melody melodyPattern = melodyMemory.get(name);
         return Melody.deepCopyMelody(melodyPattern);
     }

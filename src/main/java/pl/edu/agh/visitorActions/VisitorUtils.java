@@ -14,6 +14,7 @@ import pl.edu.agh.utils.*;
 
 import javax.sound.midi.MidiChannel;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import static pl.edu.agh.musicUtils.Instrument.*;
@@ -132,6 +133,12 @@ public class VisitorUtils {
      */
     public static  VarInfo findVar(String varName, List<MusicParser.ParentContext> parentContexts, Melody melody,
                             Scope currentScope, HashMap<String,VarInfo> globalScope, LineOrigin origin, int col) {
+
+
+        HashSet<String> gatheredVars = new HashSet<>();
+        FindPossibleVar.copyForProposal(globalScope.keySet(), gatheredVars);
+
+
         if (currentScope != null) {
             Scope current = currentScope;
             for (int i = 0; i < parentContexts.size(); i++) {
@@ -153,14 +160,17 @@ public class VisitorUtils {
                 if (varName.equals(current.forInit)) {
                     return current.scopes.get(0).memory.get(varName);
                 }
+                gatheredVars.add(current.forInit);
             } else {
                 if (melody != null && melody.forInit != null && melody.forInit.equals(varName)) {
                     return melody.scopes.get(0).memory.get(varName);
                 }
+                gatheredVars.add(melody.forInit);
             }
 
             while (current != null) {
                 if (!current.memory.containsKey(varName) || current.memory.get(varName) == null) {
+                    FindPossibleVar.copyForProposal(current.memory.keySet(), gatheredVars);
                     current = current.parent;
                 } else {
                     return current.memory.get(varName);
@@ -172,14 +182,19 @@ public class VisitorUtils {
                 if(parentContexts.isEmpty()){
                     return melody.memory.get(varName);
                 }
+                FindPossibleVar.copyForProposal(melody.memory.keySet(), gatheredVars);
             } else if (globalScope.containsKey(varName) || globalScope.get(varName) != null) {
                 return globalScope.get(varName);
             }
-            throw new UndefinedError("Variable not defined: " + varName, origin, col);
+
+            String proposal = FindPossibleVar.returnProposal(varName, gatheredVars);
+
+            throw new UndefinedError("Variable not defined: " + varName, origin, col, proposal);
 
         } else if (melody != null) {
 
             if (parentContexts == null || parentContexts.isEmpty()) {
+                FindPossibleVar.copyForProposal(melody.memory.keySet(), gatheredVars);
                 if (varName.equals(melody.forInit)) {
                     return melody.scopes.get(0).memory.get(varName);
                 } else if (melody.memory.containsKey(varName) && melody.memory.get(varName) != null) {
@@ -187,12 +202,12 @@ public class VisitorUtils {
                 } else if (globalScope.containsKey(varName) && globalScope.get(varName) != null) {
                     return globalScope.get(varName);
                 }
-                throw new UndefinedError("Variable not defined: " + varName, origin, col);
+                throw new UndefinedError("Variable not defined: " + varName, origin, col, FindPossibleVar.returnProposal(varName, gatheredVars));
             } else if (parentContexts.size() == 1) {
                 if (globalScope.containsKey(varName) && globalScope.get(varName) != null) {
                     return globalScope.get(varName);
                 }
-                throw new UndefinedError("Variable not defined: " + varName, origin, col);
+                throw new UndefinedError("Variable not defined: " + varName, origin, col, FindPossibleVar.returnProposal(varName, gatheredVars));
             }else {
                 throw new ScopeError("There is no higher scope!", origin, col);
             }
@@ -202,7 +217,7 @@ public class VisitorUtils {
             }
             if(globalScope.containsKey(varName)) {
                 return globalScope.get(varName);
-            }else throw new UndefinedError("Variable not defined: " + varName, origin, col);
+            }else throw new UndefinedError("Variable not defined: " + varName, origin, col, FindPossibleVar.returnProposal(varName, gatheredVars));
         }
     }
 
@@ -231,8 +246,16 @@ public class VisitorUtils {
      * the child scope because this declaration happens BEFORE we jump into FOR scope
      */
     public static VarInfo declareVar(String varName, Melody melody, Scope current, HashMap<String,VarInfo> globalScope, LineOrigin origin, int col) {
+
+        HashSet<String> gatheredVars = new HashSet<>();
+        FindPossibleVar.copyForProposal(globalScope.keySet(), gatheredVars);
+        FindPossibleVar.copyForProposal(melody.memory.keySet(), gatheredVars);
+        gatheredVars.add(melody.forInit);
+
         while (current != null) {
             if (!current.memory.containsKey(varName)) {
+                FindPossibleVar.copyForProposal(current.memory.keySet(), gatheredVars);
+                gatheredVars.add(current.forInit);
                 current = current.parent;
             } else return current.memory.get(varName);
         }
@@ -242,7 +265,7 @@ public class VisitorUtils {
         } else if (globalScope.containsKey(varName)) {
             return globalScope.get(varName);
         }
-        throw new UndefinedError("Variable not defined: " + varName, origin, col);
+        throw new UndefinedError("Variable not defined: " + varName, origin, col, FindPossibleVar.returnProposal(varName, gatheredVars));
 
     }
 

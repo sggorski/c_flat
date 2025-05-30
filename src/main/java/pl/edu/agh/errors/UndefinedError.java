@@ -9,6 +9,14 @@ public class UndefinedError extends RuntimeException {
         this.message = "Undefined error at line: " + lineOrigin.getOriginalLine() + " character: " + column + " file: " + lineOrigin.getFileName() + " " + message;
         this.column = column ;
     }
+
+    public UndefinedError(String message, LineOrigin origin, int column, String proposal) {
+        super();
+        this.lineOrigin = origin;
+        this.message = "Undefined error at line: " + lineOrigin.getOriginalLine() + " character: " + column + " file: " + lineOrigin.getFileName() + " " + message + " Did you mean: " + proposal;
+        this.column = column ;
+    }
+
     private final LineOrigin lineOrigin;
     private final int column;
     private final String message;

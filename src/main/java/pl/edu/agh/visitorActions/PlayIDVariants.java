@@ -50,7 +50,7 @@ public class PlayIDVariants {
                 throw new SyntaxError("Track cannot be played outside of a main melody",  origin,col);
             String trackName = ctx.parentID(0).ID().getText();
             if (!tracks.containsKey(trackName)) {
-                throw new UndefinedError("Undefined track variable: " + " " + trackName,  origin,col);
+                throw new UndefinedError("Undefined track variable: " + " " + trackName,  origin,col, LevenshteinDamerau.proposeWord(trackName, tracks.keySet(), 1));
             }
             Track track = tracks.get(trackName);
             try {

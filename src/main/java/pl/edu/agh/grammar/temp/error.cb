@@ -1,11 +1,18 @@
+melody musica(){
+
+    int a = 6;
+
+}
+
+
 melody main(){
 
+    int liczba = 6;
 
-    if(PLAY C1){
-        int a = 5;
-    }
+    Track muz;
 
+    muz ADD musica();
 
+    PLAY musice();
 
-    int a = 0;
 }

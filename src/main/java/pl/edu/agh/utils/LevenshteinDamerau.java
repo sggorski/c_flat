@@ -1,7 +1,9 @@
 package pl.edu.agh.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class LevenshteinDamerau {
     private static int distance(String a, String b) {
@@ -35,6 +37,22 @@ public class LevenshteinDamerau {
     }
 
     public static String proposeWord(String word, ArrayList<String> grammar, int accSimilarity) {
+        String currentWord = null;
+        int currentCost = accSimilarity + 1;
+        for (String potentialMatch : grammar){
+            //System.out.println(potentialMatch);
+            int newCost = distance(word.toLowerCase(), potentialMatch.toLowerCase());
+            if (newCost < currentCost) {
+                currentCost = newCost;
+                currentWord = potentialMatch;
+                //System.out.println(currentWord);
+            }
+        }
+        return currentWord;
+    }
+
+
+    public static String proposeWord(String word, Set<String> grammar, int accSimilarity) {
         String currentWord = null;
         int currentCost = accSimilarity + 1;
         for (String potentialMatch : grammar){
