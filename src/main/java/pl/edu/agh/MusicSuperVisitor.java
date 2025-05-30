@@ -58,6 +58,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     @Override
+    public T visitIncludes(MusicParser.IncludesContext ctx) {
+        return null;
+    }
+
+    @Override
     public T visitImports(MusicParser.ImportsContext ctx) {
         return visitChildren(ctx);
     }

@@ -1,4 +1,4 @@
-// Generated from C:/Users/Szymon/Desktop/c_flat2/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
+// Generated from C:/Users/kacpe/IdeaProjects/c_flat/src/main/java/pl/edu/agh/grammar/Music.g4 by ANTLR 4.13.2
 package pl.edu.agh;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -22,6 +22,12 @@ public interface MusicVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitGlobalVars(MusicParser.GlobalVarsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MusicParser#includes}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIncludes(MusicParser.IncludesContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MusicParser#imports}.
 	 * @param ctx the parse tree

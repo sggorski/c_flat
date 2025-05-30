@@ -74,6 +74,16 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
 
     }
 
+    @Override
+    public void enterIncludes(MusicParser.IncludesContext ctx) {
+
+    }
+
+    @Override
+    public void exitIncludes(MusicParser.IncludesContext ctx) {
+
+    }
+
     /**
      * @param ctx the parse tree
      */
@@ -1344,6 +1354,16 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
      */
     @Override
     public void exitIntExpr(MusicParser.IntExprContext ctx) {
+    }
+
+    @Override
+    public void enterCastExpr(MusicParser.CastExprContext ctx) {
+
+    }
+
+    @Override
+    public void exitCastExpr(MusicParser.CastExprContext ctx) {
+
     }
 
     /**
