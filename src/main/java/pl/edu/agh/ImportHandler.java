@@ -2,8 +2,8 @@ package pl.edu.agh;
 
 import pl.edu.agh.errors.ImportError;
 import pl.edu.agh.errors.IncludeError;
+import pl.edu.agh.utils.FilePreImportProcessing;
 import pl.edu.agh.utils.LineOrigin;
-
 import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -17,11 +17,14 @@ import java.util.stream.Collectors;
 
 public class ImportHandler {
     private static int currentSuperLine = 1;
+    private static long scopeCounter = 0;
     private final Set<String> alreadyImported = new HashSet<>();
     private final Set<String> alreadyIncluded = new HashSet<>();
     private int mainsCount = 0;
     private final String mainFile;
     private final Map<Integer, LineOrigin> lineMap = new HashMap<>();
+    private final List<String> globalDeclarations = new ArrayList<>();
+    private final List<Integer> globalDeclarationLineNumbers = new ArrayList<>();
 
     public Map<Integer, LineOrigin> getLineMap() {
         return lineMap;
@@ -36,7 +39,8 @@ public class ImportHandler {
             String combinedFile = resolveImportsHelper(filename);
             if(this.mainsCount == 0)
                 throw new ImportError("no main melody declaration found");
-            return combinedFile;
+
+            return resolveGlobalVariables(combinedFile);
         } catch (IOException e) {
             throw new ImportError("cannot open file: " + e.getMessage());
         }
@@ -55,7 +59,7 @@ public class ImportHandler {
             String line = lines.get(i);
             if (line.matches("melody main\\(.*\\).*")) {
                 if(!filename.equals(this.mainFile))
-                    throw new ImportError("main melody declaration out of main file - in file " + filename);
+                    throw new ImportError("main melody declaration out of main file - in file " + filename + ", line: " + (i+1));
 
                 this.mainsCount++;
                 if (this.mainsCount > 1)
@@ -64,6 +68,8 @@ public class ImportHandler {
 
             if (line.startsWith("import")) {
                 String importedFile = extractFilename(line);
+                FilePreImportProcessing preprocessor = new FilePreImportProcessing();
+                preprocessor.analiseFile(importedFile);
                 result.append(resolveImportsHelper(importedFile));
             } else if (line.matches("^include [a-z]+;$")) {
                 List<String> libFiles = resolveAllIncludes(line);
@@ -73,6 +79,22 @@ public class ImportHandler {
             } else if (line.matches("^include [a-z]+\\.[a-zA-Z_0-9]+;$")) {
                 result.append(resolveIncludesHelper(line));
             } else {
+                long plusScopeCount = line.chars().filter(c -> c == '{').count();
+                scopeCounter += plusScopeCount;
+                long minusScopeCount = line.chars().filter(c -> c == '}').count();
+                scopeCounter -= minusScopeCount;
+
+                if(line.trim().matches("^(int|bool|Note|Track|Chord) *[a-zA-Z_0-9]+.*;$")) {
+                    if(scopeCounter == 0) {
+                        if(!filename.equals(this.mainFile))
+                            throw new ImportError("global variable declaration not allowed outside of main file (found in: " + filename + ", line: " + (i+1) + ")");
+
+                        globalDeclarations.add(line);
+                        globalDeclarationLineNumbers.add(i + 1);
+                        continue;
+                    }
+                }
+
                 result.append(line).append("\n");
                 lineMap.put(currentSuperLine, new LineOrigin(filename, i + 1));
                 currentSuperLine++;
@@ -134,6 +156,26 @@ public class ImportHandler {
         }
 
         return result.toString();
+    }
+
+    private String resolveGlobalVariables(String mergedSoFar) {
+        StringBuilder finalResult = new StringBuilder();
+        Map<Integer, LineOrigin> newLineMap = new HashMap<>();
+
+        for (int i = 0; i < globalDeclarations.size(); i++) {
+            finalResult.append(globalDeclarations.get(i)).append("\n");
+            newLineMap.put(i + 1, new LineOrigin(mainFile, globalDeclarationLineNumbers.get(i)));
+        }
+
+        int offset = globalDeclarations.size();
+        for (Map.Entry<Integer, LineOrigin> entry : lineMap.entrySet()) {
+            newLineMap.put(entry.getKey() + offset, entry.getValue());
+        }
+        lineMap.clear();
+        lineMap.putAll(newLineMap);
+
+        finalResult.append(mergedSoFar);
+        return finalResult.toString();
     }
 
     private String extractFilename(String importLine) {

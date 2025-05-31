@@ -1,6 +1,9 @@
-include blueslib;
+include jazzlib;
+import "src/main/java/pl/edu/agh/grammar/temp/test.txt";
+
+int i=15;
 
 melody main() {
-    PLAY jazz_progression(H2, 1, 1000);
-    PLAY blues_baseline(H0, 2, 500);
+    PLAY jazz_baseline(C0, 2, 500);
+    PLAY C2 E2 G2 500;
 }

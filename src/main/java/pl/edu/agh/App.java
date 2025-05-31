@@ -10,8 +10,6 @@ import pl.edu.agh.utils.SuperErrorStrategy;
 import pl.edu.agh.utils.VarInfo;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,11 +38,7 @@ public class App
         String mergedSource;
         try {
             mergedSource = importer.resolveImports(args[0]);
-            System.out.println(mergedSource);
-        } catch (IncludeError e) {
-            System.err.println(e.getMessage());
-            return;
-        } catch (ImportError e) {
+        } catch (IncludeError | ImportError | SyntaxError e) {
             System.err.println(e.getMessage());
             return;
         } catch(Exception e) {
@@ -77,7 +71,7 @@ public class App
             MusicSuperVisitor visitor = new MusicSuperVisitor(melodyMemory, lineMap, mergedSource, globalScope);
             visitor.visitProgram(program);
 
-        } catch (ParseCancellationException e) {
+        }  catch (ParseCancellationException e) {
             System.err.println(e.getMessage() /*+ " ParseCancel"*/);
         } catch (RecognitionException e) {
             System.err.println(e.getMessage() /*+ " Recognition"*/);
@@ -85,9 +79,8 @@ public class App
             System.err.println(e.getMessage() /*+ " Undefined Variable"*/);
         } catch (SyntaxError | ValueError | ScopeError | VariableDeclarationError | StackOverflow e) {
             System.err.println(e.getMessage() /*+ " Errors"*/);
+        } catch (Exception e) {
+            System.err.println(/*"Error: +"*/ e.getMessage());
         }
-//        catch (Exception e) {
-//            System.err.println(/*"Error: +"*/ e.getMessage());
-//        }
     }
 }

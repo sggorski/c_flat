@@ -249,8 +249,10 @@ public class VisitorUtils {
 
         HashSet<String> gatheredVars = new HashSet<>();
         FindPossibleVar.copyForProposal(globalScope.keySet(), gatheredVars);
-        FindPossibleVar.copyForProposal(melody.memory.keySet(), gatheredVars);
-        gatheredVars.add(melody.forInit);
+        if(melody != null) {
+            FindPossibleVar.copyForProposal(melody.memory.keySet(), gatheredVars);
+            gatheredVars.add(melody.forInit);
+        }
 
         while (current != null) {
             if (!current.memory.containsKey(varName)) {
