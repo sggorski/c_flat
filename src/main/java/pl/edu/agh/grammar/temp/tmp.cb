@@ -1,9 +1,19 @@
-include jazzlib;
-import "src/main/java/pl/edu/agh/grammar/temp/test.txt";
+int i=3;
 
-int i=15;
+melody mel() {
+    int i=1;
+    if(true){
+        int i=11;
+        PRINT(i);
+        PRINT(up:i);
+        PRINT(up:up:i);
+    }
+    PRINT(i);
+}
 
 melody main() {
-    PLAY jazz_baseline(C0, 2, 500);
-    PLAY C2 E2 G2 500;
+    int i=5;
+    PLAY mel();
+    PRINT(i);
+    PRINT(up:i);
 }

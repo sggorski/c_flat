@@ -116,7 +116,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitPrint(MusicParser.PrintContext ctx) {
         Value value = tryCasting(ctx.expr());
-        int line = getLine(ctx);
+        int line = this.lineMap.get(getLine(ctx)).getOriginalLine();
         System.out.println("LINE " + line + " :" + value);
         return null;
     }

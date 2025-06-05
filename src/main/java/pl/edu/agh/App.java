@@ -32,6 +32,9 @@ public class App
         } catch (IOException e) {
             System.err.println("Cannot open file " + e.getMessage());
             return;
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return;
         }
 
         ImportHandler importer = new ImportHandler(args[0]);
