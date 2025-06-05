@@ -23,9 +23,10 @@ public class App
     public static HashMap<String, VarInfo> globalScope  = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
+        String file = "src/main/java/pl/edu/agh/grammar/final_stage/coco_jambo.cb";
         FilePreImportProcessing analyser = new FilePreImportProcessing();
         try {
-            analyser.analiseFile(args[0]);
+            analyser.analiseFile(file);
         } catch (SyntaxError e) {
             System.err.println(e.getMessage());
             return;
@@ -37,10 +38,10 @@ public class App
             return;
         }
 
-        ImportHandler importer = new ImportHandler(args[0]);
+        ImportHandler importer = new ImportHandler(file);
         String mergedSource;
         try {
-            mergedSource = importer.resolveImports(args[0]);
+            mergedSource = importer.resolveImports(file);
         } catch (IncludeError | ImportError | SyntaxError e) {
             System.err.println(e.getMessage());
             return;

@@ -479,7 +479,10 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitPauseStatement(MusicParser.PauseStatementContext ctx) {
         Melody melody = stack.peek();
-        PauseStatement.pause(ctx,melody,currentScope,globalScope,getOrigin(ctx),getCol(ctx));
+        IntValue pace;
+        if(currentScope!=null) pace = (IntValue) currentScope.effects.get(Effect.PACE);
+        else pace = (IntValue) melody.effects.get(Effect.PACE);
+        PauseStatement.pause(ctx,melody,currentScope,globalScope,getOrigin(ctx),getCol(ctx),pace);
         return visitChildren(ctx);
     }
 

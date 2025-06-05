@@ -4,6 +4,7 @@ import pl.edu.agh.Melody;
 import pl.edu.agh.MusicParser;
 import pl.edu.agh.errors.ScopeError;
 import pl.edu.agh.errors.ValueError;
+import pl.edu.agh.musicUtils.Effect;
 import pl.edu.agh.utils.*;
 
 import java.util.HashMap;
@@ -17,8 +18,9 @@ public class PauseStatement {
      * Uses Thread.sleep to introduce the pause.
      */
     public static void pause(MusicParser.PauseStatementContext ctx, Melody melody, Scope currentScope,
-                             HashMap<String,VarInfo> globalScope, LineOrigin origin, int col){
+                             HashMap<String,VarInfo> globalScope, LineOrigin origin, int col, IntValue pace){
         try {
+
             int sleep = 0;
             if (ctx.INT_VAL() != null) sleep = Integer.parseInt(ctx.INT_VAL().getText());
             else if (ctx.ID() != null) {
@@ -33,6 +35,7 @@ public class PauseStatement {
                 IntValue varInt = (IntValue) var.valueObj;
                 sleep = varInt.value;
             }
+            sleep = (60000 / pace.value ) * sleep / 100;
             Thread.sleep(sleep);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

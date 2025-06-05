@@ -1,19 +1,22 @@
-int i=3;
-
 melody mel() {
-    int i=1;
-    if(true){
-        int i=11;
-        PRINT(i);
-        PRINT(up:i);
-        PRINT(up:up:i);
-    }
-    PRINT(i);
+    SET PACE = 600;
+    PLAY C2 1000;
+    PLAY C3 1000;
+    PLAY C4 1000;
 }
 
+melody mel2() {
+    SET PACE = 300;
+    SET INSTRUMENT = BELLS;
+    PLAY C2 1000;
+    PLAY C3 1000;
+    PLAY C4 1000;
+}
 melody main() {
-    int i=5;
-    PLAY mel();
-    PRINT(i);
-    PRINT(up:i);
+    for(int i =0; i<4; i++){
+        for(int j=0; j<i; j+=1){
+            SET INSTRUMENT = VIOLIN;
+            PLAY C2 1000;
+        }
+    }
 }

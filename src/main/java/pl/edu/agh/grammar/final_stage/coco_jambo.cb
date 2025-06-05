@@ -1,0 +1,186 @@
+melody lead(){
+    SET INSTRUMENT = CHURCH_ORGAN;
+    SET PACE = 1200;
+    PLAY C4 1000;
+    PAUSE 1000;
+    /*
+    PLAY C4 Eb4 G4 500;
+    PAUSE 500;
+    PLAY C4 500;
+    PLAY Eb4 G4 250;
+    PAUSE 1000;
+    PLAY C4 Eb4 G4 Ab4 G4 500;
+    PLAY F4 250;
+    PLAY F4 500;
+    PAUSE 1500;
+    */
+    //...w kościele...?
+
+    //SET PACE=600;
+    PLAY C4 Eb4 G4 500;
+    PAUSE 500;
+    PLAY C4 500;
+    PLAY Eb4 G4 250;
+    PAUSE 500;
+    PLAY G4 500;
+    PLAY C4 Eb4 G4 Ab4 G4 500;
+    PLAY F4 250;
+    PLAY F4 500;
+    PAUSE 750;
+
+    PLAY C4 Eb4 G4 500;
+    PAUSE 500;
+    PLAY C4 500;
+    PLAY Eb4 G4 250;
+    PAUSE 500;
+    PLAY G4 500;
+    PLAY F4 500;
+    PLAY Eb4 250;
+    PLAY F4 500;
+    PLAY Eb4 1000;
+    PLAY Eb4 1250;
+    
+    PAUSE 500;
+
+    PLAY C4 Eb4 G4 500;
+    PAUSE 500;
+    PLAY C4 500;
+    PLAY Eb4 G4 250;
+    PAUSE 500;
+    PLAY G4 500;
+    PLAY C4 Eb4 G4 Ab4 G4 500;
+    PLAY F4 250;
+    PLAY F4 500;
+    PAUSE 750;
+
+    PLAY C4 Eb4 G4 500;
+    PAUSE 500;
+    PLAY C4 500;
+    PLAY Eb4 G4 250;
+    PAUSE 500;
+    PLAY G4 500;
+    PLAY F4 500;
+    PLAY Eb4 250;
+    PLAY F4 500;
+    PLAY Eb4 1000;
+    PLAY Eb4 1250;
+    
+    PAUSE 1500;
+
+    PLAY G3 500;
+    PLAY C4 250;
+    PLAY Eb4 750;
+    PLAY Eb4 500;
+    PLAY [D4, F4] [Eb4, G4] [D4, F4] [C4, Eb4] 500;
+    PLAY G3 500;
+    PLAY C4 250;
+    PLAY Eb4 750;
+    PLAY Eb4 1500;
+    PAUSE 1000;
+
+    PLAY G3 500;
+    PLAY C4 250;
+    PLAY Eb4 750;
+    PLAY Eb4 500;
+    PLAY [D4, F4] [Eb4, G4] [D4, F4] [C4, Eb4] 500;
+    PLAY G3 500;
+    PLAY C4 250;
+    PLAY Eb4 750;
+    PLAY Eb4 1500;
+    PAUSE 1000;
+    PLAY C4 500;
+    PAUSE 2000;
+}
+melody bass(){
+    SET INSTRUMENT = CHURCH_ORGAN;
+    SET PACE = 1200;
+    PLAY C2 1000;
+    PAUSE 1000;
+    //PAUSE 4000;
+    //PAUSE 1300;
+    //SET PACE = 600;
+    PAUSE 1000;
+    PLAY C2 500;
+    PLAY G1 1000;
+    PLAY G1 500;
+    PLAY C2 500;
+    PLAY G1 1000;
+    PLAY G1 500;
+
+    PLAY Ab1 500;
+    PLAY Eb1 1000;
+    PLAY Eb1 500;
+    PLAY B1 500;
+    PLAY F1 1000;
+    PLAY F1 500;
+
+    PLAY C2 500;
+    PLAY G1 1000;
+    PLAY G1 500;
+    PLAY C2 500;
+    PLAY G1 1000;
+    PLAY G1 500;
+
+    PLAY Ab1 500;
+    PLAY Eb1 1000;
+    PLAY Eb1 500;
+    PLAY B1 500;
+    PLAY F1 1000;
+    PLAY F1 500;
+
+    PLAY C2 500;
+    PLAY G1 1000;
+    PLAY G1 500;
+    PLAY C2 500;
+    PLAY G1 1000;
+    PLAY G1 500;
+
+    PLAY Ab1 500;
+    PLAY Eb1 1000;
+    PLAY Eb1 500;
+    PLAY B1 500;
+    PLAY F1 1000;
+    PLAY F1 500;
+
+    PLAY C2 500;
+    PLAY G1 1000;
+    PLAY G1 500;
+    PLAY C2 500;
+    PLAY G1 1000;
+    PLAY G1 500;
+
+    PLAY Ab1 500;
+    PLAY Eb1 1000;
+    PLAY Eb1 500;
+    PLAY B1 500;
+    PLAY F1 1000;
+    PLAY F1 500;
+
+    PLAY C2 500;
+    PLAY G1 1000;
+    PLAY G1 500;
+    PLAY Ab1 Eb1 B1 F1 500;
+    PLAY C2 500;
+    PLAY G1 1000;
+    PLAY G1 500;
+    PLAY Ab1 Eb1 B1 F1 500;
+    PLAY C2 500;
+    PLAY G1 1000;
+    PLAY G1 500;
+    PLAY Ab1 Eb1 B1 F1 500;
+    PLAY C2 500;
+    PLAY G1 1000;
+    PLAY G1 500;
+    PLAY Ab1 Eb1 B1 F1 500;
+    PLAY C1 500;
+    PAUSE 2000;
+}
+melody main(){
+    
+    Track track1;
+    track1 ADD lead();
+    track1 ADD bass();
+    PLAY track1;
+    
+    
+}
