@@ -23,7 +23,7 @@ public class App
     public static HashMap<String, VarInfo> globalScope  = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
-        String file = "src/main/java/pl/edu/agh/grammar/final_stage/coco_jambo.cb";
+        String file = "src/main/java/pl/edu/agh/grammar/temp/tmp.cb";
         FilePreImportProcessing analyser = new FilePreImportProcessing();
         try {
             analyser.analiseFile(file);

@@ -28,6 +28,8 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     private final Map<Integer, LineOrigin> lineMap;
     Scope lastScope = null;
     HashMap<String, VarInfo> globalScope = null;
+    HashMap<String,Integer> trackNames= new HashMap<>();
+
 
     /**
      * ArrayList of Scope objects designed to create a parent-child relationship with another Scope/Melody
@@ -1464,7 +1466,7 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
 
     @Override
     public void enterTrackDeclare(MusicParser.TrackDeclareContext ctx) {
-
+        trackNames.put(ctx.trackDeclaration().ID().getText(),getLine(ctx));
     }
 
     @Override
@@ -1622,6 +1624,8 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     private void fillMemoryWithArg(HashMap<String, VarInfo> memory, String varName, MusicParser.VarDeclWithARgContext ctx) {
         if (memory.containsKey(varName))
             throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + memory.get(varName).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        if (trackNames.containsKey(varName))
+            throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + trackNames.get(varName), this.lineMap.get(getLine(ctx)), getCol(ctx));
         if (Arrays.asList(((VocabularyImpl) this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
             throw new VariableDeclarationError("Variable: " + varName + " is a keyword", this.lineMap.get(getLine(ctx)), getCol(ctx));
         if (isAnInstrument(varName))
@@ -1654,6 +1658,8 @@ public class MusicSuperListener extends MusicBaseListener implements MusicListen
     private void fillMemoryWithoutArg(HashMap<String, VarInfo> memory, String varName, MusicParser.VarDeclWithoutArgContext ctx) {
         if (memory.containsKey(varName))
             throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + memory.get(varName).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        if (trackNames.containsKey(varName))
+            throw new VariableDeclarationError("Redeclaration of a variable: " + varName + " previously defined in line " + trackNames.get(varName), this.lineMap.get(getLine(ctx)), getCol(ctx));
         if (Arrays.asList(((VocabularyImpl) this.lexer.getVocabulary()).getLiteralNames()).contains(varName))
             throw new VariableDeclarationError("Variable: " + varName + " is a keyword", this.lineMap.get(getLine(ctx)), getCol(ctx));
         if (isAnInstrument(varName))

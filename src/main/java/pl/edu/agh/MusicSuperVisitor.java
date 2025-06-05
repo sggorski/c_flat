@@ -1052,9 +1052,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
      */
     @Override
     public T visitTrackDeclare(MusicParser.TrackDeclareContext ctx) {
+        Melody melody = stack.peek();
         String name = ctx.trackDeclaration().ID().getText();
         if (tracks.containsKey(name)) {
             throw new VariableDeclarationError("Redeclaration of a track variable: " + name + " previously defined in line " + tracks.get(name).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        }
+        if(melody.memory.containsKey(name)){
+            throw new VariableDeclarationError("Redeclaration of a  variable: " + name + " previously defined in line " + melody.memory.get(name).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
+        }
+        if(globalScope.containsKey(name)){
+            throw new VariableDeclarationError("Tracks' name cannot overlap with global variables: " + name + " previously defined in line " + globalScope.get(name).line, this.lineMap.get(getLine(ctx)), getCol(ctx));
         }
         Track newTrack = new Track(name, getLine(ctx));
         tracks.put(name, newTrack);
