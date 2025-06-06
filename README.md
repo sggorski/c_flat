@@ -32,7 +32,7 @@ Odbywa się z wykorzystaniem instrukcji `import`, po której należy umieścić 
 W importowanych plikach nie mogą występować zmienne globalne.
 
 4. **Deklaracje zmiennych:**\
-W języku c_flat występuje 5 rodzajów zmiennych:
+W języku Cb występuje 5 rodzajów zmiennych:
 - `int` reprezentująca liczbę całkowitą
 - `bool` reprezentująca wartość logiczną; możliwe wartości to `true` i `false`
 - `Note` reprezentująca nutę; możliwe są wartości od `C-2` do `H4` stanowiące niemal pełny zakres 88 dźwięków standardowego fortepianu; możliwe jest wykorzystanie znaku `#` jako muzycznego krzyżyka (półton w górę, np `F#3`) oraz litery `b` jako muzycznego bemola (półton w dół, np. `Cb2`)
