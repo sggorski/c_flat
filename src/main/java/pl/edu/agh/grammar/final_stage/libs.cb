@@ -1,0 +1,21 @@
+include blueslib;
+include passageslib.dominant_seventh_passage;
+
+melody impro() {
+    SET INSTRUMENT=CLARINET;
+    PAUSE 15;
+    PLAY minor_blues_pentatonic(H2, 1, 200);
+    PAUSE 400;
+    PLAY minor_blues_pentatonic_reversed(H3, 1, 200);
+    PAUSE 350;
+    PLAY dominant_seventh_passage(E2, 1, 200);
+    PAUSE 150;
+    PLAY minor_blues_pentatonic_reversed(H3, 1, 200);
+}
+
+melody main() {
+    Track t1;
+    t1 ADD blues_progression(H2, 1, 1000);
+    t1 ADD impro();
+    PLAY t1;
+}
