@@ -1,0 +1,168 @@
+melody violin_melody() {
+    SET INSTRUMENT=VIOLA;
+    PAUSE 5;
+
+    PLAY G3 100 G3 150 G3 200 Eb3 1500;
+    PAUSE 1500;
+    PLAY F3 100 F3 150 F3 200 D3 1500;
+    PAUSE 1500;
+
+    PLAY G3 G3 G3 Eb3 Ab3 Ab3 Ab3 G3 Eb4 Eb4 Eb4 200;
+    PLAY C4 600;
+    PAUSE 250;
+    PLAY G3 G3 G3 D3 Ab3 Ab3 Ab3 G3 F4 F4 F4 200;
+    PLAY D4 600;
+    PAUSE 250;
+
+    PLAY G3 G3 F3 Eb3 200;
+    PAUSE 600;
+    PLAY G3 G3 F3 Eb3 200;
+    PAUSE 600;
+
+    PAUSE 600;
+    PLAY G4 G4 F4 400 Eb4 800;
+    PAUSE 400;
+    PLAY C4 800;
+    PAUSE 400;
+    PLAY G4 1000;
+    PAUSE 1000;
+
+    PLAY Ab4 Ab4 Ab4 400 F4 1200;
+    PAUSE 250;
+}
+
+melody winds_melody() {
+    PAUSE 5;
+
+    PLAY G3 100 G3 150 G3 200 Eb3 1500;
+    PAUSE 1500;
+    PLAY F3 100 F3 150 F3 200 D3 1500;
+    PAUSE 1500;
+
+    PLAY G3 600 Eb3 200 Ab3 600 G3 200 Eb4 600;
+    PLAY C4 600;
+    PAUSE 250;
+    PLAY G3 600 D3 200 Ab3 600 G3 200 F4 600;
+    PLAY D4 600;
+    PAUSE 250;
+
+    PLAY G3 400 F3 Eb3 200;
+    PAUSE 600;
+    PLAY G3 400 F3 Eb3 200;
+    PAUSE 600;
+
+    PAUSE 600;
+    PLAY G3 G3 F3 400 Eb3 800;
+    PAUSE 400;
+    PLAY C3 800;
+    PAUSE 400;
+    PLAY G3 1000;
+    PAUSE 1000;
+
+    PLAY Ab3 Ab3 Ab3 400 F3 1200;
+    PAUSE 250;
+}
+
+melody viola_melody() {
+    SET INSTRUMENT=VIOLA;
+    PAUSE 5;
+
+    PLAY G2 100 G2 150 G2 200 Eb2 1500;
+    PAUSE 1500;
+    PLAY F2 100 F2 150 F2 200 D2 1500;
+    PAUSE 1500;
+
+    PLAY G2 600 Eb2 200 Ab2 600 G2 200 Eb2 600;
+    PLAY C2 600;
+    PAUSE 250;
+    PLAY G2 600 D2 200 Ab2 600 G2 200 F2 600;
+    PLAY D2 600;
+    PAUSE 250;
+
+    PLAY G2 400 F2 Eb2 200;
+    PAUSE 600;
+    PLAY G2 400 F2 Eb2 200;
+    PAUSE 600;
+
+    PAUSE 600;
+    PLAY D3 D3 D3 400 C3 800;
+    PAUSE 400;
+    PLAY F#2 800;
+    PAUSE 400;
+    PLAY H2 1000;
+    PAUSE 1000;
+
+    PLAY Ab2 Ab2 Ab2 400 F2 1200;
+    PAUSE 250;
+}
+
+melody cello_melody() {
+    SET INSTRUMENT=CELLO;
+    PAUSE 5;
+
+    PLAY G1 100 G1 150 G1 200 Eb1 1500;
+    PAUSE 1500;
+    PLAY F1 100 F1 150 F1 200 D1 1500;
+    PAUSE 1500;
+
+    PLAY G1 800 Ab1 800 Eb1 800;
+    PLAY C1 600;
+    PAUSE 250;
+    PLAY G1 800 Ab1 800 F1 800;
+    PLAY D1 600;
+    PAUSE 600;
+
+    PLAY Eb1 Eb1 F1 200 G1 600;
+    PLAY G1 Eb1 Eb1 F1 G1 200;
+
+    PAUSE 400;
+    PLAY H1 H1 H1 400 G1 800;
+    PAUSE 400;
+    PLAY Ab1 800;
+    PAUSE 400;
+    PLAY D1 1000;
+    PAUSE 1000;
+
+    PLAY Ab1 Ab1 Ab1 400 F1 1200;
+    PAUSE 250;
+}
+
+melody bass() {
+    SET INSTRUMENT=BASS;
+    PAUSE 5;
+
+    PLAY G0 100 G0 150 G0 200 Eb0 1500;
+    PAUSE 1500;
+    PLAY F0 100 F0 150 F0 200 D0 1500;
+    PAUSE 2100;
+
+    PLAY Eb0 800 G0 800;
+    PLAY C0 600;
+    PAUSE 850;
+    PLAY D0 800 G0 800;
+    PLAY D0 600;
+    PAUSE 850;
+
+    PLAY C0 800 H-1 800 C0 800;
+
+    PAUSE 400;
+    PLAY H0 H0 H0 400 C0 800;
+    PAUSE 400;
+    PLAY C0 800;
+    PAUSE 400;
+    PLAY G0 1000;
+    PAUSE 1000;
+
+    PLAY Ab0 Ab0 Ab0 400 F0 1200;
+    PAUSE 250;
+}
+
+melody main() {
+    Track t;
+    t ADD violin_melody();
+    t ADD winds_melody(INSTRUMENT=CLARINET);
+    t ADD viola_melody();
+    t ADD cello_melody();
+    t ADD bass();
+    PLAY t;
+}

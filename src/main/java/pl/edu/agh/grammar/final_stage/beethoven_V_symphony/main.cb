@@ -1,0 +1,15 @@
+import "src/main/java/pl/edu/agh/grammar/final_stage/beethoven_V_symphony/violin.cb";
+import "src/main/java/pl/edu/agh/grammar/final_stage/beethoven_V_symphony/winds.cb";
+import "src/main/java/pl/edu/agh/grammar/final_stage/beethoven_V_symphony/viola.cb";
+import "src/main/java/pl/edu/agh/grammar/final_stage/beethoven_V_symphony/cello.cb";
+import "src/main/java/pl/edu/agh/grammar/final_stage/beethoven_V_symphony/bass.cb";
+
+melody main() {
+    Track t;
+    t ADD violin_melody();
+    t ADD winds_melody(INSTRUMENT=CLARINET);
+    t ADD viola_melody();
+    t ADD cello_melody();
+    t ADD bass();
+    PLAY t;
+}
