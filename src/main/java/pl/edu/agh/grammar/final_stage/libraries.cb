@@ -1,0 +1,26 @@
+include blueslib;
+include passageslib.dominant_seventh_passage;
+include orientalscaleslib.jewish_scale_reversed;
+
+melody improvization() {
+    SET INSTRUMENT=CLARINET;
+    PLAY minor_blues_pentatonic(H2, 1, 170);
+    PAUSE 500;
+    PLAY minor_blues_pentatonic_reversed(H3, 1, 170);
+    PAUSE 500;
+    PLAY dominant_seventh_passage(E2, 1, 200);
+    PAUSE 300;
+    PLAY jewish_scale_reversed(H3, 1, 150);
+    PAUSE 900;
+    PLAY D3 E3 F3 F#3 F3 E3 D3 E3 F3 F#3 F3 E3 D3 E3 F3 F#3 F3 E3 D3 E3 F3 F#3 F3 E3 D3 E3 F3 F#3 F3 E3 D3 100;
+    PLAY D4 F#4 B4 200 H4 1000;
+    PAUSE 200;
+}
+
+melody main() {
+    Track t1;
+    t1 ADD blues_progression(H2, 1, 1000);
+    t1 ADD blues_baseline(H0, 1, 1000, INSTRUMENT=BASS);
+    t1 ADD improvization();
+    PLAY t1;
+}
