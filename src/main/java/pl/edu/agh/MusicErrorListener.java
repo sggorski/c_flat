@@ -44,7 +44,9 @@ public class MusicErrorListener extends BaseErrorListener {
             }else {
                 // e = InputMismatchException
 
-                System.out.println(e.getClass().getSimpleName());
+                //TODO Sometimes the error is registered as InputMismatch where in reality should be Missing Token
+
+                throw new MismatchedInput("Invalid input used: " + token.getText(), lineMap.get(line), charPositionInLine);
 
             }
 
@@ -52,7 +54,7 @@ public class MusicErrorListener extends BaseErrorListener {
 
 //            System.out.println(ExpectedTokens(parser));
 //            System.out.println(rulename + " " + token.getText() + " " + ctx.start.getText());
-            throw new SyntaxError(message==null ? msg : message, lineMap.get(line), charPositionInLine);
+            //throw new SyntaxError(message==null ? msg : message, lineMap.get(line), charPositionInLine);
         } else {
 
             MusicLexer lexer = (MusicLexer) recognizer; // Cast recognizer to lexer, because it's lexer's stage
@@ -118,22 +120,22 @@ public class MusicErrorListener extends BaseErrorListener {
 //        }
 
 
-//        if(tokenTypeName != null ) {
-//            switch (tokenTypeName) {
-//                case "NOTE_VAL":
-//                    return "Note value cannot be here";
-//                case "INT_VAL":
-//                    return "Integer value cannot be here";
-//                case "BOOL_VAL":
-//                    return "Boolean value cannot be here";
-//                case "STRING_VAL":
-//                    return "String value cannot be here";
-//                case "INSTRUMENT_VALUE":
-//                    return "Instrument value cannot be here";
-//
-//            }
-//
-//        }
+        if(tokenTypeName != null ) {
+            switch (tokenTypeName) {
+                case "NOTE_VAL":
+                    return "Note value cannot be here";
+                case "INT_VAL":
+                    return "Integer value cannot be here";
+                case "BOOL_VAL":
+                    return "Boolean value cannot be here";
+                case "STRING_VAL":
+                    return "String value cannot be here";
+                case "INSTRUMENT_VALUE":
+                    return "Instrument value cannot be here";
+
+            }
+
+        }
 
         if(rulename.equals("settings") ){
             return "Cannot perform this " + faultyToken.getText() + " action while setting an option";
@@ -145,12 +147,16 @@ public class MusicErrorListener extends BaseErrorListener {
         if(rulename.equals("expr") && ctx.getParent() instanceof MusicParser.WhileLoopContext) {
             return "While loop expression cannot be empty";
         }
+        if(rulename.equals("loop") && ctx.getParent() instanceof MusicParser.LoopStatementContext) {
+            return "For loop cannot be empty";
+        }
 
-        String wordProposal = LevenshteinDamerau.proposeWord(faultyToken.getText(), vocabularyStrings(parser.getVocabulary()), 1);
+
+        String wordProposal = LevenshteinDamerau.proposeWord(faultyToken.getText(), vocabularyStrings(parser.getVocabulary()), 6);
 
 
         if(wordProposal != null){
-            return "Unrecognized character: " + faultyToken.getText() + " Did you mean " + LevenshteinDamerau.proposeWord(faultyToken.getText(),vocabularyStrings(parser.getVocabulary()), 1);
+            return "Unrecognized character: " + faultyToken.getText() + " Did you mean " + LevenshteinDamerau.proposeWord(faultyToken.getText(),vocabularyStrings(parser.getVocabulary()), 3);
         }else {
             return "Unrecognized character: " + faultyToken.getText() + " No viable proposal ";
         }
