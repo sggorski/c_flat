@@ -84,6 +84,7 @@ Komenda `PLAY` oznacza zagranie określonego fragmentu przez określony czas. Za
 - pojedynczą nutę, np. `PLAY C2 400;` (możliwe wykorzystanie zmiennych, np. `PLAY nuta dlugosc;`)
 - sekwencję nut, np. `PLAY C2 E2 G2 400;` (możliwe wykorzystanie zmiennych), czas odnosi się do długości pojedynczej nuty, nie wszystkich
 - akord, np. `PLAY [C2, E2, G2] 400;` (możliwe wykorzystanie zmiennych)
+- nuty i akordy na zmianę, np `PLAY [C2, E2], D2 E2 [E2, G2] C3 500;`
 - funkcję (melodię), np. `PLAY zwrotka();` (szersze omówienie w dalszej części dokumentacji)
 
 10. **Scope'y**\
@@ -199,7 +200,7 @@ Rzutowanie (ang. casting) umożliwia jawną zmianę typu danej zmiennej. Operato
 - typ `int` na typ `Note`: operacja odwrotna do powyższego rzutowania `Note` -> `int`
 
 18. **Struktura Track**\
-Jest to zaawansowana struktura pozwalająca na granie utworów polifonicznych (tj. wielogłosowych). Polega na zadelkarowaniu zmiennej tego typu (`Track`) a następnie przypisaniu do niej funkcji z parametrami (instrukcja `ADD`), po czym można taką zmienną typu `Track` zgrać standardowym poleceniem `PLAY`. Grane będą jednocześnie wszystkie melodie, np. zakłądając istnienie funkcji `mel1` i `mel2` można to wykonać tak (obsługiwane są też oczywiście parametry funkcji - jak przy pojedynczym wywołaniu):
+Jest to zaawansowana struktura pozwalająca na granie utworów polifonicznych (tj. wielogłosowych). Może być utworzona tylko w głównym scope'ie funkcji `main`. Polega na zadeklarowaniu zmiennej tego typu (`Track`) a następnie przypisaniu do niej funkcji z parametrami (instrukcja `ADD`), po czym można taką zmienną typu `Track` zgrać standardowym poleceniem `PLAY`. Grane będą jednocześnie wszystkie melodie, np. zakłądając istnienie funkcji `mel1` i `mel2` można to wykonać tak (obsługiwane są też oczywiście parametry funkcji - jak przy pojedynczym wywołaniu):
 ```
 Track t;
 t ADD mel1();
