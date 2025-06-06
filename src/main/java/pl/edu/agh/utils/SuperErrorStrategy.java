@@ -13,6 +13,9 @@ public class SuperErrorStrategy extends DefaultErrorStrategy {
         TokenStream tokens = recognizer.getInputStream();
         Token prevToken = tokens.get(e.getOffendingToken().getTokenIndex() - 1);
 
+        IntervalSet expecting = this.getExpectedTokens(recognizer);
+        System.out.println(expecting.toString(recognizer.getVocabulary()));
+
         String msg = "mismatched input " + this.getTokenErrorDisplay(e.getOffendingToken()) + " expecting " + e.getExpectedTokens().toString(recognizer.getVocabulary());
         recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
     }
@@ -50,7 +53,7 @@ public class SuperErrorStrategy extends DefaultErrorStrategy {
             Token previousToken = input.get(t.getTokenIndex() - 1);
             String tokenName = this.getTokenErrorDisplay(t);
             IntervalSet expecting = this.getExpectedTokens(recognizer);
-            String msg = "extraneous input " + tokenName + " expecting " + expecting.toString(recognizer.getVocabulary());
+            String msg = "Unnecessary character " + tokenName;
             recognizer.notifyErrorListeners(previousToken, msg, (RecognitionException)null);
         }
     }
@@ -64,7 +67,7 @@ public class SuperErrorStrategy extends DefaultErrorStrategy {
             TokenStream input = recognizer.getInputStream();
             Token previousToken = input.get(t.getTokenIndex() - 1);
             IntervalSet expecting = this.getExpectedTokens(recognizer);
-            String msg = "missing " + expecting.toString(recognizer.getVocabulary()) + " at " + this.getTokenErrorDisplay(t);
+            String msg = "missing " + expecting.toString(recognizer.getVocabulary());
             recognizer.notifyErrorListeners(previousToken, msg, (RecognitionException)null);
         }
     }
