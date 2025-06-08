@@ -65,7 +65,13 @@ Użycie return w funkcji:
 w postaci Scope'a, w której została ona wywołana
 - Po użyciu słowa `RETURN` ustawiamy obecny Scope na adres powrotu funkcji
 
-
+### Instrukcja up:
+- Jeżeli instrukcja `up:` zostaje użyta przed zmienną, jej wyszukanie polega na tymczasowej zmianie Scope'a o n wyżej, gdzie n to liczba użyć instrukcji `up:` 
+- W momencie gdy aktualny Scope jest nullem, sprawdzana jest liczba pozostałych, niewykorzystanych instrukcji `up:`, 
+  - Jeżeli jest ona równa zero to najpierw jest przeszukiwana pamięć funkcji, a potem globalnej przestrzeni nazw
+  - Jeżeli jest ona równa jeden to zostaje przeszukana jedynie globalna przestrzeń nazw
+  - Jeżeli jest ona większa niż jeden to zostaje wyrzucony wyjątek `ScopeError`
+  
 ## Instrukcje sterujące - warunkowe i pętle
 
 ### Instrukcja if/elseif/else:
@@ -81,7 +87,38 @@ następnie usuwamy odpowiednią ilosć Scopów, które odpowiadają elseifom (je
 - W przypadku kiedy expression w if'ie jest fałszywe, zostaje pominięty Scope tego if'a (parent tego Scope'a kasuje swoje dziecko) i przechodzimy do następnej w kolejności instrukcji logicznej
 - Jeżeli jest nią else if to postępuje się tak samo jak z if'em, jeżeli to else to po prostu następuje przejście do jego Scope'a i wykonanie instrukcji znajdujących się wewnątrz niego
 
+### Pętla while:
 
+Pierwszy przebieg:
+- brak
+
+Drugi przebieg:
+- Następuje stworzenie głębokiej kopii Scope'a pętli while oraz stworzenie Scope'a powrotu ustawionego na obecny Scope
+- Następuje sprawdzenie expression pętli while
+- Jeżeli jest ono fałszywe to następuje usunięcie tego Scope'a z listy rodzica, jeżeli jest prawdziwe to następuje przejście do Scope'a tej pętli i wykonanie instrukcji znajdujących się wewnątrz niej
+- Po zakończeniu tej operacji ten Scope zostaje nadpisany kopią sprzed wykonania instrukcji wewnątrz pętli
+- Ponownie zostają wykonane wszystkie poprzednie kroki
+- W przypadku użycia instrukcji `break` obecny Scope zostaje ustawiony na Scope powrotu, a Scope pętli while zostaje usunięty
+- W przypadku użycia instrukcji `continue` obecny Scope zostaje ustawiony na Scope powrotu, a Scope odpowiadający za pętlę while zostaje ustawiony na stworzoną kopię tego Scope sprzed wykonania instrukcji wewnątrz pętli
+
+### Pętla for
+
+Pierwszy przebieg:
+- Jeżeli deklaracja zmiennej została wykonana w inicjalizacji w nagłówku pętli, to zostaje ona pominięta i dzieje się dopiero przed wyjściem z pętli for, w celu przypisania jej do Scope'a odpowiadającego za ciało pętli
+
+Drugi przebieg:
+- Na początku Dokonuje się sprawdzenia czy inicjalizacja w nagłówku funkcji jest pusta, zawiera przypisanie lub deklarację zmiennej
+- Jeżeli jest to inicjalizacja to wartość danej zmiennej obecnego Scope'a zostaje nadpisana, jeżeli natomiast jest to deklaracja to w pamięci Scope'a pętli dokonuje się przypisanie wartości dla wykrytej wcześniej zmiennej
+- W przypadku deklaracji specjalne pole `forInit` Scope'a który jest przed Scopem pętli for zostaje ustawione na nazwę zmiennej w tej deklaracji
+- Zostaje sprawdzony warunek w nagłówku pętli for, jeżeli zmienna szukana jest w polu forInit to zostaje ona wyciągnięta ze Scope'a ciała pętli for
+- Dopóki warunek jest prawdziwy to (jeżeli jest pusty to jest zawsze prawdziwy): 
+  - tak samo jak w pętli while zostaje stworzona kopia Scope'a ciała pętli for oraz Scope powrotu wskazujący na Scope, który jest rodzicem Scope'a ciała pętli for
+  - obecny Scope staje się Scopem pętli while i zostają wykonane instrukcje w niej zawarte
+  - Po wyjściu z tego Scope'a następuje nadpisanie Scope'a ciała pętli for jego kopią
+  - Na koniec zostaje wykonana aktualizacja (o ile jest)
+- Jeżeli warunek jest fałszywy to Scope ciała pętli for zostaje usunięty a pole `forInit` zostaje ustawione na null
+- W przypadku użycia instrukcji `break` obecny Scope zostaje ustawiony na Scope powrotu, a Scope pętli for zostaje usunięty
+- W przypadku użycia instrukcji `continue` obecny Scope zostaje ustawiony na Scope powrotu, a Scope odpowiadający za ciało pętli for zostaje ustawiony na stworzoną kopię tego Scope sprzed wykonania instrukcji wewnątrz pętli
 
 ## Importy
 
@@ -106,4 +143,7 @@ Biblioteki i znajdujące się w nich funkcje są opisane w dokumentacji dla uży
 
 ## Sygnalizacja błędów
 
-*(TO DO)*
+Dla odpowiedniej sygnalizacji błędów dla użytkownika zostały wykorzystane poniższe mechanizmy:
+- Stworzona została dedykowana klasa dziedzicząca po MusicErrorListener
+- Stowrzona została dedykowana klasa dziedzicząca po DefaultErrorStrategy
+- Została wykorzystana odległość Damerau-Levenshtein'a, w celu podpowiadania użytkownikowi o możliwych błędach podczas pisania programu, obejmuje on nazwy zmiennych oraz błędnie napisane instrukcje, dopuszczalna odległość wynosi 1 
