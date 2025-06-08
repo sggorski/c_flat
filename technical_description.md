@@ -37,6 +37,11 @@ Działanie interpretera przebiega w dwóch etapach:
 - Po zakończeniu działania funkcji, jej ramka jest **ściągana ze stosu**.
 - W przypadku wystąpienia instrukcji `return`, zwracana wartość jest **propagowana w górę drzewa parsowania**, aż dotrze do miejsca, gdzie może zostać przypisana do zmiennej lub wyrażenia.
 
+### Castowanie
+
+Mechanizm castowania pozwala na jawne rzutowanie między wybranymi typami (np. `int ↔ Note`, `int ↔ bool`, `Note → int`, `bool ↔ int`) z kontrolą poprawności.  
+W przypadku nieobsługiwanej konwersji lub błędnych danych (np. ujemna liczba na nutę) rzucany jest wyjątek `CastError`.
+
 ## Scopy
 
 *(TO DO)*
