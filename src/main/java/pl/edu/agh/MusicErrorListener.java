@@ -38,7 +38,7 @@ public class MusicErrorListener extends BaseErrorListener {
                 if(tokenType.equals("ID")){
                     throw new SyntaxError(message==null ? msg : message, lineMap.get(line), charPositionInLine);
                 }else {
-                    throw new SyntaxError("Missing input try one of the following: " + getUserExpTokens(parser), lineMap.get(line), charPositionInLine);
+                    throw new SyntaxError("Mismatched input " + e.getOffendingToken().getText(), lineMap.get(line), charPositionInLine);
                 }
 
             }else {
@@ -46,7 +46,7 @@ public class MusicErrorListener extends BaseErrorListener {
 
                 //TODO Sometimes the error is registered as InputMismatch where in reality should be Missing Token
 
-                throw new MismatchedInput("Invalid input used: " + token.getText(), lineMap.get(line), charPositionInLine);
+                throw new MismatchedInput("Invalid input used: " + token.getText() + " Try one of the following: " + getUserExpTokens(parser), lineMap.get(line), charPositionInLine);
 
             }
 

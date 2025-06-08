@@ -187,7 +187,8 @@ public class VisitorUtils {
             return null;
         }
         Scope current = currentScope;
-        for (int i = 0; i < parentContexts.size(); i++) {
+        int startingParents = parentContexts.size();
+        for (int i = 0; i < startingParents; i++) {
             current = current.parent;
             parentContexts.remove(0);
             if (current == null) break;
