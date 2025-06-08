@@ -44,11 +44,43 @@ W przypadku nieobsługiwanej konwersji lub błędnych danych (np. ujemna liczba 
 
 ## Scopy
 
-*(TO DO)*
+Mechanizm Scopów dla funkcji został omówiony wyżej, tutaj zostanie omówiony mechanizm dla pozostałych przypadków
+
+Pierwszy przebieg:
+-   Tworzony jest stos dla Scopów, każdy ze Scopów zawiera pola `parent`, `melodyParent` oraz listę `children`
+-   W momencie wejścia do Scope zostaje tworzony nowy obiekt Scope'a, który zostaje następnie dodany do stosu
+- Scope, który wcześniej znajdował się najwyżej na stosie staje się rodzicem nowododanego, w przypadku braku takiego Scope'a zamiast tego do pola `melodyParent` zostaje przypisana obecna melodia - czyli funkcja
+- Ostatni Scope na stoie  traktowany jest jako aktualny w tym przebiegu - rejestracja zmiennych następuje w pamięci tego Scope'a
+- W momencie wyjścia ze Scope'a, zostaje on zdjęty ze stosu i dodany na koniec listy dzieci jego rodzica (`parent` lub `melodyParent`)
+
+Drugi przebieg:
+- Rozpoczęcie się Scope'a prowadzi do wyszukania kolejnego Scope'a, który powinien być po aktualnym, jeżeli aktualny Scope nie istnieje oznacza to że obecnym Scopem jest funkcja, w obu przypadkach jako następny Scope wybierane jest pierwsze dziecko z listy Scopów
+- Aktualny Scope jest z tym, z którego jako pierwszego będą wyszukiwane zmienne (wyjatkiem jest użycie `up:`),
+jeżeli wyszukiwana zmienna nie zostanie znaleziona, następuje przeszukiwanie kolejnych rodziców do momentu znalezienia zmiennej lub dotarcia do sytuacji, w które `parent` jest równe null,
+wtedy następuje przeszukanie pamięci funkcji, a na końcu globalnego Scope'a, jeżeli zmienna nie została odszukana następuje wyrzucenie wyjątku `UndefinedError`
+- Opuszczenie Scope'a skutkuje ustawieniem aktualnego Scope'a na rodzica (pole `parent`), z rodzica natomiast zostaje usunięte pierwsze dziecko znajdujące się w liście dzieci (ten Scope, z którego wychodzimy)
+
+Użycie return w funkcji:
+- Funckja podczas wywołania zapisuje swój adres powrotu (jeżeli byłaby to funkcja to nic się nie dzieje, adresem powrotu jest funkcja, która byłaby na szczycie stosu po tej)
+w postaci Scope'a, w której została ona wywołana
+- Po użyciu słowa `RETURN` ustawiamy obecny Scope na adres powrotu funkcji
+
 
 ## Instrukcje sterujące - warunkowe i pętle
 
-*(TO DO)*
+### Instrukcja if/elseif/else:
+
+Pierwszy przebieg:
+- brak
+
+Drugi przebieg:
+- Twór if/elseif/else jest poniekąd traktowany jako jedna całość
+- Najpierw zostaje sprawdzony warunek if'a
+- Jeżeli jest on prawdziwy, następuje przejście do Scope'a tego if'a i wykonujemy to co znajduje się w środku,
+następnie usuwamy odpowiednią ilosć Scopów, które odpowiadają elseifom (jeżeli jakieś istnieją) oraz else (jeżeli istnieje)
+- W przypadku kiedy expression w if'ie jest fałszywe, zostaje pominięty Scope tego if'a (parent tego Scope'a kasuje swoje dziecko) i przechodzimy do następnej w kolejności instrukcji logicznej
+- Jeżeli jest nią else if to postępuje się tak samo jak z if'em, jeżeli to else to po prostu następuje przejście do jego Scope'a i wykonanie instrukcji znajdujących się wewnątrz niego
+
 
 
 ## Importy

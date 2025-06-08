@@ -1,6 +1,10 @@
 package pl.edu.agh.utils;
 
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.atn.ATN;
+import org.antlr.v4.runtime.atn.ATNState;
+import org.antlr.v4.runtime.atn.ParserATNSimulator;
+import org.antlr.v4.runtime.atn.Transition;
 import org.antlr.v4.runtime.misc.IntervalSet;
 
 import java.util.ArrayList;
@@ -16,6 +20,8 @@ public class SuperErrorStrategy extends DefaultErrorStrategy {
         IntervalSet expecting = this.getExpectedTokens(recognizer);
         System.out.println(expecting.toString(recognizer.getVocabulary()));
 
+
+
         String msg = "mismatched input " + this.getTokenErrorDisplay(e.getOffendingToken()) + " expecting " + e.getExpectedTokens().toString(recognizer.getVocabulary());
         recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
     }
@@ -24,11 +30,10 @@ public class SuperErrorStrategy extends DefaultErrorStrategy {
     protected void reportNoViableAlternative(Parser recognizer, NoViableAltException e) {
 
         TokenStream tokens = recognizer.getInputStream();
-        Token prevToken = tokens != null ? tokens.get(e.getOffendingToken().getTokenIndex() - 1) : null;
+        Token prevToken = tokens != null ? tokens.get(e.getOffendingToken().getTokenIndex()) : null;
         System.out.println(recognizer.getExpectedTokens().toString(recognizer.getVocabulary()));
-        IntervalSet expecting = this.getExpectedTokens(recognizer);
-        System.out.println("missing " + expecting.toString(recognizer.getVocabulary()) + " at " + this.getTokenErrorDisplay(e.getOffendingToken()));
         String input;
+
         if (tokens != null) {
             if (e.getStartToken().getType() == -1) {
                 input = "<EOF>";
@@ -39,8 +44,8 @@ public class SuperErrorStrategy extends DefaultErrorStrategy {
             input = "<unknown input>";
         }
 
-        String msg = "no viable alternative at input " + this.escapeWSAndQuote(input);
-        recognizer.notifyErrorListeners(prevToken, msg, e);
+        String msg = "no viable alternative at input " + this.escapeWSAndQuote(input) + e.getOffendingToken().getText();
+        recognizer.notifyErrorListeners(e.getOffendingToken(), msg, e);
     }
 
     @Override
@@ -53,7 +58,8 @@ public class SuperErrorStrategy extends DefaultErrorStrategy {
             Token previousToken = input.get(t.getTokenIndex() - 1);
             String tokenName = this.getTokenErrorDisplay(t);
             IntervalSet expecting = this.getExpectedTokens(recognizer);
-            String msg = "Unnecessary character " + tokenName;
+            System.out.println(expecting.toString(recognizer.getVocabulary()));
+            String msg = " Unnecessary character/word: " + tokenName + " remove it";
             recognizer.notifyErrorListeners(previousToken, msg, (RecognitionException)null);
         }
     }
@@ -69,6 +75,43 @@ public class SuperErrorStrategy extends DefaultErrorStrategy {
             IntervalSet expecting = this.getExpectedTokens(recognizer);
             String msg = "missing " + expecting.toString(recognizer.getVocabulary());
             recognizer.notifyErrorListeners(previousToken, msg, (RecognitionException)null);
+
+        }
+    }
+
+    @Override
+    public Token recoverInline(Parser recognizer) throws RecognitionException {
+        Token matchedSymbol = this.singleTokenDeletion(recognizer);
+        if (matchedSymbol != null) {
+            recognizer.consume();
+            return matchedSymbol;
+        } else if (this.singleTokenInsertion(recognizer)) {
+            return this.getMissingSymbol(recognizer);
+        } else {
+            InputMismatchException e;
+            if (this.nextTokensContext == null) {
+                e = new InputMismatchException(recognizer);
+            } else {
+                e = new InputMismatchException(recognizer, this.nextTokensState, this.nextTokensContext);
+            }
+
+            throw e;
+        }
+    }
+
+    @Override
+    protected boolean singleTokenInsertion(Parser recognizer) {
+        int currentSymbolType = recognizer.getInputStream().LA(1);
+        ATNState currentState = (ATNState)((ParserATNSimulator)recognizer.getInterpreter()).atn.states.get(recognizer.getState());
+        ATNState next = currentState.transition(0).target;
+        ATN atn = ((ParserATNSimulator)recognizer.getInterpreter()).atn;
+
+        IntervalSet expectingAtLL2 = atn.nextTokens(next, recognizer.getRuleContext());
+        if (expectingAtLL2.contains(currentSymbolType)) {
+            this.reportMissingToken(recognizer);
+            return true;
+        } else {
+            return false;
         }
     }
 

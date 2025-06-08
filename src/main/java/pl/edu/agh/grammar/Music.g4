@@ -115,7 +115,7 @@ selfAssignment
     : (parent)*ID assOp expr;
 
 varDecl
-    : type ID '=' expr  #varDeclWithARg
+    : type ID '=' expr #varDeclWithARg
     | type ID  #varDeclWithoutArg
     ;
 
