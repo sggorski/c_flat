@@ -53,11 +53,24 @@ W przypadku nieobsługiwanej konwersji lub błędnych danych (np. ujemna liczba 
 
 ## Importy
 
-*(TO DO)*
+Instrukcja `import` wprowadza do języka modularność i pozwala użytkownikowi na podzielenie kodu źródłowego na wiele plików. Proces importowania jest następujący (całość odbywa się jeszcze przed `listenerem` i `visitorem`):
+1. Plik startowy jest analizowany linijka po linijce
+2. Po natrafieniu na instrukcję `import` wyszukiwany jest plik po ścieżce względnej podanej po tej instrukcji.
+3. Jeśli plik istnieje, to jego zawartość jest wczytywana, jeśli nie - rzucany jest błąd o nieistnieniu danego pliku.
+4. Wczytany plik jest następnie analizowany syntaktycznie celem wyłapania błędów składniowych i uprzedniego ich zgłoszenia.
+5. Poprawny składniowo plik importowany jest następnie analizowany linijka po linijce jak plik startowy - ewentualne importy w plikach innych niż startowy są obsługiwane rekurencyjnie (każdy kolejny import pliku już raz dodanego jest pomijany).
+6. Na tym etapie wyłapywane są deklaracje funkcji `main` oraz zmiennych globalnych poza plikiem startowym.
+7. Poprawne linijki dołączane są na początek bufora łączącego wszystkie pliki w całość.
+8. Na końcu zmienne globalne zadeklarowane w pliku startowym są "przesuwane" na początek bufora.
+9. Gdy plik startowy nie zawiera funkcji `main` lub zawiera ich wiele zgłaszany jest błąd.
+10. Podczas importowania tworzona jest także mapa linijek złączonego pliku na linie w poszczególnych plikach źródłowych (celem podawania dokładnych informacji przy wyświetlaniu błędów.)
+11. Tak przygotowany bufor jest następnie przekazywany `listenerowi` i `visitorowi` celem dalszej obsługi.
 
 ## Biblioteki standardowe
 
-*(TO DO)*
+Biblioteki i znajdujące się w nich funkcje są opisane w dokumentacji dla użytkownika. Są one napisane w języku `Cb` i umieszczone w katalogu `resources`, który jest automatycznie dołączany do paczki `.jar` podczas tworzenia wykonywalnego pliku końcowego. Do programów źródłowych dołączane są z wykorzystaniem instrukcji `include`. Działa ona w sposób analogiczny do tego opisanego w sekcji wyżej, z tym że:
+1. Dane podane po instrukcji `include` (tj. nazwa biblioteki i ewentualnie nazwa funkcji) są odpowiednio przekształcane na ścieżki do plików w `.jar`.
+2. Pomijany jest proces analizy syntaktycznej i wyłapywania deklaracji zmiennych globalnych i funkcji `main` (jako że te pliki są autorstwa twórców języka i tych błędów z pewnością nie zawierają).
 
 ## Sygnalizacja błędów
 
