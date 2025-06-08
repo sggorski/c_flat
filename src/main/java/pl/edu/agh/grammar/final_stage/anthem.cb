@@ -7,7 +7,7 @@ int tp = 250;
 melody melody1(){
     SET INSTRUMENT = PIANO;
     SET REVERB = 127;
-    PAUSE 2100;
+    PAUSE 4100;
     //PLAY D#3 20;
     PLAY D#3 D#3 D#3 t;
     PLAY C#3 t;
@@ -38,7 +38,7 @@ melody melody1(){
 
 melody melody2(){
     SET INSTRUMENT = BASS;
-    PAUSE 2170;
+    PAUSE 4100;
     //PLAY G#1 530;
     PLAY  G#1 G#1 G#1 G#1 G#1 G#1 G#1 G#1 G#1 G#1 G#1 G#1 t2;
     PLAY  D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 D#1 t2;
