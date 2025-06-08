@@ -3,6 +3,9 @@ Interpretowany język do zapisu muzyki pozwalający wykonywać proste jak i bard
 
 ## Instalacja
 
+## Opis techniczny języka
+Opis techniczny języka dostępny po kliknięciu linku obok.: [Opis](technical_description.md)
+
 ## Dokumentacja dla użytkownika
 
 1. **Struktura kodu źródłowego:**
