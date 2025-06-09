@@ -1,0 +1,15 @@
+int x = 1;
+
+melody foo(int n) {
+    int x = 100;
+    if (n > 0) {
+        PLAY foo(n - 1);
+    }
+    PRINT(x);
+    PRINT(up:x);
+}
+
+melody main() {
+    int i=15;
+    PLAY foo(2);
+}

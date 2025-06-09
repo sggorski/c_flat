@@ -5,8 +5,6 @@ melody foo(int n) {
         for (int j = 0; j < i; j+=1) {
             PRINT(i);
             PRINT(j);
-            i += 2;
-            j += 1;
         }
     }
 }
