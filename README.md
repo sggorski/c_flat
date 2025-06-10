@@ -3,6 +3,53 @@ Interpretowany język do zapisu muzyki pozwalający wykonywać proste jak i bard
 
 ## Instalacja
 
+Aby zainstalować nasz interpreter CFlat, postępuj zgodnie z poniższymi krokami.  
+**Wymagane jest posiadanie zainstalowanego JDK w wersji 21.**
+
+---
+
+### 1. Pobierz plik ZIP z interpreterm
+
+Pobierz najnowszą wersję naszego interpretera z poniższego linku: [Link](https://drive.google.com/drive/folders/1ATRqf2of5x2dkOJZIdNhpwM69bydQftP?usp=sharing)
+
+### 2. Rozpakuj archiwum
+
+Rozpakuj pobrany plik ZIP do wybranego folderu na swoim komputerze.
+
+---
+
+### 3. Dodaj folder z programem do zmiennej środowiskowej PATH
+
+Aby móc uruchamiać interpreter z dowolnego miejsca w terminalu, dodaj folder, w którym znajdują się pliki programu, do zmiennej środowiskowej `PATH`.
+
+#### Windows
+
+1. Otwórz **Panel sterowania** → **System** → **Zaawansowane ustawienia systemu** → **Zmienne środowiskowe**.
+2. W sekcji „Zmienne systemowe” znajdź zmienną `Path` i kliknij **Edytuj**.
+3. Dodaj ścieżkę do folderu z rozpakowanym interpreterm.
+4. Zatwierdź zmiany.
+
+### 4. Uruchamianie interpretera
+
+Od tej pory możesz uruchamiać interpreter poleceniem: `cflat <nazwa_pliku>`
+
+### 5. Instalacja wtyczki do kolorowania składni w Visual Studio Code
+
+W folderze z interpreterm znajduje się plik `cflat-0.0.1.vsix` – jest to rozszerzenie do kolorowania składni dla plików `.cb` w edytorze VSCode.
+
+Aby zainstalować rozszerzenie:
+
+1. Otwórz **Visual Studio Code**.
+2. Przejdź do zakładki **Extensions** (Rozszerzenia).
+3. Kliknij ikonę z trzema kropkami w prawym górnym rogu.
+4. Wybierz **Install from VSIX...** lub **Wczytaj rozszerzenie z pliku VSIX**.
+5. Wskaż plik `cflat-0.0.1.vsix` z folderu, w którym rozpakowałeś interpreter.
+6. Po instalacji składnia plików z rozszerzeniem `.cb` będzie kolorowana.
+
+---
+
+Twój interpreter jest gotowy do użycia!
+
 ## Opis techniczny języka
 Opis techniczny języka dostępny po kliknięciu linku obok.: [Opis](technical_description.md)
 
