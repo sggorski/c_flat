@@ -1,5 +1,84 @@
 # Opis techniczny interpretera języka Cflat
 
+## Konstrukcja gramatyki
+
+Gramatyka języka Music została zdefiniowana przy użyciu narzędzia [ANTLR4](https://www.antlr.org/). Poniżej znajduje się opis głównych założeń oraz struktury tej gramatyki.
+
+---
+
+### 1. Struktura programu
+
+Podstawowy szkielet programu:
+
+- **includes** – dyrektywy `include` dołączające biblioteki.
+- **imports** – importy plików zewnętrznych.
+- **globalVars** – deklaracje zmiennych globalnych.
+- **functionDecl** – deklaracje funkcji (melodii).
+- **mainDecl** – główna funkcja programu (`melody main`).
+
+---
+### 2. Deklaracje i instrukcje
+
+- **Zmienne globalne i lokalne** deklarowane są przez regułę `varDecl`.
+- **Funkcje** (melodie) deklaruje się przez `functionDecl`.
+- **Parametry** funkcji opisuje reguła `parameters`.
+- **Typy** obsługiwane przez język to: `int`, `bool`, `Chord`, `Note`.
+
+---
+
+### 3. Instrukcje główne (statements)
+
+W języku dostępne są m.in.:
+
+- Przypisania (`assignment`, `selfAssignment`)
+- Deklaracje zmiennych (`varDecl`)
+- Odtwarzanie nut i akordów (`playStatement`)
+- Pauzy (`pauseStatement`)
+- Ustawienia parametrów muzycznych (`settings`)
+- Instrukcje sterujące: pętle (`loop`), warunki (`if`, `elseif`, `else`), bloki (`scope`)
+- Wywołania funkcji (`functionCall`)
+- Wydruk na konsolę (`print`)
+- Instrukcje specjalne: `break`, `continue`, `return`
+
+---
+
+### 4. Ustawienia muzyczne
+
+Za pomocą instrukcji `SET` można modyfikować parametry odtwarzania, takie jak np. tempo (`PACE`), instrument (`INSTRUMENT`), głośność (`VOLUME`), efekty (`REVERB`, `TREMOLO` itp.).
+
+---
+
+### 5. Obsługa nut, akordów i ścieżek
+
+- Nuty reprezentowane są przez `NOTE_VAL` (np. `C4`, `D#3`).
+- Akordy zapisuje się w nawiasach kwadratowych, np. `[C4,E4,G4]`.
+- Ścieżki (tracks) można deklarować tylko z poziomu głownego scope'a głównej funckji.
+
+---
+
+### 6. Wyrażenia
+
+Język obsługuje standardowe wyrażenia arytmetyczne, logiczne, porównania, rzutowania typów oraz operacje na własnych typach (`Chord`, `Note`).
+
+---
+
+### 7. Składnia słów kluczowych i wartości
+
+- **Słowa kluczowe**: `import`, `include`, `melody`, `int`, `bool`, `Chord`, `Note`, `Track`, `SET`, `PLAY`, `PAUSE`, `RETURN`, `PRINT`, `break`, `continue`, `while`, `for`, `if`, `else`, itp.
+- **Wartości**: liczby całkowite (`INT_VAL`), wartości logiczne (`true`, `false`), nuty (`NOTE_VAL`), nazwy instrumentów (`INSTRUMENT_VALUE`).
+
+---
+
+### 9. Komentarze
+
+- Komentarze jednoliniowe: `// komentarz`
+- Komentarze blokowe: `/* komentarz */`
+---
+
+### 10. Rozszerzalność
+
+Dzięki modularnej budowie gramatyki możliwe jest łatwe dodawanie nowych typów, instrukcji oraz słów kluczowych.
+
 ## Dwuprzebiegowość działania interpretera
 
 Działanie interpretera przebiega w dwóch etapach:
@@ -36,6 +115,57 @@ Działanie interpretera przebiega w dwóch etapach:
     - **Własne efekty** (odpowiednio propagowane, funckja domyślnie dziedziczy efekty ze scopa, w którym została wywołana).
 - Po zakończeniu działania funkcji, jej ramka jest **ściągana ze stosu**.
 - W przypadku wystąpienia instrukcji `return`, zwracana wartość jest **propagowana w górę drzewa parsowania**, aż dotrze do miejsca, gdzie może zostać przypisana do zmiennej lub wyrażenia.
+
+### Ramka stosu w języku Music – klasa `Melody`
+
+W interpreterze języka Music każda funkcja (melodia) posiada własną ramkę stosu, która jest reprezentowana przez instancję klasy `Melody`. Ramka stosu przechowuje wszystkie informacje niezbędne do prawidłowego wykonania funkcji, takie jak:
+
+#### Składowe ramki stosu (`Melody`)
+
+- **instrument**  
+  Aktualny instrument przypisany do melodii (np. PIANO, GUITAR).
+
+- **effects**  
+  Mapa efektów muzycznych (`Effect`) oraz ich wartości (`Value`), np. reverb, chorus, vibrato.
+
+- **name**  
+  Nazwa melodii (funkcji).
+
+- **memory**  
+  Mapa zmiennych lokalnych (`String` → `VarInfo`), przechowuje wszystkie zmienne zadeklarowane w danej melodii.
+
+- **parameters**  
+  Mapa parametrów funkcji (`Integer` → `VarInfo`), przechowuje wartości przekazane do funkcji (melodii) jako argumenty.
+
+- **body**  
+  Lista instrukcji (`StatementContext`), które tworzą ciało funkcji.
+
+- **mainBody**  
+  Lista instrukcji głównej funkcji programu (`MainStatementContext`).
+
+- **scopes**  
+  Lista obiektów `Scope` reprezentujących zagnieżdżone zakresy widoczności zmiennych (np. dla bloków, pętli, warunków).
+
+- **previous_scope**  
+  Odniesienie do poprzedniego zakresu (przydatne przy wychodzeniu z bloku).
+
+- **forInit**  
+  Dodatkowa informacja o inicjalizacji pętli for.
+
+- **synth, channels**  
+  Obiekty MIDI używane do odtwarzania dźwięków (kanały, syntezator).
+
+### Rola ramki stosu
+
+Ramka stosu (`Melody`) jest tworzona przy każdym wywołaniu funkcji (melodii) i przechowuje:
+
+- Wszystkie lokalne zmienne i ich wartości
+- Parametry wywołania funkcji
+- Aktualny instrument i efekty
+- Kontekst wykonania (ciało funkcji, zakresy)
+- Informacje potrzebne do obsługi dźwięku (MIDI)
+
+Dzięki temu każda funkcja ma własną, izolowaną przestrzeń na dane, a powrót z funkcji przywraca poprzedni stan stosu.
 
 ### Castowanie
 
