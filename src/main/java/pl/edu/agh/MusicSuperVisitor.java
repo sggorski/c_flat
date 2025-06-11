@@ -138,16 +138,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (melody.name.equals("main")) {
             if (value instanceof BoolValue) {
                 BoolValue boolValue = (BoolValue) value;
-                System.out.println("MAIN RETURNED: " + boolValue);
+                //System.out.println("MAIN RETURNED: " + boolValue);
             } else if (value instanceof IntValue) {
                 IntValue intValue = (IntValue) value;
-                System.out.println("MAIN RETURNED: " + intValue);
+                //System.out.println("MAIN RETURNED: " + intValue);
             } else if (value instanceof NoteValue) {
                 NoteValue noteValue = (NoteValue) value;
-                System.out.println("MAIN RETURNED: " + noteValue);
+               // System.out.println("MAIN RETURNED: " + noteValue);
             } else if (value instanceof ChordValue) {
                 ChordValue chordValue = (ChordValue) value;
-                System.out.println("MAIN RETURNED: " + chordValue);
+               // System.out.println("MAIN RETURNED: " + chordValue);
             }
             System.exit(0);
         } else {
@@ -507,8 +507,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         } else {
             temp = Scope.deepCopyScopeStructure(currentScope.getChild(), null, currentScope);
         }
-
-        if (((BoolValue) visit(ctx.expr())).value) {
+        Value exprVal = tryCasting(ctx.expr());
+        if (!(exprVal instanceof BoolValue)) {
+            throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getType().name(), this.lineMap.get(getLine(ctx)), getCol(ctx));
+        }
+        if (((BoolValue) exprVal).value) {
             try {
                 T result = visit(ctx.scope());
                 if (result instanceof ReturnVal) return result;
@@ -614,7 +617,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 return (T) Boolean.FALSE;
             }
         } else
-            throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getClass().getName(), this.lineMap.get(getLine(ctx)), getCol(ctx));
+            throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getType().name(), this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
     /**
@@ -636,7 +639,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 return (T) Boolean.FALSE;
             }
         } else
-            throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getClass().getName(), this.lineMap.get(getLine(ctx)), getCol(ctx));
+            throw new ValueError("Expression is not of type BOOLEAN, got type: " + exprVal.getType().name(), this.lineMap.get(getLine(ctx)), getCol(ctx));
     }
 
     @Override
@@ -1133,7 +1136,11 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     }
 
     private boolean checkForExpr(MusicParser.ForLoopContext ctx) {
-        return ((BoolValue) visit(ctx.expr())).value;
+        Value val = tryCasting(ctx.expr());
+        if(val instanceof BoolValue){
+            return ((BoolValue) val).value;
+        }
+        throw new ValueError("Incorrect value type of expression, expected: BOOLEAN, got: " + val.getType().name(), this.lineMap.get(getLine(ctx)), getCol(ctx) );
     }
 
     /**

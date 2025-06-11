@@ -29,24 +29,24 @@ public class MusicErrorListener extends BaseErrorListener {
             String tokenType = parser.getVocabulary().getSymbolicName(token.getType());
             String message = tryToResolveError(parser, token, rulename, e);
 
-            System.out.println(e != null ? e.getClass().getSimpleName() : "null");
 
             if(e == null) {
                 throw new SyntaxError(msg, lineMap.get(line), charPositionInLine);
             } else if (e instanceof NoViableAltException) {
+                msg = resolveNoViable(parser, token);
 
-                if(tokenType.equals("ID")){
-                    throw new SyntaxError(message==null ? msg : message, lineMap.get(line), charPositionInLine);
-                }else {
-                    throw new SyntaxError("Mismatched input " + e.getOffendingToken().getText(), lineMap.get(line), charPositionInLine);
-                }
+                throw new SyntaxError(msg, lineMap.get(line), charPositionInLine);
 
             }else {
                 // e = InputMismatchException
-
+                String mesg;
                 //TODO Sometimes the error is registered as InputMismatch where in reality should be Missing Token
-
-                throw new MismatchedInput("Invalid input used: " + token.getText() + " Try one of the following: " + getUserExpTokens(parser), lineMap.get(line), charPositionInLine);
+                if(token.getText().equals("<EOF>")  || token.getText().equals("main")){
+                    mesg = "Missing input: " + "}";
+                }else{
+                    mesg = "Invalid input used: " + token.getText() + " Try one of the following: " + getUserExpTokens(parser);
+                }
+                throw new MismatchedInput(mesg, lineMap.get(line), charPositionInLine);
 
             }
 
@@ -72,6 +72,29 @@ public class MusicErrorListener extends BaseErrorListener {
             }
         }
         // throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
+    }
+
+    private String resolveNoViable(Parser parser, Token offendingToken) {
+        String tokenType = parser.getVocabulary().getSymbolicName(offendingToken.getType());
+        TokenStream tokens = parser.getInputStream();
+        Token prevToken = tokens.get(offendingToken.getTokenIndex() - 1);
+
+        if(prevToken != null){
+            String prevTokenType = parser.getVocabulary().getSymbolicName(prevToken.getType());
+            if(prevToken.getText().length() >= 2){
+                String proposal = LevenshteinDamerau.proposeWord(prevToken.getText(), vocabularyStrings(parser.getVocabulary()), 1);
+                if(proposal != null && proposal.length() > 1 && !proposal.equals(prevToken.getText())) {
+                    return "Mismatched input " + prevToken.getText() + " Did you mean: " + proposal;
+                }
+            }
+            if(prevTokenType != null && prevTokenType.equals("ID")) {
+                return "Mismatched input " + prevToken.getText();
+            }else return "Mismatched input " + offendingToken.getText();
+        }
+        if(tokenType == null){
+            return "Illegal input";
+        }
+        return null;
     }
 
     private String getUserExpTokens(Parser parser) {
@@ -152,7 +175,7 @@ public class MusicErrorListener extends BaseErrorListener {
         }
 
 
-        String wordProposal = LevenshteinDamerau.proposeWord(faultyToken.getText(), vocabularyStrings(parser.getVocabulary()), 6);
+        String wordProposal = LevenshteinDamerau.proposeWord(faultyToken.getText(), vocabularyStrings(parser.getVocabulary()), 1);
 
 
         if(wordProposal != null){
@@ -171,7 +194,7 @@ public class MusicErrorListener extends BaseErrorListener {
         for (int i = 0; i < vocabulary.getMaxTokenType(); i++){
             String displayName = vocabulary.getLiteralName(i);
             if (displayName != null){
-                vocabularyStrings.add(vocabulary.getLiteralName(i).substring(1, vocabulary.getLiteralName(i).length() - 1));
+                vocabularyStrings.add( vocabulary.getLiteralName(i).substring(1, vocabulary.getLiteralName(i).length() - 1));
             }
         }
         return vocabularyStrings;
