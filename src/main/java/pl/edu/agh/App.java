@@ -4,12 +4,10 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import pl.edu.agh.errors.*;
-import pl.edu.agh.utils.FilePreImportProcessing;
-import pl.edu.agh.utils.LineOrigin;
-import pl.edu.agh.utils.SuperErrorStrategy;
-import pl.edu.agh.utils.VarInfo;
+import pl.edu.agh.utils.*;
 
 import java.io.IOException;
+import java.rmi.ConnectIOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,13 +43,14 @@ public class App
         } catch (IncludeError | ImportError | SyntaxError e) {
             System.err.println(e.getMessage());
             return;
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.err.println("No such melody!");
             return;
         }
 
         CharStream stream = CharStreams.fromString(mergedSource);
         Map<Integer, LineOrigin> lineMap = importer.getLineMap();
+        MusicParser parser = null;
         try {
             MusicLexer lexer = new MusicLexer(stream);
             lexer.removeErrorListeners();
@@ -59,7 +58,7 @@ public class App
 
             CommonTokenStream tokens = new CommonTokenStream(lexer);
 
-            MusicParser parser = new MusicParser(tokens);
+            parser = new MusicParser(tokens);
 
             parser.removeErrorListeners();
             parser.addErrorListener(new MusicErrorListener(lineMap));
@@ -75,16 +74,29 @@ public class App
             MusicSuperVisitor visitor = new MusicSuperVisitor(melodyMemory, lineMap, mergedSource, globalScope);
             visitor.visitProgram(program);
 
-        }  catch (ParseCancellationException e) {
+        } catch (ParseCancellationException e) {
             System.err.println(e.getMessage() /*+ " ParseCancel"*/);
         } catch (RecognitionException e) {
             System.err.println(e.getMessage() /*+ " Recognition"*/);
         } catch (UndefinedError e) {
             System.err.println(e.getMessage() /*+ " Undefined Variable"*/);
-        } catch (SyntaxError | ValueError | ScopeError | VariableDeclarationError | StackOverflow e) {
+        } catch (SyntaxError | ValueError | ScopeError | VariableDeclarationError | StackOverflow | CastError | ImportError | ArithmeticException |
+                 IncludeError | IncomparableError | RuntimeError | MismatchedInput | BreakError | ContinueError e) {
             System.err.println(e.getMessage() /*+ " Errors"*/);
         } catch (Exception e) {
-            System.err.println(/*"Error: +"*/ e.getMessage());
+            if(parser != null){
+                System.err.println("Illegal action");
+            }else{
+                Token currentToken = parser.getCurrentToken();
+
+                if (currentToken != null) {
+                    int line = currentToken.getLine();
+                    int column = currentToken.getCharPositionInLine();
+                    System.err.printf("Illegal Action at line %d character: %d", line, column);
+                }else {
+                    System.err.println("Illegal action");
+                }
+            }
         }
     }
 }
