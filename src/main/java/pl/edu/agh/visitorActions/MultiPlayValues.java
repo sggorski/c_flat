@@ -3,6 +3,7 @@ package pl.edu.agh.visitorActions;
 import org.antlr.runtime.tree.ParseTree;
 import pl.edu.agh.Melody;
 import pl.edu.agh.MusicParser;
+import pl.edu.agh.errors.RuntimeError;
 import pl.edu.agh.errors.ScopeError;
 import pl.edu.agh.errors.ValueError;
 import pl.edu.agh.musicUtils.Music;
@@ -46,9 +47,11 @@ public class MultiPlayValues {
      * Throws an error if the variable type is unsupported.
      */
     public static void playVariable(MusicParser.ParentIDContext idContext,Melody melody, Scope currentScope,
-                                    HashMap<String,VarInfo> globalScope, int duration, LineOrigin origin, int col){
+                                    HashMap<String,VarInfo> globalScope,HashMap<String,Track> tracks, int duration, LineOrigin origin, int col){
         VarInfo varInfo;
         String varName = idContext.ID().getText();
+        if(tracks.containsKey(varName))
+            throw new RuntimeError("Variable  " + varName + " of type Track cannot by played here.", origin, col);
         varInfo = VisitorUtils.findVar(varName, idContext.parent(),melody,currentScope,globalScope,origin,col);
         if (varInfo.type == Type.NOTE) {
             NoteValue noteVal = (NoteValue) varInfo.valueObj;

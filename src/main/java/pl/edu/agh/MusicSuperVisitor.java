@@ -463,7 +463,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
                 Music.playNote(note.note, duration,melody,currentScope);
             } else {
                 MusicParser.ParentIDContext idContext = (MusicParser.ParentIDContext) child;
-                MultiPlayValues.playVariable(idContext,melody,currentScope,globalScope,duration,getOrigin(ctx),getCol(ctx));
+                MultiPlayValues.playVariable(idContext,melody,currentScope,globalScope,tracks,duration,getOrigin(ctx),getCol(ctx));
             }
         }
         return visitChildren(ctx);
@@ -1022,8 +1022,8 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
     @Override
     public T visitTrackAdd(MusicParser.TrackAddContext ctx) {
         String name = ctx.trackStatement().ID().getText();
-        if (!tracks.containsKey(name)) {
-            throw new UndefinedError("Undefined track variable: " + " " + name, this.lineMap.get(getLine(ctx)), getCol(ctx), LevenshteinDamerau.proposeWord(name, tracks.keySet(), 1));
+        if (!tracks.containsKey(name) ) {
+            throw new UndefinedError("Undefined variable: " + " " + name, this.lineMap.get(getLine(ctx)), getCol(ctx), LevenshteinDamerau.proposeWord(name, tracks.keySet(), 1));
         }
         Track track = tracks.get(name);
         String funcName = ctx.trackStatement().functionCall().ID().getText();

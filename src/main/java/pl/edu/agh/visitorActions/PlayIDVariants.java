@@ -2,6 +2,7 @@ package pl.edu.agh.visitorActions;
 
 import pl.edu.agh.Melody;
 import pl.edu.agh.MusicParser;
+import pl.edu.agh.errors.RuntimeError;
 import pl.edu.agh.errors.ScopeError;
 import pl.edu.agh.errors.SyntaxError;
 import pl.edu.agh.errors.UndefinedError;
@@ -27,9 +28,14 @@ public class PlayIDVariants {
         if (ctx.INT_VAL() != null || ctx.parentID(1) != null) {
             VarInfo varInfo;
             String varName = ctx.parentID(0).ID().getText();
+            if(tracks.containsKey(varName))
+                throw new RuntimeError("Variable  " + varName + " of type Track cannot by played here.", origin, col);
+
             varInfo = VisitorUtils.findVar(varName, ctx.parentID(0).parent(), melody, currentScope, globalScope, origin,col);
-            if (varInfo == null)
-                throw new ScopeError("Variable not defined: " + varName, origin,col);
+            if (varInfo == null) {
+                System.out.println("here");
+                throw new ScopeError("Variable not defined: " + varName, origin, col);
+            }
             int duration = 0;
             if (ctx.INT_VAL() != null) duration = Integer.parseInt(ctx.INT_VAL().getText());
             else if (ctx.parentID(1) != null) {
@@ -49,6 +55,12 @@ public class PlayIDVariants {
             if (!melody.name.equals("main"))
                 throw new SyntaxError("Track cannot be played outside of a main melody",  origin,col);
             String trackName = ctx.parentID(0).ID().getText();
+            if(melody.memory.containsKey(trackName)) {
+                VarInfo val = melody.memory.get(trackName);
+                if(val.type.equals(Type.NOTE))
+                    throw new RuntimeError("Variable  " + trackName + " of type " + val.type + " cannot by played as track. Maybe you are missing a duration?", origin, col);
+                else throw new RuntimeError("Variable  " + trackName + " of type " + val.type + " cannot by played as track.", origin, col);
+            }
             if (!tracks.containsKey(trackName)) {
                 throw new UndefinedError("Undefined track variable: " + " " + trackName,  origin,col, LevenshteinDamerau.proposeWord(trackName, tracks.keySet(), 1));
             }
