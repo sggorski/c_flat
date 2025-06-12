@@ -3,7 +3,7 @@
 ## Konstrukcja gramatyki
 
 Gramatyka języka cflat została zdefiniowana przy użyciu narzędzia [ANTLR4](https://www.antlr.org/).\
-Można ją znaleźć w repozytorium [tutaj](.\src\main\java\pl\edu\agh\grammar\Music.g4).\
+Można ją znaleźć w repozytorium [tutaj](src/main/java/pl/edu/agh/grammar/Music.g4).\
 Poniżej znajduje się opis głównych założeń oraz struktury tej gramatyki.
 
 ---
