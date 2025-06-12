@@ -1,8 +1,10 @@
-# Opis techniczny interpretera języka Cflat
+# Opis techniczny interpretera języka CFlat
 
 ## Konstrukcja gramatyki
 
-Gramatyka języka Music została zdefiniowana przy użyciu narzędzia [ANTLR4](https://www.antlr.org/). Poniżej znajduje się opis głównych założeń oraz struktury tej gramatyki.
+Gramatyka języka cflat została zdefiniowana przy użyciu narzędzia [ANTLR4](https://www.antlr.org/).\
+Można ją znaleźć w repozytorium [tutaj](.\src\main\java\pl\edu\agh\grammar\Music.g4).\
+Poniżej znajduje się opis głównych założeń oraz struktury tej gramatyki.
 
 ---
 
@@ -116,9 +118,9 @@ Działanie interpretera przebiega w dwóch etapach:
 - Po zakończeniu działania funkcji, jej ramka jest **ściągana ze stosu**.
 - W przypadku wystąpienia instrukcji `return`, zwracana wartość jest **propagowana w górę drzewa parsowania**, aż dotrze do miejsca, gdzie może zostać przypisana do zmiennej lub wyrażenia.
 
-### Ramka stosu w języku Music – klasa `Melody`
+### Ramka stosu w języku cflat – klasa `Melody`
 
-W interpreterze języka Music każda funkcja (melodia) posiada własną ramkę stosu, która jest reprezentowana przez instancję klasy `Melody`. Ramka stosu przechowuje wszystkie informacje niezbędne do prawidłowego wykonania funkcji, takie jak:
+W interpreterze języka cflat każda funkcja (melodia) posiada własną ramkę stosu, która jest reprezentowana przez instancję klasy `Melody`. Ramka stosu przechowuje wszystkie informacje niezbędne do prawidłowego wykonania funkcji, takie jak:
 
 #### Składowe ramki stosu (`Melody`)
 
