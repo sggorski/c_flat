@@ -137,7 +137,7 @@ public class VisitorUtils {
 
         HashSet<String> gatheredVars = new HashSet<>();
         FindPossibleVar.copyForProposal(globalScope.keySet(), gatheredVars);
-        int parentsSize = parentContexts.size();
+        int parentsSize = parentContexts==null ?  0 : parentContexts.size();
         Scope current = resolveUpScope(varName, currentScope, parentContexts, origin, col);
 
         if (current != null) {
@@ -158,7 +158,7 @@ public class VisitorUtils {
 
         }
 
-        if (melody != null && parentContexts.isEmpty()) {
+        if (melody != null && parentContexts != null && parentContexts.isEmpty()) {
             if (parentsSize == 0 && melody.forInit != null && melody.forInit.equals(varName)) {
                 return melody.scopes.get(0).memory.get(varName);
             }
@@ -166,11 +166,11 @@ public class VisitorUtils {
             if (melody.memory.containsKey(varName) && melody.memory.get(varName) != null) {
                 return melody.memory.get(varName);
             }
-        }else if(melody != null) {
+        }else if(melody != null && parentContexts!= null) {
             parentContexts.remove(0);
         }
 
-        if (parentContexts.size() >= 1) {
+        if (parentContexts != null && parentContexts.size() >= 1) {
             throw new ScopeError("There is no higher Scope!", origin, col);
         }
 
@@ -185,6 +185,9 @@ public class VisitorUtils {
             currentScope, List<MusicParser.ParentContext> parentContexts, LineOrigin origin, int col) {
         if (currentScope == null) {
             return null;
+        }
+        if(parentContexts == null) {
+            return currentScope;
         }
         Scope current = currentScope;
         int startingParents = parentContexts.size();
