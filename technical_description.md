@@ -101,10 +101,17 @@ Działanie interpretera przebiega w dwóch etapach:
      - Zarejestrowanych funkcji.
    - W tym etapie realizowane jest właściwe **wykonywanie programu**.
 
+Poniżej umieszczono ogólny diagram klas interpretera wizualizujący powiązania pomiędzy nimi.
+![Diagram klas](img/diag2.png)
+
 ## Kolejność wykonywania działań / operatorów
 
 - Kolejność wykonywania operatorów i instrukcji została osiągnięta poprzez odpowiednią konstrukcję **gramatyki ANTLR4**.
 - Reguły zostały zapisane w taki sposób, aby odzwierciedlać **priorytety operatorów** — kolejność reguł oraz ich rekurencyjność determinują, które działania wykonywane są wcześniej.
+
+Na poniższych diagramach klas zwizualizowano powiązania pomiędzy klasami odpowiedzialnymi za obsługię różnych typów danych dostępnych w języku `CFlat`. Znajdują się tam także odwołania do klas wyjątków odpowiedzialnych za error handling omówiony w dalszej części dokumentacji.
+![Diagram klas dla typów danych](img/diag3.png)
+![Diagram klas dla typów danych](img/diag1.png)
 
 ## Wywoływanie funkcji
 
@@ -196,6 +203,9 @@ Użycie return w funkcji:
 - Funckja podczas wywołania zapisuje swój adres powrotu (jeżeli byłaby to funkcja to nic się nie dzieje, adresem powrotu jest funkcja, która byłaby na szczycie stosu po tej)
 w postaci Scope'a, w której została ona wywołana
 - Po użyciu słowa `RETURN` ustawiamy obecny Scope na adres powrotu funkcji
+
+Poniższy diagram pokazuje powiązania pomiędzy klasami `Scope` i `Melody` opowiedzialnymi za obsługę bloków kodu i wywołań funkcji - zamieszczono także pola składowe i metody ww. klas.
+![Diagram klas Scope i Melody](img/diag4.png)
 
 ### Instrukcja up:
 - Jeżeli instrukcja `up:` zostaje użyta przed zmienną, jej wyszukanie polega na tymczasowej zmianie Scope'a o n wyżej, gdzie n to liczba użyć instrukcji `up:` 
