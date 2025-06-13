@@ -580,6 +580,16 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
 
         if (temp != null) {
             currentScope = currentScope.parent;
+            if(currentScope != null && currentScope.forInit != null){
+                VarInfo varFromOriginal =  currentScope.scopes.get(0).memory.get(currentScope.forInit);
+                VarInfo varFromCopy =  temp.memory.get(currentScope.forInit);
+                varFromCopy.valueObj = varFromOriginal.valueObj;
+            }else if(stack.peek() != null && stack.peek().forInit != null ) {
+                VarInfo varFromOriginal =  stack.peek().scopes.get(0).memory.get(stack.peek().forInit);
+                VarInfo varFromCopy =  temp.memory.get(stack.peek().forInit);
+                varFromCopy.valueObj = varFromOriginal.valueObj;
+            }
+
             VisitorUtils.resetCurrScope(temp,stack.peek(),currentScope);
         }
         else currentScope = VisitorUtils.changeScope(stack.peek(), currentScope);
