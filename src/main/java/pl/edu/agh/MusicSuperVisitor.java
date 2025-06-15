@@ -1163,7 +1163,7 @@ public class MusicSuperVisitor<T> extends MusicBaseVisitor<T> implements MusicVi
         if (currentScope != null) {
             VisitorUtils.editEffect(ctx, effect, parents,currentScope.effects,currentScope.instrument,
                     currentScope.channels, melody,currentScope,globalScope,getOrigin(ctx),getCol(ctx));
-        } else if (stack.peek() != null) VisitorUtils.editEffect(ctx, effect,null,melody.effects,melody.instrument,
+        } else if (stack.peek() != null) VisitorUtils.editEffect(ctx, effect,parents,melody.effects,melody.instrument,
                 melody.channels,melody,currentScope,globalScope,getOrigin(ctx),getCol(ctx));
     }
 
