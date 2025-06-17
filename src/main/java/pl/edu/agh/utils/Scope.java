@@ -18,7 +18,6 @@ public class Scope {
 
     public HashMap<Effect, Value> effects = new HashMap<>();
     public HashMap<String, VarInfo> memory = new HashMap<>();
-    public ScopeType scopeType;
     public ArrayList<Scope> scopes = new ArrayList<>();
     public ArrayList<Scope> scopesForCopy = new ArrayList<>();
     public Scope parent = null;
@@ -89,7 +88,6 @@ public class Scope {
 
     public static Scope deepCopyScope(Scope original, Melody melodyParent, Scope parentScope) {
         Scope copy = new Scope();
-        copy.scopeType = original.scopeType;
         copy.memory = new HashMap<>();
         copy.melodyParent = melodyParent;
         copy.parent = parentScope;
