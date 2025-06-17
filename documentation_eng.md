@@ -51,7 +51,7 @@ To install the extension:
 Your interpreter is ready to use!
 
 ## Technical description of the language
-The technical description of the language is available by clicking the link next to it: [technical description](technical_description.md)
+The technical description of the language is available by clicking the link next to it: [technical description](technical_description_eng.md)
 
 ## User documentation
 
