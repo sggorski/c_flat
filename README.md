@@ -104,7 +104,7 @@ melody main() {
 
 For more detailed information about the language, please refer to:
 
-- [User Documentation](documentation.md) - Complete guide to language syntax and features
+- [User Documentation](documentation_eng.md) - Complete guide to language syntax and features
 - [Technical Description](technical_description.md) - Technical details about the interpreter implementation
 
 ## Authors
